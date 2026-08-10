@@ -11,7 +11,10 @@
 
         <RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
 
-        <OutputPath>../1.6/Assemblies</OutputPath>
+        <RimWorldWorkshopDir Condition=" '$(RimWorldWorkshopDir)' == '' ">$(RIMWORLD_WORKSHOP_DIR)</RimWorldWorkshopDir>
+        <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(LOCALAPPDATA)\Ustas\RimWorldSourceBuilds\RimTalkTTSModule\bin\</BaseOutputPath>
+        <BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">$(LOCALAPPDATA)\Ustas\RimWorldSourceBuilds\RimTalkTTSModule\obj\</BaseIntermediateOutputPath>
+        <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
         <LangVersion>default</LangVersion>
     </PropertyGroup>
 
@@ -37,7 +40,7 @@
     <!-- Reference to RimTalk mod assembly for compilation (provided by game/mod at runtime) -->
     <ItemGroup>
         <Reference Include="RimTalk">
-            <HintPath>D:\steam\steamapps\common\RimWorld\Mods\rimtalk\1.6\Assemblies\RimTalk.dll</HintPath>
+            <HintPath>$(RimWorldWorkshopDir)\3551203752\$(GameVersion)\Assemblies\RimTalk.dll</HintPath>
             <!-- Do not copy the assembly into our output; the game loads mod assemblies from its folder. -->
             <Private>false</Private>
         </Reference>
