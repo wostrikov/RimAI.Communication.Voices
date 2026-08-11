@@ -58,6 +58,8 @@
   <RimTalk.Settings.TTS.ResetPrompt>Скинути промпт</RimTalk.Settings.TTS.ResetPrompt>
   <RimTalk.Settings.TTS.ResetPrompt.FishAudioOld>Використати стандартний промпт FishAudio (v1.6/S1)</RimTalk.Settings.TTS.ResetPrompt.FishAudioOld>
   <RimTalk.Settings.TTS.ResetPrompt.FishAudioS2>Використати стандартний промпт FishAudio (S2-pro)</RimTalk.Settings.TTS.ResetPrompt.FishAudioS2>
+  <RimTalk.Settings.TTS.ResetPrompt.FishAudio>Використати стандартний промпт FishAudio</RimTalk.Settings.TTS.ResetPrompt.FishAudio>
+  <RimTalk.Settings.TTS.ResetPrompt.TTSWebUI>Використати стандартний промпт TTS-WebUI</RimTalk.Settings.TTS.ResetPrompt.TTSWebUI>
   <RimTalk.Settings.TTS.ResetPrompt.CosyVoice>Використати стандартний промпт CosyVoice</RimTalk.Settings.TTS.ResetPrompt.CosyVoice>
   <RimTalk.Settings.TTS.ResetPrompt.IndexTTS>Використати стандартний промпт IndexTTS</RimTalk.Settings.TTS.ResetPrompt.IndexTTS>
   <RimTalk.Settings.TTS.ResetPrompt.AzureTTS>Використати стандартний промпт Azure TTS</RimTalk.Settings.TTS.ResetPrompt.AzureTTS>
@@ -115,6 +117,11 @@
   <RimTalk.Settings.TTS.TTSConfig>Налаштування TTS</RimTalk.Settings.TTS.TTSConfig>
   <RimTalk.Settings.TTS.TTSSupplier>Провайдер TTS</RimTalk.Settings.TTS.TTSSupplier>
   <RimTalk.Settings.TTS.TTSSupplier.FishAudio>Fish Audio</RimTalk.Settings.TTS.TTSSupplier.FishAudio>
+  <RimTalk.Settings.TTS.TTSSupplier.TTSWebUI>TTS-WebUI (локальний)</RimTalk.Settings.TTS.TTSSupplier.TTSWebUI>
+  <RimTalk.Settings.TTS.TTSWebUIBaseUrlLabel>Базова URL-адреса API TTS-WebUI: {0}</RimTalk.Settings.TTS.TTSWebUIBaseUrlLabel>
+  <RimTalk.Settings.TTS.TTSWebUICustomUrlLabel>Власна URL-адреса (якщо її немає у списку):</RimTalk.Settings.TTS.TTSWebUICustomUrlLabel>
+  <RimTalk.Settings.TTS.TTSWebUIModelLabel>Модель TTS-WebUI: {0}</RimTalk.Settings.TTS.TTSWebUIModelLabel>
+  <RimTalk.Settings.TTS.TTSWebUIModelHint>Назва моделі залежить від розширень TTS-WebUI (наприклад, bark, tortoise, xtts, kokoro)</RimTalk.Settings.TTS.TTSWebUIModelHint>
   <RimTalk.Settings.TTS.TTSSupplier.CosyVoice>CosyVoice2</RimTalk.Settings.TTS.TTSSupplier.CosyVoice>
   <RimTalk.Settings.TTS.TTSSupplier.IndexTTS>IndexTTS2</RimTalk.Settings.TTS.TTSSupplier.IndexTTS>
   <RimTalk.Settings.TTS.TTSSupplier.AzureTTS>AzureTTS (Наразі недоступний)</RimTalk.Settings.TTS.TTSSupplier.AzureTTS>
