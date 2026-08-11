@@ -186,7 +186,7 @@ namespace RimTalk.TTS.UI
                 {
                     listing.Label("RimTalk.Settings.TTS.ApiKey".Translate());
                     string currentApiKey = settings.GetSupplierApiKey(settings.Supplier);
-                    string newApiKey = listing.TextEntry(currentApiKey ?? "");
+                    string newApiKey = GUI.PasswordField(listing.GetRect(30f), currentApiKey ?? "", '•');
                     if (newApiKey != currentApiKey)
                     {
                         settings.SetSupplierApiKey(settings.Supplier, newApiKey);
@@ -1049,6 +1049,10 @@ namespace RimTalk.TTS.UI
 
             // Provider Selection
             listing.Label("RimTalk.Settings.TTS.ProviderLabel".Translate());
+            if (listing.RadioButton("Використовувати конфігурацію RimTalk", settings.ApiProvider == TTSApiProvider.RimTalkSame))
+            {
+                settings.ApiProvider = TTSApiProvider.RimTalkSame;
+            }
             if (listing.RadioButton("DeepSeek", settings.ApiProvider == TTSApiProvider.DeepSeek))
             {
                 settings.ApiProvider = TTSApiProvider.DeepSeek;
@@ -1064,15 +1068,25 @@ namespace RimTalk.TTS.UI
 
             listing.Gap(6f);
 
-            // Model
-            listing.Label("RimTalk.Settings.TTS.LLMModelLabel".Translate());
-            settings.Model = listing.TextEntry(settings.Model ?? "");
-
-            listing.Gap(6f);
-
-            // API Key
-            listing.Label("RimTalk.Settings.TTS.LLMApiKeyLabel".Translate());
-            settings.ApiKey = listing.TextEntry(settings.ApiKey ?? "");
+            bool inheritedOpenAI = settings.ApiProvider == TTSApiProvider.RimTalkSame || settings.ApiProvider == TTSApiProvider.OpenAI;
+            if (inheritedOpenAI)
+            {
+                var config = global::RimTalk.Settings.Get()?.GetActiveConfig();
+                string effectiveModel = config == null ? "не налаштовано" :
+                    (config.SelectedModel == "Custom" ? config.CustomModelName : config.SelectedModel);
+                listing.Label("Використовується модель, вибрана в RimTalk: " + effectiveModel);
+                listing.Label("OpenAI credential: OPENAI_RIMTALK ✓");
+                settings.ApiKey = "";
+                settings.Model = "";
+            }
+            else
+            {
+                listing.Label("RimTalk.Settings.TTS.LLMModelLabel".Translate());
+                settings.Model = listing.TextEntry(settings.Model ?? "");
+                listing.Gap(6f);
+                listing.Label("RimTalk.Settings.TTS.LLMApiKeyLabel".Translate());
+                settings.ApiKey = GUI.PasswordField(listing.GetRect(30f), settings.ApiKey ?? "", '•');
+            }
 
             listing.Gap(6f);
 

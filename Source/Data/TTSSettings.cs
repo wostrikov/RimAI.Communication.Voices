@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using Verse;
 
 namespace RimTalk.TTS.Data
@@ -55,9 +58,9 @@ namespace RimTalk.TTS.Data
         public string DefaultVoiceModelId = "";//Deprecated
         
         // LLM API Configuration (for text processing/translation)
-        public TTSApiProvider ApiProvider = TTSApiProvider.DeepSeek;
+        public TTSApiProvider ApiProvider = TTSApiProvider.RimTalkSame;
         public string ApiKey = "";
-        public string Model = "deepseek-chat";
+        public string Model = "";
         public string CustomBaseUrl = ""; // For custom provider
         
         // Custom TTS processing prompt (empty = use default from TTSConstant)
@@ -135,13 +138,51 @@ namespace RimTalk.TTS.Data
             Scribe_Values.Look(ref PlayerReferenceVoiceModelId, "playerReferenceVoiceModelId", VoiceModel.NONE_MODEL_ID);
 
             // LLM API configuration
-            Scribe_Values.Look<TTSApiProvider>(ref ApiProvider, "apiProvider", TTSApiProvider.DeepSeek);
+            Scribe_Values.Look<TTSApiProvider>(ref ApiProvider, "apiProvider", TTSApiProvider.RimTalkSame);
             Scribe_Values.Look(ref ApiKey, "apiKey", "");
             Scribe_Values.Look(ref Model, "model", "deepseek-chat");
             Scribe_Values.Look(ref CustomBaseUrl, "customBaseUrl", "");
             Scribe_Values.Look(ref RemoveBracketsInPreProcess, "removeBracketsInPreProcess", false);
 
             LoadOldSettings();
+
+            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            {
+                MigrateLegacyPrompt();
+                if (ApiProvider == TTSApiProvider.RimTalkSame || ApiProvider == TTSApiProvider.OpenAI)
+                {
+                    // OpenAI preprocessing is owned by RimTalk. Never retain a duplicate secret/model.
+                    ApiKey = "";
+                    Model = "";
+                }
+            }
+        }
+
+        private void MigrateLegacyPrompt()
+        {
+            if (string.IsNullOrWhiteSpace(CustomTTSProcessingPrompt)) return;
+            string hash = StablePromptHash(CustomTTSProcessingPrompt);
+            string[] legacyHashes =
+            {
+                "A0F98622135D5ED68EE5611738718F8EFD39E3F6976D660F55F7EAA1AAA1E523",
+                "C00106A79AF670DC7A5ACF61804C9214A2FA0085890781A564845C6ADE0F68C2",
+                "32A53186D516521E3EFF8139B14241E0753CADB6912248B27F027CEF6FED8D4B",
+                "ED1E0699A70E0FD3C2BB905A0B8009892E6D5611AFF18B80AC7E2DAF5DC3E4E7",
+                "642092E62E2D6C9E7A1952AC761BAA5740FCC584A1C8357802EC3E15F069FE11",
+                "B2F6638BCEA827A32BD0A6487A19BCB93CCB55B4A3682E4507A3BF5683058FB7",
+                "12A01DB74ABEB3C50BCCE5C406DA433B263BA226A82700EE34A2925410ACEF5E"
+            };
+            if (Array.IndexOf(legacyHashes, hash) >= 0)
+                CustomTTSProcessingPrompt = "";
+        }
+
+        internal static string StablePromptHash(string value)
+        {
+            string normalized = (value ?? "").Replace("\r\n", "\n").Trim();
+            using (var sha = SHA256.Create())
+            {
+                return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(normalized))).Replace("-", "");
+            }
         }
 
         private void LoadOldSettings()

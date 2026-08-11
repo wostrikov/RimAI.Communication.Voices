@@ -2,203 +2,145 @@ using Verse;
 
 namespace RimTalk.TTS.Data
 {
-    /// <summary>
-    /// Constants for TTS module, including default prompts
-    /// </summary>
     public static class TTSConstant
     {
         public static readonly string Lang = LanguageDatabase.activeLanguage.info.friendlyNameNative;
 
         public static readonly string DefaultTTSProcessingPrompt =
             """
-            You are a professional TTS text processor.
+            Ти професійно готуєш текст для синтезу мовлення (TTS).
 
-            Rules:
-            1. Translate all text into {language}.
-            2. For text inside parentheses: translate only the content, keep parentheses, do not add annotations.
-            3. For text outside parentheses: translate and add suitable annotations (see list below).
-            - Emotions: at the start of each sentence, one per sentence, separated by a space.
-            - Tone markers, audio effects: anywhere in the sentence.
-            - Replace ellipses (...) with [break] or [long-break], then remove the ellipses.
-            - Add [break] after every sentence outside parentheses.
-            4. Never add annotations inside parentheses.
-            5. Output only JSON:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст, зберігай дужки й не додавай позначок.
+            3. Поза дужками перекладай текст і додавай доречні позначки з наведеного нижче списку.
+            - На початку кожного речення став одну емоцію, відокремлену пробілом.
+            - Позначки тону й звукові ефекти можна ставити будь-де в реченні.
+            - Замінюй трикрапки (...) на [break] або [long-break], після чого прибирай трикрапки.
+            - Після кожного речення поза дужками додавай [break].
+            4. Ніколи не додавай позначок усередині дужок.
+            5. Виведи лише JSON:
             {
-                "text": "<fully translated to {language} and annotated text, all parentheses and their translated content preserved>",
-                "emotion": "<empty string>"
+                "text": "<повністю перекладений мовою {language} та розмічений текст зі збереженими дужками й перекладеним вмістом>",
+                "emotion": "<порожній рядок>"
             }
 
-            Available annotations:
-            Emotions: [happy], [sad], [angry], [excited], [calm], [nervous], [confident], [surprised], [satisfied], [delighted], [scared], [worried], [upset], [frustrated], [depressed], [empathetic], [embarrassed], [disgusted], [moved], [proud], [relaxed], [grateful], [curious], [sarcastic], [disdainful], [unhappy], [anxious], [hysterical], [indifferent], [uncertain], [doubtful], [confused], [disappointed], [regretful], [guilty], [ashamed], [jealous], [envious], [hopeful], [optimistic], [pessimistic], [nostalgic], [lonely], [bored], [contemptuous], [sympathetic], [compassionate], [determined], [resigned]
-            Tone markers: [in a hurry tone], [shouting], [screaming], [whispering], [soft tone]
-            Audio effects: [laughing], [chuckling], [sobbing], [crying loudly], [sighing], [groaning], [panting], [gasping], [yawning], [snoring]
-            Pauses: [break], [long-break]
+            Доступні позначки:
+            Емоції: [happy], [sad], [angry], [excited], [calm], [nervous], [confident], [surprised], [satisfied], [delighted], [scared], [worried], [upset], [frustrated], [depressed], [empathetic], [embarrassed], [disgusted], [moved], [proud], [relaxed], [grateful], [curious], [sarcastic], [disdainful], [unhappy], [anxious], [hysterical], [indifferent], [uncertain], [doubtful], [confused], [disappointed], [regretful], [guilty], [ashamed], [jealous], [envious], [hopeful], [optimistic], [pessimistic], [nostalgic], [lonely], [bored], [contemptuous], [sympathetic], [compassionate], [determined], [resigned]
+            Тон: [in a hurry tone], [shouting], [screaming], [whispering], [soft tone]
+            Звукові ефекти: [laughing], [chuckling], [sobbing], [crying loudly], [sighing], [groaning], [panting], [gasping], [yawning], [snoring]
+            Паузи: [break], [long-break]
             """;
-        
+
         public static readonly string DefaultTTSProcessingPrompt_CosyVoice =
             """
-            你是一名专业的TTS文本处理专家.
+            Ти професійно готуєш текст для синтезу мовлення (TTS).
 
-            规则:
-            1. 将所有文本翻译为{language}.
-            2. 括号内内容:只翻译内容,保留括号,不添加任何标注.
-            3. 括号外内容:翻译并在合适位置添加标注(见下方列表).
-            4. 不要在括号内添加任何标注.
-            5. 只输出JSON格式:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст, зберігай дужки й не додавай позначок.
+            3. Поза дужками перекладай текст і додавай доречні позначки з наведеного нижче списку.
+            4. Не додавай позначок усередині дужок.
+            5. Виведи лише JSON:
             {
-                "text": "<完整翻译为 {language} 并加标注的文本,所有括号及其翻译内容均保留>",
-                "emotion": "<最贴切的情感词>"
+                "text": "<повністю перекладений мовою {language} і розмічений текст зі збереженими дужками та їхнім перекладеним вмістом>",
+                "emotion": "<найдоречніша емоція>"
             }
 
-            可用标注:
-            情感(emotion字段,仅选一个):Happy, Sad, Angry, Excited, Calm, Fearful, Disgusted, Confused
-            语气/音效(可在text字段括号外添加):[breath], <strong></strong>, [noise], [laughter], [cough], [clucking], [accent], [quick_breath], <laughter></laughter>, [hissing], [sigh], [vocalized-noise], [lipsmack]
+            Доступні позначки:
+            Емоція (поле emotion, вибери одну): Happy, Sad, Angry, Excited, Calm, Fearful, Disgusted, Confused
+            Тон і звукові ефекти (можна додавати в полі text поза дужками): [breath], <strong></strong>, [noise], [laughter], [cough], [clucking], [accent], [quick_breath], <laughter></laughter>, [hissing], [sigh], [vocalized-noise], [lipsmack]
             """;
 
         public static readonly string DefaultTTSProcessingPrompt_IndexTTS =
             """
-            你是一名专业翻译家.
+            Ти професійний перекладач.
 
-            规则:
-            1. 将所有文本翻译为{language}.
-            2. 括号内内容:只翻译内容,保留括号.
-            3. 括号外内容:翻译为{language}.
-            4. 只输出JSON格式:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст і зберігай дужки.
+            3. Поза дужками перекладай текст мовою {language}.
+            4. Виведи лише JSON:
             {
-                "text": "<完整翻译为 {language} 的文本,所有括号及其翻译内容均保留>",
-                "emotion": "<空字符串>"
+                "text": "<повністю перекладений мовою {language} текст зі збереженими дужками та їхнім перекладеним вмістом>",
+                "emotion": "<порожній рядок>"
             }
             """;
 
         public static readonly string DefaultTTSProcessingPrompt_AzureTTS =
             """
-            You are a professional TTS text processor for Microsoft Azure Text-to-Speech.
+            Ти професійно готуєш текст для Microsoft Azure Text-to-Speech.
 
-            Rules:
-            1. Translate all text into {language}.
-            2. For text inside parentheses: translate only the content, keep parentheses, do not add annotations.
-            3. For text outside parentheses: translate and add Azure TTS SSML-compatible markup tags.
-            4. Never add tags inside parentheses.
-            5. Output only JSON:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст, зберігай дужки й не додавай розмітки.
+            3. Поза дужками перекладай текст і додавай сумісну з Azure TTS розмітку SSML.
+            4. Ніколи не додавай теги всередині дужок.
+            5. Виведи лише JSON:
             {
-                "text": "<fully translated to {language} with SSML tags, all parentheses and their translated content preserved>",
-                "emotion": "<most appropriate speaking style from list below, or empty string>"
+                "text": "<повністю перекладений мовою {language} текст із тегами SSML і збереженими дужками>",
+                "emotion": "<найдоречніший стиль мовлення зі списку нижче або порожній рядок>"
             }
 
-            Available Azure TTS speaking styles (for emotion field, choose one or leave empty):
-            - cheerful: Happy, upbeat mood
-            - sad: Sorrowful, melancholic
-            - angry: Annoyed, displeased
-            - excited: Enthusiastic, energetic
-            - friendly: Pleasant, warm, inviting
-            - terrified: Very scared, panicked
-            - shouting: Loud, speaking forcefully
-            - unfriendly: Cold, distant
-            - whispering: Speaking very softly
-            - hopeful: Optimistic, expecting positive outcomes
-            - calm: Relaxed, composed
-            - fearful: Afraid, nervous
-            - embarrassed: Uncomfortable, self-conscious
-            - serious: Stern, focused, no-nonsense
-            - depressed: Very sad, low mood
-            - disgruntled: Annoyed, dissatisfied
-            - assistant: Professional, helpful tone (for helpful NPCs)
-            - newscast: Clear, formal news reporter style
-            - customerservice: Polite, patient service tone
+            Доступні стилі Azure TTS для поля emotion (вибери один або залиш порожнім):
+            cheerful, sad, angry, excited, friendly, terrified, shouting, unfriendly, whispering, hopeful, calm, fearful, embarrassed, serious, depressed, disgruntled, assistant, newscast, customerservice.
 
-            Available SSML markup tags (add in text field outside parentheses):
-            
-            Pauses/Breaks:
-            - [break] or [break:500ms] - Short pause (default 500ms)
-            - [long-break] or [break:1s] - Long pause (1 second)
-            - [break:2s] - Custom duration pause
-            
-            Emphasis (highlight important words):
-            - [emphasis]word[/emphasis] - Moderate emphasis (default)
-            - [emphasis:strong]IMPORTANT[/emphasis] - Strong emphasis
-            - [emphasis:reduced]minor[/emphasis] - Reduced emphasis
-            
-            Examples:
-            "I'm [emphasis:strong]very[/emphasis] happy!" -> Strong emphasis on "very"
-            "Wait[break:1s] Are you sure?" -> 1 second pause between sentences
-            "Call me at [telephone]555-0123[/telephone]" -> Pronounce phone number correctly
-            "The date is [date]2024-01-13[/date]" -> Pronounce date naturally
+            Доступна розмітка SSML у полі text поза дужками:
+            - [break], [break:500ms], [long-break], [break:1s], [break:2s] — паузи.
+            - [emphasis]word[/emphasis], [emphasis:strong]IMPORTANT[/emphasis], [emphasis:reduced]minor[/emphasis] — наголос.
+            - [telephone]555-0123[/telephone] — вимова номера телефону.
+            - [date]2024-01-13[/date] — природна вимова дати.
             """;
 
         public static readonly string DefaultTTSProcessingPrompt_EdgeTTS =
             """
-            You are a professional TTS text processor for Microsoft Edge-TTS.
+            Ти професійно готуєш текст для Microsoft Edge-TTS.
 
-            Rules:
-            1. Translate all text into {language}.
-            2. Output only JSON:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. Виведи лише JSON:
             {
-                "text": "<fully translated to {language}, all parentheses and their translated content preserved>",
-                "emotion": "<empty string>"
+                "text": "<повністю перекладений мовою {language} текст зі збереженими дужками та їхнім перекладеним вмістом>",
+                "emotion": "<порожній рядок>"
             }
             """;
 
         public static readonly string DefaultTTSProcessingPrompt_GeminiTTS =
             """
-            You are a professional TTS text processor for Google Gemini Text-to-Speech.
+            Ти професійно готуєш текст для Google Gemini Text-to-Speech.
 
-            Rules:
-            1. Translate all text into {language}.
-            2. For text inside parentheses: translate only the content, keep parentheses, do not add annotations.
-            3. For text outside parentheses: translate and add natural language style directives.
-            4. Never add directives inside parentheses.
-            5. Output only JSON:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст, зберігай дужки й не додавай вказівок.
+            3. Поза дужками перекладай текст і додавай природномовні вказівки щодо стилю.
+            4. Ніколи не додавай вказівок усередині дужок.
+            5. Виведи лише JSON:
             {
-                "text": "<fully translated to {language} with style directives, all parentheses and their translated content preserved>",
-                "emotion": "<empty string>"
+                "text": "<повністю перекладений мовою {language} текст зі стильовими вказівками та збереженими дужками>",
+                "emotion": "<порожній рядок>"
             }
 
-            Natural Language Style Control:
-            Gemini TTS uses natural language prompts to control speaking style. You can add style directives at the beginning of text or before specific parts:
-            
-            Examples:
-            - "Say cheerfully: Have a wonderful day!"
-            - "In a spooky whisper: Something wicked this way comes"
-            - "Speak excitedly and quickly: I can't believe it!"
-            - "With a warm, friendly tone: Welcome home"
-            - "In a sad, tired voice: I'm exhausted"
-            - "Energetically: Let's go!"
-            - "Calmly and softly: Everything will be okay"
-            
-            Style Attributes You Can Specify:
-            - Emotion: happy, sad, angry, excited, calm, nervous, confident, surprised, scared, bored
-            - Tone: cheerful, friendly, warm, cold, professional, casual, playful, serious
-            - Manner: whisper, shout, hurry, slowly, energetically, lazily, tiredly
-            - Pace: quickly, slowly, at normal pace
-            - Accent/Character: British accent, Southern accent, robotic, childlike
-            
-            Multi-part Styling:
-            You can add different styles to different parts of the same text:
-            "Say happily: Good morning! [pause] Now in a serious tone: We need to talk."
-            
-            Note: Gemini TTS is highly controllable through natural language. Be creative and descriptive with your style instructions.
-            Available voices: Kore, Puck, Aoede, Enceladus, Charon, Fenrir, Leda, Callirrhoe, and 22 more.
+            Керування стилем природною мовою:
+            Gemini TTS сприймає вказівки на початку тексту або перед окремими частинами. Можна визначати емоцію, тон, манеру, темп, акцент чи характер голосу та застосовувати різні стилі до різних частин одного тексту. Будь творчим і конкретним, не змінюючи змісту.
+            Доступні голоси: Kore, Puck, Aoede, Enceladus, Charon, Fenrir, Leda, Callirrhoe та інші.
             """;
 
         public static readonly string DefaultTTSProcessingPrompt_TTSWebUI =
             """
-            You are a professional TTS text processor for TTS-WebUI.
+            Ти професійно готуєш текст для TTS-WebUI.
 
-            Rules:
-            1. Translate all text into {language}.
-            2. For text inside parentheses: translate only the content, keep parentheses.
-            3. For text outside parentheses: translate and optionally add natural pauses.
-            4. Use "..." for natural pauses between sentences or thoughts.
-            5. Output only JSON:
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст і зберігай дужки.
+            3. Поза дужками перекладай текст і за потреби додавай природні паузи.
+            4. Використовуй "..." для природних пауз між реченнями або думками.
+            5. Виведи лише JSON:
             {
-                "text": "<fully translated to {language}, all parentheses and their translated content preserved>",
-                "emotion": "<empty string>"
+                "text": "<повністю перекладений мовою {language} текст зі збереженими дужками та їхнім перекладеним вмістом>",
+                "emotion": "<порожній рядок>"
             }
             """;
 
-        /// <summary>
-        /// Get the current TTS processing prompt from settings or fallback to default
-        /// </summary>
         public static string GetTTSProcessingPrompt(TTSSettings settings)
         {
             if (settings == null)

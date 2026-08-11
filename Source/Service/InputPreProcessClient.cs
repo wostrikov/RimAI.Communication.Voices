@@ -3,6 +3,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RimTalk.TTS.Data;
+using RimTalk.Client;
+using RimTalk.Data;
 using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
@@ -52,6 +54,11 @@ namespace RimTalk.TTS.Service
                 return (null, false);
             }
 
+            if (settings.ApiProvider == TTSApiProvider.RimTalkSame || settings.ApiProvider == TTSApiProvider.OpenAI)
+            {
+                return await QueryViaRimTalkAsync(prompt, text, settings);
+            }
+
             if (string.IsNullOrWhiteSpace(settings.ApiKey))
             {
                 Log.Warning("[RimTalk.TTS] SimpleLLMClient: API key not configured");
@@ -85,7 +92,7 @@ namespace RimTalk.TTS.Service
                 // Build simple OpenAI-compatible request with single user message
                 string jsonRequest = BuildRequest(prompt, text, settings.Model);
                 
-                Log.Message($"[RimTalk.TTS] Sending LLM request to {settings.ApiProvider}: {prompt}");
+                Log.Message($"[RimTalk.TTS] Sending LLM request to {settings.ApiProvider}");
 
                 // Send HTTP request
                 var (responseJson, success) = await SendHttpRequestAsync(jsonRequest, baseUrl, settings.ApiKey);
@@ -202,13 +209,51 @@ namespace RimTalk.TTS.Service
                 }
 
                 string responseText = webRequest.downloadHandler.text;
-                Log.Message($"[RimTalk.TTS] HTTP response received: {responseText}");
+                Log.Message("[RimTalk.TTS] HTTP response received");
                 return (responseText, true);
             }
             catch (Exception ex)
             {
                 Log.Error($"[RimTalk.TTS] HTTP request error: {ex.Message}\n{ex.StackTrace}");
                 return ("", false);
+            }
+        }
+
+        private static async Task<(PreProcessResult response, bool success)> QueryViaRimTalkAsync(
+            string prompt, string text, TTSSettings settings)
+        {
+            if (string.IsNullOrWhiteSpace(prompt)) return (null, false);
+            if (settings.RemoveBracketsInPreProcess) text = RemoveBrackets(text);
+
+            IAIClient client = await AIClientFactory.GetAIClientAsync();
+            if (client == null)
+            {
+                Log.Warning("[RimTalk.TTS] Конфігурацію AI RimTalk не налаштовано");
+                return (null, false);
+            }
+
+            Payload payload = await client.GetChatCompletionAsync(
+                new System.Collections.Generic.List<(Role role, string message)>
+                {
+                    (Role.System, prompt)
+                },
+                new System.Collections.Generic.List<(Role role, string message)>
+                {
+                    (Role.User, text)
+                });
+
+            if (payload == null || !string.IsNullOrEmpty(payload.ErrorMessage) || string.IsNullOrWhiteSpace(payload.Response))
+                return (null, false);
+
+            try
+            {
+                var parsed = JsonUtil.DeserializeFromJson<PreProcessResultJson>(payload.Response);
+                return (new PreProcessResult { Text = parsed.text, Emotion = parsed.emotion }, true);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[RimTalk.TTS] Не вдалося розібрати структуровану відповідь RimTalk: {ex.Message}");
+                return (null, false);
             }
         }
 

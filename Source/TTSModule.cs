@@ -57,7 +57,11 @@ namespace RimTalk.TTS
             // Output TTS API configuration
             Log.Message("[RimTalk.TTS] ========== TTS API Configuration ==========");
             Log.Message($"[RimTalk.TTS] Provider: {_settings.ApiProvider}");
-            Log.Message($"[RimTalk.TTS] Model: {(_settings.Model ?? "(not set)")}");
+            var activeConfig = global::RimTalk.Settings.Get()?.GetActiveConfig();
+            string effectiveModel = (_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI)
+                ? (activeConfig?.SelectedModel == "Custom" ? activeConfig.CustomModelName : activeConfig?.SelectedModel)
+                : _settings.Model;
+            Log.Message($"[RimTalk.TTS] Model: {(effectiveModel ?? "(not set)")}");
             
             string baseUrl = _settings.ApiProvider == Data.TTSApiProvider.Custom 
                 ? (_settings.CustomBaseUrl ?? "(not set)")
@@ -66,10 +70,7 @@ namespace RimTalk.TTS
                     : "https://api.openai.com");
             Log.Message($"[RimTalk.TTS] BaseUrl: {baseUrl}");
             
-            string apiKeyDisplay = string.IsNullOrEmpty(_settings.ApiKey) 
-                ? "(not set)" 
-                : $"{_settings.ApiKey.Substring(0, Math.Min(10, _settings.ApiKey.Length))}***";
-            Log.Message($"[RimTalk.TTS] ApiKey: {apiKeyDisplay}");
+            Log.Message($"[RimTalk.TTS] Credential source: {((_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI) ? "OPENAI_RIMTALK" : "provider-specific setting")}");
             Log.Message("[RimTalk.TTS] ==========================================");
 
             Log.Message("[RimTalk.TTS] TTS Module initialized");
