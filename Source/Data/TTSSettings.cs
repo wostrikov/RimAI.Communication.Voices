@@ -173,7 +173,10 @@ namespace RimTalk.TTS.Data
                 "12A01DB74ABEB3C50BCCE5C406DA433B263BA226A82700EE34A2925410ACEF5E"
             };
             if (Array.IndexOf(legacyHashes, hash) >= 0)
+            {
                 CustomTTSProcessingPrompt = "";
+                LongEventHandler.ExecuteWhenFinished(Write);
+            }
         }
 
         internal static string StablePromptHash(string value)
