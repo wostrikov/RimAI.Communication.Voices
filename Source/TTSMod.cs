@@ -18,7 +18,7 @@ namespace RimTalk.TTS
 
         public override string SettingsCategory()
         {
-            return "RimTalk TTS";
+            return Content?.Name ?? "RimTalk TTS Addon";
         }
 
         public override void DoSettingsWindowContents(UnityEngine.Rect inRect)
