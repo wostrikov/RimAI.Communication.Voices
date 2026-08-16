@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Verse;
 
-namespace RimTalk.TTS.Service.EdgeTTSService
+namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
 {
     /// <summary>
     /// Client for Edge-TTS (Microsoft Edge's free TTS service)
@@ -47,13 +47,13 @@ namespace RimTalk.TTS.Service.EdgeTTSService
 
                     if (audioData == null || audioData.Length == 0)
                     {
-                        Log.Warning("[RimTalk.TTS] EdgeTTSClient: No audio data received");
+                        Log.Warning("[RimAI.Voices] EdgeTTSClient: No audio data received");
                         return null;
                     }
 
                     if (Prefs.DevMode)
                     {
-                        Log.Message($"[RimTalk.TTS] EdgeTTSClient: Generated {audioData.Length} bytes of audio");
+                        Log.Message($"[RimAI.Voices] EdgeTTSClient: Generated {audioData.Length} bytes of audio");
                     }
 
                     return audioData;
@@ -61,10 +61,10 @@ namespace RimTalk.TTS.Service.EdgeTTSService
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] EdgeTTSClient.GenerateSpeechAsync exception: {ex.GetType().Name}: {ex.Message}");
+                Log.Error($"[RimAI.Voices] EdgeTTSClient.GenerateSpeechAsync exception: {ex.GetType().Name}: {ex.Message}");
                 if (ex.InnerException != null)
                 {
-                    Log.Error($"[RimTalk.TTS] EdgeTTSClient inner exception: {ex.InnerException.Message}");
+                    Log.Error($"[RimAI.Voices] EdgeTTSClient inner exception: {ex.InnerException.Message}");
                 }
                 return null;
             }

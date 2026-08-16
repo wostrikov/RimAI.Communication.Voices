@@ -7,9 +7,9 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 using Verse;
-using RimTalk.Util;
+using Ustas.RimAI.Communication.Util;
 
-namespace RimTalk.TTS.Service.FishAudioService;
+namespace Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 
 /// <summary>
 /// Client for Fish Audio TTS API using Python SDK via local HTTP server
@@ -40,12 +40,12 @@ public static class FishAudioTTSClient
             }
             
             // Method 2: Try from RimWorld Mods directory structure
-            // Assembly is in: Mods/rimtalk/1.6/Assemblies/RimTalk.dll
+            // Assembly is in: Mods/rimtalk/1.6/Assemblies/Ustas.RimAI.Communication.dll
             // Script is in:   Mods/rimtalk/Source/Service/fish_audio_tts.py
             var loadedMods = Verse.LoadedModManager.RunningMods;
             foreach (var mod in loadedMods)
             {
-                if (mod.Name.Contains("RimTalk") || mod.PackageId.Contains("rimtalk"))
+                if (mod.Name.Contains("Ustas.RimAI.Communication") || mod.PackageId.Contains("rimtalk"))
                 {
                     string scriptPath = Path.Combine(mod.RootDir.ToString(), "Source", "Service", "FishAudioService", "fish_audio_tts.py");
                     if (File.Exists(scriptPath))

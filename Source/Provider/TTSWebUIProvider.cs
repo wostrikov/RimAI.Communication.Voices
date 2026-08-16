@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using RimTalk.TTS.Service;
+using Ustas.RimAI.Communication.Voices.Service;
 using Verse;
 
-namespace RimTalk.TTS.Provider
+namespace Ustas.RimAI.Communication.Voices.Provider
 {
     /// <summary>
     /// Provider wrapper for TTS-WebUI (rsxdalv/TTS-WebUI).
@@ -39,7 +39,7 @@ namespace RimTalk.TTS.Provider
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] TTSWebUI generation failed: {ex.Message}");
+                Log.Error($"[RimAI.Voices] TTSWebUI generation failed: {ex.Message}");
                 return null;
             }
         }

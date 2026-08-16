@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Verse;
-using RimTalk.Util;
+using Ustas.RimAI.Communication.Util;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     public class GeminiTTSClient
     {

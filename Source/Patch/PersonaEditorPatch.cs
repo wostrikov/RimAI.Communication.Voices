@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 using UnityEngine;
 using Verse;
 
-namespace RimTalk.TTS.Patch
+namespace Ustas.RimAI.Communication.Voices.Patch
 {
     /// <summary>
     /// Adds Voice Model button to RimTalk's Persona Editor Window
@@ -23,26 +23,26 @@ namespace RimTalk.TTS.Patch
         {
             try
             {
-                var personaEditorType = AccessTools.TypeByName("RimTalk.UI.PersonaEditorWindow");
+                var personaEditorType = AccessTools.TypeByName("Ustas.RimAI.Communication.UI.PersonaEditorWindow");
                 if (personaEditorType == null)
                 {
-                    Log.Warning("[RimTalk.TTS] PersonaEditorWindow type not found. Skipping patch.");
+                    Log.Warning("[RimAI.Voices] PersonaEditorWindow type not found. Skipping patch.");
                     return null;
                 }
 
                 var method = AccessTools.Method(personaEditorType, "DoWindowContents");
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] PersonaEditorWindow.DoWindowContents method not found. Skipping patch.");
+                    Log.Warning("[RimAI.Voices] PersonaEditorWindow.DoWindowContents method not found. Skipping patch.");
                     return null;
                 }
 
-                Log.Message("[RimTalk.TTS] Successfully found PersonaEditorWindow.DoWindowContents method");
+                Log.Message("[RimAI.Voices] Successfully found PersonaEditorWindow.DoWindowContents method");
                 return method;
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] Failed to find PersonaEditorWindow: {ex.Message}");
+                Log.Warning($"[RimAI.Voices] Failed to find PersonaEditorWindow: {ex.Message}");
                 return null;
             }
         }
@@ -84,7 +84,7 @@ namespace RimTalk.TTS.Patch
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] PersonaEditorPatch.Postfix error: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] PersonaEditorPatch.Postfix error: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -102,7 +102,7 @@ namespace RimTalk.TTS.Patch
                 buttonHeight
             );
 
-            if (Widgets.ButtonText(buttonRect, "RimTalk.PersonaEditor.VoiceModel".Translate()))
+            if (Widgets.ButtonText(buttonRect, "Ustas.RimAI.Communication.PersonaEditor.VoiceModel".Translate()))
             {
                 Find.WindowStack.Add(new UI.VoiceSelectionWindow(pawn));
             }

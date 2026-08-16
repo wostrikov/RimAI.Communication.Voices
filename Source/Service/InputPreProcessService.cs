@@ -1,9 +1,9 @@
 using System.Text;
 using System.Threading.Tasks;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 using Verse;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     /// <summary>
     /// Translation service using TTS module's own LLM API configuration
@@ -17,7 +17,7 @@ namespace RimTalk.TTS.Service
         {
             if (settings == null)
             {
-                Log.Warning("[RimTalk.TTS] preprocess settings is null");
+                Log.Warning("[RimAI.Voices] preprocess settings is null");
                 return null;
             }
 
@@ -40,13 +40,13 @@ namespace RimTalk.TTS.Service
                 }
                 else
                 {
-                    Log.Warning("[RimTalk.TTS] Empty response from preprocess API");
+                    Log.Warning("[RimAI.Voices] Empty response from preprocess API");
                     return null;
                 }
             }
             catch (System.Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] preprocess failed - {ex.Message}");
+                Log.Error($"[RimAI.Voices] preprocess failed - {ex.Message}");
                 return null;
             }
         }

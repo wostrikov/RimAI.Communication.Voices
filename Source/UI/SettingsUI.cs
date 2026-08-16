@@ -2,11 +2,11 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using RimWorld;
-using RimTalk.TTS.Data;
-using RimTalk.TTS.Service;
-using RimTalk.TTS.Patch;
+using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Service;
+using Ustas.RimAI.Communication.Voices.Patch;
 
-namespace RimTalk.TTS.UI
+namespace Ustas.RimAI.Communication.Voices.UI
 {
     /// <summary>
     /// TTS settings UI renderer
@@ -73,7 +73,7 @@ namespace RimTalk.TTS.UI
             listing.Begin(viewRect);
 
             // Enable TTS
-            listing.CheckboxLabeled("RimTalk.Settings.TTS.Enable".Translate(), ref settings.EnableTTS, "RimTalk.Settings.TTS.EnableTooltip".Translate());
+            listing.CheckboxLabeled("Ustas.RimAI.Communication.Settings.TTS.Enable".Translate(), ref settings.EnableTTS, "Ustas.RimAI.Communication.Settings.TTS.EnableTooltip".Translate());
 
             // Handle TTS toggle
             if (isOn != settings.EnableTTS)
@@ -82,7 +82,7 @@ namespace RimTalk.TTS.UI
                 {
                     // TTS turned OFF: stop all audio and clear state
                     AudioPlaybackService.StopAndClear();
-                    Log.Message("[RimTalk.TTS] TTS disabled via settings");
+                    Log.Message("[RimAI.Voices] TTS disabled via settings");
                     listing.End();
                     Widgets.EndScrollView();
                     return;
@@ -93,14 +93,14 @@ namespace RimTalk.TTS.UI
                     if (Find.CurrentMap != null)
                     {
                         TTSService.ReloadMap(Find.CurrentMap);
-                        Log.Message("[RimTalk.TTS] TTS enabled via settings, reloading map pawns");
+                        Log.Message("[RimAI.Voices] TTS enabled via settings, reloading map pawns");
                     }
                 }
             }
 
             listing.Gap();
 
-            listing.CheckboxLabeled("RimTalk.Settings.TTS.ButtonEnable".Translate(), ref settings.ButtonDisplay, "RimTalk.Settings.TTS.ButtonEnableTooltip".Translate());
+            listing.CheckboxLabeled("Ustas.RimAI.Communication.Settings.TTS.ButtonEnable".Translate(), ref settings.ButtonDisplay, "Ustas.RimAI.Communication.Settings.TTS.ButtonEnableTooltip".Translate());
 
             listing.Gap();
 
@@ -110,7 +110,7 @@ namespace RimTalk.TTS.UI
             listing.Gap();
 
             // Translation Language
-            listing.Label("RimTalk.Settings.TTS.TranslationLanguage".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.TranslationLanguage".Translate());
             settings.TTSTranslationLanguage = listing.TextEntry(settings.TTSTranslationLanguage);
 
             listing.Gap();
@@ -122,52 +122,52 @@ namespace RimTalk.TTS.UI
 
             // Supplier selection (TTS backend)
             Text.Font = GameFont.Medium;
-            listing.Label("RimTalk.Settings.TTS.TTSConfig".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.TTSConfig".Translate());
             Text.Font = GameFont.Small;
 
-            listing.Label("RimTalk.Settings.TTS.TTSSupplier".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier".Translate());
             Rect supplierRect = listing.GetRect(Text.LineHeight);
             string supplierDisplay = SupplierString(settings.Supplier);
 
             if (Widgets.ButtonText(supplierRect, supplierDisplay))
             {
                 var options = new System.Collections.Generic.List<FloatMenuOption>();
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.FishAudio".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.FishAudio".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.FishAudio;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.CosyVoice".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.CosyVoice;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.IndexTTS".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.IndexTTS".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.IndexTTS;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.AzureTTS".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.AzureTTS".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.AzureTTS;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.EdgeTTS".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.EdgeTTS".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.EdgeTTS;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.GeminiTTS".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.GeminiTTS".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.GeminiTTS;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.TTSSupplier.TTSWebUI".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.TTSWebUI;
                     TTSService.SetProvider(settings.Supplier, settings);
                 }));
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.None".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.None".Translate(), delegate
                 {
                     settings.Supplier = TTSSettings.TTSSupplier.None;
                     TTSService.SetProvider(settings.Supplier, settings);
@@ -184,7 +184,7 @@ namespace RimTalk.TTS.UI
                 // EdgeTTS doesn't need API key - skip it
                 if (settings.Supplier != TTSSettings.TTSSupplier.EdgeTTS)
                 {
-                    listing.Label("RimTalk.Settings.TTS.ApiKey".Translate());
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.ApiKey".Translate());
                     string currentApiKey = settings.GetSupplierApiKey(settings.Supplier);
                     string newApiKey = GUI.PasswordField(listing.GetRect(30f), currentApiKey ?? "", '•');
                     if (newApiKey != currentApiKey)
@@ -199,12 +199,12 @@ namespace RimTalk.TTS.UI
                 if (settings.Supplier == TTSSettings.TTSSupplier.FishAudio)
                 {
                     string currentModel = settings.GetSupplierModel(settings.Supplier);
-                    listing.Label("RimTalk.Settings.TTS.ModelLabel".Translate(currentModel));
-                    if (listing.RadioButton("RimTalk.Settings.TTS.ModelHighQuality".Translate(), currentModel == "fishaudio-1"))
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.ModelLabel".Translate(currentModel));
+                    if (listing.RadioButton("Ustas.RimAI.Communication.Settings.TTS.ModelHighQuality".Translate(), currentModel == "fishaudio-1"))
                     {
                         settings.SetSupplierModel(settings.Supplier, "fishaudio-1");
                     }
-                    if (listing.RadioButton("RimTalk.Settings.TTS.ModelFaster".Translate(), currentModel == "s1"))
+                    if (listing.RadioButton("Ustas.RimAI.Communication.Settings.TTS.ModelFaster".Translate(), currentModel == "s1"))
                     {
                         settings.SetSupplierModel(settings.Supplier, "s1");
                     }
@@ -214,13 +214,13 @@ namespace RimTalk.TTS.UI
                 if (settings.Supplier == TTSSettings.TTSSupplier.CosyVoice)
                 {
                     string currentModel = settings.GetSupplierModel(settings.Supplier);
-                    listing.Label("RimTalk.Settings.TTS.ModelLabel.CosyVoice".Translate(currentModel ?? "(not set)"));
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.ModelLabel.CosyVoice".Translate(currentModel ?? "(not set)"));
                     if (listing.RadioButton("FunAudioLLM/CosyVoice2-0.5B", currentModel == "FunAudioLLM/CosyVoice2-0.5B"))
                     {
                         settings.SetSupplierModel(settings.Supplier, "FunAudioLLM/CosyVoice2-0.5B");
                     }
                     listing.Gap(6f);
-                    listing.Label("RimTalk.Settings.TTS.CustomModelIdLabel".Translate());
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.CustomModelIdLabel".Translate());
                     string customModelCosy = listing.TextEntry(currentModel ?? "");
                     if (customModelCosy != currentModel)
                     {
@@ -232,13 +232,13 @@ namespace RimTalk.TTS.UI
                 if (settings.Supplier == TTSSettings.TTSSupplier.IndexTTS)
                 {
                     string currentModel = settings.GetSupplierModel(settings.Supplier);
-                    listing.Label("RimTalk.Settings.TTS.ModelLabel.IndexTTS".Translate(currentModel ?? "(not set)"));
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.ModelLabel.IndexTTS".Translate(currentModel ?? "(not set)"));
                     if (listing.RadioButton("IndexTeam/IndexTTS-2", currentModel == "IndexTeam/IndexTTS-2"))
                     {
                         settings.SetSupplierModel(settings.Supplier, "IndexTeam/IndexTTS-2");
                     }
                     listing.Gap(6f);
-                    listing.Label("RimTalk.Settings.TTS.CustomModelIdLabel".Translate());
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.CustomModelIdLabel".Translate());
                     string customModelIndex = listing.TextEntry(currentModel ?? "");
                     if (customModelIndex != currentModel)
                     {
@@ -250,7 +250,7 @@ namespace RimTalk.TTS.UI
                 if (settings.Supplier == TTSSettings.TTSSupplier.AzureTTS)
                 {
                     string currentRegion = settings.GetSupplierRegion(settings.Supplier);
-                    listing.Label("RimTalk.Settings.TTS.AzureRegionLabel".Translate(currentRegion ?? "eastus"));
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.AzureRegionLabel".Translate(currentRegion ?? "eastus"));
                     listing.Gap(6f);
                     
                     // Common Azure regions for TTS
@@ -275,7 +275,7 @@ namespace RimTalk.TTS.UI
                     }
                     
                     listing.Gap(6f);
-                    listing.Label("RimTalk.Settings.TTS.CustomRegionLabel".Translate());
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.CustomRegionLabel".Translate());
                     string customRegion = listing.TextEntry(currentRegion ?? "eastus");
                     if (customRegion != currentRegion)
                     {
@@ -294,7 +294,7 @@ namespace RimTalk.TTS.UI
                         currentBaseUrl = "http://localhost:7778/v1";
                     }
                     
-                    listing.Label("RimTalk.Settings.TTS.TTSWebUIBaseUrlLabel".Translate(currentBaseUrl));
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.TTSWebUIBaseUrlLabel".Translate(currentBaseUrl));
                     listing.Gap(6f);
                     
                     // Common TTSWebUI base URLs
@@ -320,7 +320,7 @@ namespace RimTalk.TTS.UI
                     }
                     
                     listing.Gap(6f);
-                    listing.Label("RimTalk.Settings.TTS.TTSWebUICustomUrlLabel".Translate());
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.TTSWebUICustomUrlLabel".Translate());
                     string customUrl = listing.TextEntry(currentBaseUrl);
                     if (customUrl != currentBaseUrl)
                     {
@@ -332,9 +332,9 @@ namespace RimTalk.TTS.UI
                     
                     // Model selection for TTSWebUI (user can specify model name)
                     string currentModel = settings.GetSupplierModel(settings.Supplier);
-                    listing.Label("RimTalk.Settings.TTS.TTSWebUIModelLabel".Translate(currentModel ?? "(default)"));
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.TTSWebUIModelLabel".Translate(currentModel ?? "(default)"));
                     listing.Gap(6f);
-                    listing.Label("RimTalk.Settings.TTS.TTSWebUIModelHint".Translate());
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.TTSWebUIModelHint".Translate());
                     string customModel = listing.TextEntry(currentModel ?? "");
                     if (customModel != currentModel)
                     {
@@ -345,7 +345,7 @@ namespace RimTalk.TTS.UI
                 listing.Gap();
                 
                 int currentCooldown = settings.GetSupplierGenerateCooldown(settings.Supplier);
-                listing.Label("RimTalk.Settings.TTS.GenerateCooldownMiliSecondsLabel".Translate(currentCooldown.ToString()));
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.GenerateCooldownMiliSecondsLabel".Translate(currentCooldown.ToString()));
                 int newCooldown = (int)listing.Slider(currentCooldown, 0, 20000);
                 if (newCooldown != currentCooldown)
                     settings.SetSupplierGenerateCooldown(settings.Supplier, newCooldown);
@@ -353,7 +353,7 @@ namespace RimTalk.TTS.UI
                 listing.Gap();
 
                 float currentVolume = settings.GetSupplierVolume(settings.Supplier);
-                listing.Label("RimTalk.Settings.TTS.VolumeLabel".Translate(currentVolume.ToStringPercent()));
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.VolumeLabel".Translate(currentVolume.ToStringPercent()));
                 float newVolume = listing.Slider(currentVolume, 0f, 1f);
                 if (newVolume != currentVolume)
                     settings.SetSupplierVolume(settings.Supplier, newVolume);
@@ -361,14 +361,14 @@ namespace RimTalk.TTS.UI
                 listing.Gap();
 
                 float currentTemp = settings.GetSupplierTemperature(settings.Supplier);
-                listing.Label("RimTalk.Settings.TTS.TemperatureLabel".Translate(currentTemp.ToString("F2")));
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.TemperatureLabel".Translate(currentTemp.ToString("F2")));
                 float newTemp = listing.Slider(currentTemp, 0.7f, 1.0f);
                 if (newTemp != currentTemp)
                     settings.SetSupplierTemperature(settings.Supplier, newTemp);
 
                 // Top P
                 float currentTopP = settings.GetSupplierTopP(settings.Supplier);
-                listing.Label("RimTalk.Settings.TTS.TopPLabel".Translate(currentTopP.ToString("F2")));
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.TopPLabel".Translate(currentTopP.ToString("F2")));
                 float newTopP = listing.Slider(currentTopP, 0.7f, 1.0f);
                 if (newTopP != currentTopP)
                     settings.SetSupplierTopP(settings.Supplier, newTopP);
@@ -377,7 +377,7 @@ namespace RimTalk.TTS.UI
 
                 // Speed slider (0.25 - 4.0)
                 float currentSpeed = settings.GetSupplierSpeed(settings.Supplier);
-                listing.Label("RimTalk.Settings.TTS.SpeedLabel".Translate(currentSpeed.ToString("F2")));
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.SpeedLabel".Translate(currentSpeed.ToString("F2")));
                 float newSpeed = listing.Slider(currentSpeed, 0.25f, 4.0f);
                 if (newSpeed != currentSpeed)
                     settings.SetSupplierSpeed(settings.Supplier, newSpeed);
@@ -395,7 +395,7 @@ namespace RimTalk.TTS.UI
 
         private static void DrawProcessingPromptSection(Listing_Standard listing, TTSSettings settings)
         {
-            listing.Label("RimTalk.Settings.TTS.ProcessingPromptLabel".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptLabel".Translate());
             
             // Initialize buffer if needed - show default prompt if custom is empty
             if (!processingPromptInitialized)
@@ -410,7 +410,7 @@ namespace RimTalk.TTS.UI
             Text.Font = GameFont.Tiny;
             GUI.color = Color.cyan;
             Rect tipRect = listing.GetRect(Text.LineHeight);
-            Widgets.Label(tipRect, "RimTalk.Settings.TTS.ProcessingPromptTip".Translate());
+            Widgets.Label(tipRect, "Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptTip".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
             listing.Gap(6f);
@@ -438,19 +438,19 @@ namespace RimTalk.TTS.UI
             Rect cosyRect = new Rect(resetButtonsRect1.x + btnW + gap, resetButtonsRect1.y, btnW, resetButtonsRect1.height);
             Rect indexRect = new Rect(resetButtonsRect1.x + (btnW + gap) * 2f, resetButtonsRect1.y, btnW, resetButtonsRect1.height);
 
-            if (Widgets.ButtonText(fishRect, "RimTalk.Settings.TTS.ResetPrompt.FishAudio".Translate()))
+            if (Widgets.ButtonText(fishRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.FishAudio".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = "";
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt;
             }
 
-            if (Widgets.ButtonText(cosyRect, "RimTalk.Settings.TTS.ResetPrompt.CosyVoice".Translate()))
+            if (Widgets.ButtonText(cosyRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.CosyVoice".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_CosyVoice;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_CosyVoice;
             }
 
-            if (Widgets.ButtonText(indexRect, "RimTalk.Settings.TTS.ResetPrompt.IndexTTS".Translate()))
+            if (Widgets.ButtonText(indexRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.IndexTTS".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_IndexTTS;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_IndexTTS;
@@ -463,19 +463,19 @@ namespace RimTalk.TTS.UI
             Rect edgeRect = new Rect(resetButtonsRect2.x + btnW + gap, resetButtonsRect2.y, btnW, resetButtonsRect2.height);
             Rect geminiRect = new Rect(resetButtonsRect2.x + (btnW + gap) * 2f, resetButtonsRect2.y, btnW, resetButtonsRect2.height);
 
-            if (Widgets.ButtonText(azureRect, "RimTalk.Settings.TTS.ResetPrompt.AzureTTS".Translate()))
+            if (Widgets.ButtonText(azureRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.AzureTTS".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_AzureTTS;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_AzureTTS;
             }
 
-            if (Widgets.ButtonText(edgeRect, "RimTalk.Settings.TTS.ResetPrompt.EdgeTTS".Translate()))
+            if (Widgets.ButtonText(edgeRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.EdgeTTS".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_EdgeTTS;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_EdgeTTS;
             }
 
-            if (Widgets.ButtonText(geminiRect, "RimTalk.Settings.TTS.ResetPrompt.GeminiTTS".Translate()))
+            if (Widgets.ButtonText(geminiRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.GeminiTTS".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_GeminiTTS;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_GeminiTTS;
@@ -486,7 +486,7 @@ namespace RimTalk.TTS.UI
             Rect resetButtonsRect3 = listing.GetRect(30f);
             Rect ttswebuiRect = new Rect(resetButtonsRect3.x, resetButtonsRect3.y, btnW, resetButtonsRect3.height);
 
-            if (Widgets.ButtonText(ttswebuiRect, "RimTalk.Settings.TTS.ResetPrompt.TTSWebUI".Translate()))
+            if (Widgets.ButtonText(ttswebuiRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.TTSWebUI".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_TTSWebUI;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_TTSWebUI;
@@ -496,10 +496,10 @@ namespace RimTalk.TTS.UI
         private static void DrawVoiceModelsSection(Listing_Standard listing, TTSSettings settings, float width, System.Collections.Generic.List<VoiceModel> voiceModels)
         {
             Text.Font = GameFont.Medium;
-            listing.Label("RimTalk.Settings.TTS.VoiceModels".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.VoiceModels".Translate());
             Text.Font = GameFont.Small;
 
-            listing.Label("RimTalk.Settings.TTS.DefaultVoiceModel".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.DefaultVoiceModel".Translate());
 
             // Show default model selector (now includes RULE_BASED as an option)
             DrawSimpleDefaultVoiceSelector(listing, settings, voiceModels);
@@ -507,7 +507,7 @@ namespace RimTalk.TTS.UI
             listing.Gap(6f);
 
             // Rules button and list
-            if (listing.ButtonText("RimTalk.Settings.TTS.Rules".Translate()))
+            if (listing.ButtonText("Ustas.RimAI.Communication.Settings.TTS.Rules".Translate()))
             {
                 // Toggle rules visibility (using a static variable)
                 showRulesList = !showRulesList;
@@ -537,16 +537,16 @@ namespace RimTalk.TTS.UI
             // Default model selector (shows names from current voice model list)
             string defaultModelId = settings.GetSupplierDefaultVoiceModelId(settings.Supplier);
 
-            string currentDefaultName = "RimTalk.Settings.TTS.NotSet".Translate();
+            string currentDefaultName = "Ustas.RimAI.Communication.Settings.TTS.NotSet".Translate();
             if (!string.IsNullOrEmpty(defaultModelId))
             {
                 if (defaultModelId == VoiceModel.NONE_MODEL_ID)
                 {
-                    currentDefaultName = "RimTalk.Settings.TTS.NoneModel".Translate();
+                    currentDefaultName = "Ustas.RimAI.Communication.Settings.TTS.NoneModel".Translate();
                 }
                 else if (defaultModelId == VoiceModel.RULE_BASED_MODEL_ID)
                 {
-                    currentDefaultName = "RimTalk.Settings.TTS.RuleBased".Translate();
+                    currentDefaultName = "Ustas.RimAI.Communication.Settings.TTS.RuleBased".Translate();
                 }
                 else if (voiceModels != null)
                 {
@@ -556,22 +556,22 @@ namespace RimTalk.TTS.UI
                 }
             }
 
-            if (listing.ButtonText("RimTalk.Settings.TTS.DefaultModel".Translate(currentDefaultName)))
+            if (listing.ButtonText("Ustas.RimAI.Communication.Settings.TTS.DefaultModel".Translate(currentDefaultName)))
             {
                 var options = new System.Collections.Generic.List<FloatMenuOption>();
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.ClearDefault".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.ClearDefault".Translate(), delegate
                 {
                     settings.SetSupplierDefaultVoiceModelId(settings.Supplier, null);
                 }));
 
                 // Add NONE pseudo-model option
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.NoneModel".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.NoneModel".Translate(), delegate
                 {
                     settings.SetSupplierDefaultVoiceModelId(settings.Supplier, VoiceModel.NONE_MODEL_ID);
                 }));
 
                 // Add RULE_BASED option
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.RuleBased".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.RuleBased".Translate(), delegate
                 {
                     settings.SetSupplierDefaultVoiceModelId(settings.Supplier, VoiceModel.RULE_BASED_MODEL_ID);
                 }));
@@ -597,7 +597,7 @@ namespace RimTalk.TTS.UI
             var rules = settings.GetSupplierVoiceRules(settings.Supplier);
             
             // Rules list title
-            listing.Label("RimTalk.Settings.TTS.AdvancedMode.RulesList".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.RulesList".Translate());
             
             // Container box for rules
             float ruleListHeight = Mathf.Max(200f, rules.Count * 35f + 10f);
@@ -723,14 +723,14 @@ namespace RimTalk.TTS.UI
         {
             // Player reference voice selection (single-line dropdown using supplier voice models)
             listing.Gap(6f);
-            listing.Label("RimTalk.Settings.TTS.PlayerVoiceModel".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.PlayerVoiceModel".Translate());
             Rect playerRect = listing.GetRect(Text.LineHeight);
 
             string currentPlayerSelectionName;
             var playerModelId = settings.PlayerReferenceVoiceModelId;
             if (playerModelId == VoiceModel.NONE_MODEL_ID)
             {
-                currentPlayerSelectionName = "RimTalk.Settings.TTS.NoneModel".Translate();
+                currentPlayerSelectionName = "Ustas.RimAI.Communication.Settings.TTS.NoneModel".Translate();
             }
             else
             {
@@ -743,7 +743,7 @@ namespace RimTalk.TTS.UI
                 var options = new System.Collections.Generic.List<FloatMenuOption>();
 
                 // None
-                options.Add(new FloatMenuOption("RimTalk.Settings.TTS.NoneModel".Translate(), delegate
+                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.NoneModel".Translate(), delegate
                 {
                     settings.PlayerReferenceVoiceModelId = VoiceModel.NONE_MODEL_ID;
                     RimTalkPatches.UpdatePlayerPawnVoice();
@@ -778,31 +778,31 @@ namespace RimTalk.TTS.UI
             Rect removeButtonRect = new Rect(headerRect.x + headerRect.width - 30f, headerRect.y, 30f, 24f);
             headerRect.width -= 70f;
 
-            Widgets.Label(headerRect, "RimTalk.Settings.TTS.ModelConfigurations".Translate());
+            Widgets.Label(headerRect, "Ustas.RimAI.Communication.Settings.TTS.ModelConfigurations".Translate());
 
             listing.Gap(6f);
 
             // Upload user voice section (only shown when supplier supports SiliconFlow)
             if (settings.Supplier == TTSSettings.TTSSupplier.CosyVoice || settings.Supplier == TTSSettings.TTSSupplier.IndexTTS)
             {
-                listing.Label("RimTalk.Settings.TTS.UploadUserVoiceLabel".Translate());
-                listing.Label("RimTalk.Settings.TTS.UploadFilePath".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.UploadUserVoiceLabel".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.UploadFilePath".Translate());
                 uploadPathBuffer = listing.TextEntry(uploadPathBuffer ?? "");
-                listing.Label("RimTalk.Settings.TTS.UploadName".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.UploadName".Translate());
                 uploadNameBuffer = listing.TextEntry(uploadNameBuffer ?? "");
-                listing.Label("RimTalk.Settings.TTS.UploadTextPreview".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.UploadTextPreview".Translate());
                 uploadTextBuffer = listing.TextEntry(uploadTextBuffer ?? "");
                 Rect uploadRect = listing.GetRect(30f);
-                if (Widgets.ButtonText(uploadRect, "RimTalk.Settings.TTS.UploadButton".Translate()))
+                if (Widgets.ButtonText(uploadRect, "Ustas.RimAI.Communication.Settings.TTS.UploadButton".Translate()))
                 {
                     // Validate local file
                     if (string.IsNullOrWhiteSpace(uploadPathBuffer) || !System.IO.File.Exists(uploadPathBuffer))
                     {
-                        Messages.Message("RimTalk.TTS.UploadFailed.LocalFileNotFound".Translate(), MessageTypeDefOf.RejectInput, false);
+                        Messages.Message("Ustas.RimAI.Communication.Voices.UploadFailed.LocalFileNotFound".Translate(), MessageTypeDefOf.RejectInput, false);
                     }
                     else if (string.IsNullOrWhiteSpace(uploadNameBuffer))
                     {
-                        Messages.Message("RimTalk.TTS.UploadFailed.NameEmpty".Translate(), MessageTypeDefOf.RejectInput, false);
+                        Messages.Message("Ustas.RimAI.Communication.Voices.UploadFailed.NameEmpty".Translate(), MessageTypeDefOf.RejectInput, false);
                     }
                     else
                     {
@@ -818,12 +818,12 @@ namespace RimTalk.TTS.UI
                                 EnqueueMainThreadAction(() =>
                                 {
                                     Refresh();
-                                    Messages.Message("RimTalk.TTS.UploadComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
+                                    Messages.Message("Ustas.RimAI.Communication.Voices.UploadComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
                                 });
                             }
                             else
                             {
-                                EnqueueMainThreadAction(() => Messages.Message("RimTalk.TTS.UploadFailed.ServerError".Translate(), MessageTypeDefOf.RejectInput, false));
+                                EnqueueMainThreadAction(() => Messages.Message("Ustas.RimAI.Communication.Voices.UploadFailed.ServerError".Translate(), MessageTypeDefOf.RejectInput, false));
                             }
                         });
                     }
@@ -854,7 +854,7 @@ namespace RimTalk.TTS.UI
             listing.Gap(6f);
 
             // Column descriptions
-            listing.Label("RimTalk.Settings.TTS.ColumnDescription".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.ColumnDescription".Translate());
             listing.Gap(6f);
 
             // Draw table headers
@@ -869,11 +869,11 @@ namespace RimTalk.TTS.UI
             float idWidth = (width - 130f) * 0.4f;
 
             Rect nameHeaderRect = new Rect(x, y, nameWidth, height);
-            Widgets.Label(nameHeaderRect, "RimTalk.Settings.TTS.ColumnModelName".Translate());
+            Widgets.Label(nameHeaderRect, "Ustas.RimAI.Communication.Settings.TTS.ColumnModelName".Translate());
             x += nameWidth + 5f;
 
             Rect idHeaderRect = new Rect(x, y, idWidth, height);
-            Widgets.Label(idHeaderRect, "RimTalk.Settings.TTS.ColumnModelID".Translate());
+            Widgets.Label(idHeaderRect, "Ustas.RimAI.Communication.Settings.TTS.ColumnModelID".Translate());
 
             // Draw each model config row
             if (voiceModels != null)
@@ -889,7 +889,7 @@ namespace RimTalk.TTS.UI
                 listing.Gap(6f);
                 // Single Reset Models button placed after the full list
                 Rect resetAllRect = listing.GetRect(30f);
-                if (Widgets.ButtonText(resetAllRect, "RimTalk.Settings.TTS.ResetModelsButton".Translate()))
+                if (Widgets.ButtonText(resetAllRect, "Ustas.RimAI.Communication.Settings.TTS.ResetModelsButton".Translate()))
                 {
                     Refresh();
                 }
@@ -901,8 +901,8 @@ namespace RimTalk.TTS.UI
                 listing.Gap(6f);
                 Rect voiceLibraryRect = listing.GetRect(30f);
                 string buttonLabel = settings.Supplier == TTSSettings.TTSSupplier.AzureTTS 
-                    ? "RimTalk.Settings.TTS.AzureVoiceLibrary".Translate() 
-                    : "RimTalk.Settings.TTS.EdgeVoiceLibrary".Translate();
+                    ? "Ustas.RimAI.Communication.Settings.TTS.AzureVoiceLibrary".Translate() 
+                    : "Ustas.RimAI.Communication.Settings.TTS.EdgeVoiceLibrary".Translate();
                 if (Widgets.ButtonText(voiceLibraryRect, buttonLabel))
                 {
                     Find.WindowStack.Add(new VoiceLibraryWindow(settings.Supplier));
@@ -970,7 +970,7 @@ namespace RimTalk.TTS.UI
                             settings.SetSupplierVoiceModels(supplier, current);
                         }
                         // Notify user that sync completed (enqueue to show on main thread)
-                        EnqueueMessage("RimTalk.TTS.SyncComplete".Translate(), MessageTypeDefOf.TaskCompletion);
+                        EnqueueMessage("Ustas.RimAI.Communication.Voices.SyncComplete".Translate(), MessageTypeDefOf.TaskCompletion);
                     }
                 });
             }
@@ -1025,9 +1025,9 @@ namespace RimTalk.TTS.UI
                     {
                         bool ok = await Service.SiliconFlowClient.DeleteUserVoiceAsync(apiKey, toDeleteId);
                         if (ok)
-                            EnqueueMessage("RimTalk.TTS.DeleteComplete".Translate(), MessageTypeDefOf.TaskCompletion);
+                            EnqueueMessage("Ustas.RimAI.Communication.Voices.DeleteComplete".Translate(), MessageTypeDefOf.TaskCompletion);
                         else
-                            EnqueueMessage("RimTalk.TTS.DeleteFailed".Translate(), MessageTypeDefOf.RejectInput);
+                            EnqueueMessage("Ustas.RimAI.Communication.Voices.DeleteFailed".Translate(), MessageTypeDefOf.RejectInput);
                     });
                 }
 
@@ -1042,13 +1042,13 @@ namespace RimTalk.TTS.UI
         private static void DrawApiConfigSection(Listing_Standard listing, TTSSettings settings)
         {
             Text.Font = GameFont.Medium;
-            listing.Label("RimTalk.Settings.TTS.LLMApiConfig".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.LLMApiConfig".Translate());
             Text.Font = GameFont.Small;
             
             listing.Gap(6f);
 
             // Provider Selection
-            listing.Label("RimTalk.Settings.TTS.ProviderLabel".Translate());
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.ProviderLabel".Translate());
             if (listing.RadioButton("Використовувати спільну конфігурацію текстового ШІ RimAI", settings.ApiProvider == TTSApiProvider.RimTalkSame))
             {
                 settings.ApiProvider = TTSApiProvider.RimTalkSame;
@@ -1061,7 +1061,7 @@ namespace RimTalk.TTS.UI
             {
                 settings.ApiProvider = TTSApiProvider.OpenAI;
             }
-            if (listing.RadioButton("RimTalk.Settings.TTS.CustomProvider".Translate(), settings.ApiProvider == TTSApiProvider.Custom))
+            if (listing.RadioButton("Ustas.RimAI.Communication.Settings.TTS.CustomProvider".Translate(), settings.ApiProvider == TTSApiProvider.Custom))
             {
                 settings.ApiProvider = TTSApiProvider.Custom;
             }
@@ -1071,7 +1071,7 @@ namespace RimTalk.TTS.UI
             bool inheritedOpenAI = settings.ApiProvider == TTSApiProvider.RimTalkSame || settings.ApiProvider == TTSApiProvider.OpenAI;
             if (inheritedOpenAI)
             {
-                var config = global::RimTalk.Settings.Get()?.GetActiveConfig();
+                var config = global::Ustas.RimAI.Communication.Settings.Get()?.GetActiveConfig();
                 string effectiveModel = config == null ? "не налаштовано" :
                     (config.SelectedModel == "Custom" ? config.CustomModelName : config.SelectedModel);
                 listing.Label("Використовується спільна модель RimAI: " + effectiveModel);
@@ -1081,10 +1081,10 @@ namespace RimTalk.TTS.UI
             }
             else
             {
-                listing.Label("RimTalk.Settings.TTS.LLMModelLabel".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.LLMModelLabel".Translate());
                 settings.Model = listing.TextEntry(settings.Model ?? "");
                 listing.Gap(6f);
-                listing.Label("RimTalk.Settings.TTS.LLMApiKeyLabel".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.LLMApiKeyLabel".Translate());
                 settings.ApiKey = GUI.PasswordField(listing.GetRect(30f), settings.ApiKey ?? "", '•');
             }
 
@@ -1093,28 +1093,28 @@ namespace RimTalk.TTS.UI
             // Custom Base URL (only for Custom provider)
             if (settings.ApiProvider == TTSApiProvider.Custom)
             {
-                listing.Label("RimTalk.Settings.TTS.CustomBaseUrlLabel".Translate());
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.CustomBaseUrlLabel".Translate());
                 settings.CustomBaseUrl = listing.TextEntry(settings.CustomBaseUrl ?? "");
             }
 
             listing.Gap(6f);
 
             // Remove brackets during preprocessing
-            listing.CheckboxLabeled("RimTalk.Settings.TTS.RemoveBracketsInPreProcess".Translate(), ref settings.RemoveBracketsInPreProcess, "RimTalk.Settings.TTS.RemoveBracketsInPreProcessTooltip".Translate());
+            listing.CheckboxLabeled("Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcess".Translate(), ref settings.RemoveBracketsInPreProcess, "Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcessTooltip".Translate());
         }
 
         private static string SupplierString(TTSSettings.TTSSupplier supplier)
         {
             return supplier switch
             {
-                TTSSettings.TTSSupplier.FishAudio => "RimTalk.Settings.TTS.TTSSupplier.FishAudio".Translate(),
-                TTSSettings.TTSSupplier.CosyVoice => "RimTalk.Settings.TTS.TTSSupplier.CosyVoice".Translate(),
-                TTSSettings.TTSSupplier.IndexTTS => "RimTalk.Settings.TTS.TTSSupplier.IndexTTS".Translate(),
-                TTSSettings.TTSSupplier.AzureTTS => "RimTalk.Settings.TTS.TTSSupplier.AzureTTS".Translate(),
-                TTSSettings.TTSSupplier.EdgeTTS => "RimTalk.Settings.TTS.TTSSupplier.EdgeTTS".Translate(),
-                TTSSettings.TTSSupplier.GeminiTTS => "RimTalk.Settings.TTS.TTSSupplier.GeminiTTS".Translate(),
-                TTSSettings.TTSSupplier.TTSWebUI => "RimTalk.Settings.TTS.TTSSupplier.TTSWebUI".Translate(),
-                TTSSettings.TTSSupplier.None => "RimTalk.Settings.TTS.None".Translate(),
+                TTSSettings.TTSSupplier.FishAudio => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.FishAudio".Translate(),
+                TTSSettings.TTSSupplier.CosyVoice => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice".Translate(),
+                TTSSettings.TTSSupplier.IndexTTS => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.IndexTTS".Translate(),
+                TTSSettings.TTSSupplier.AzureTTS => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.AzureTTS".Translate(),
+                TTSSettings.TTSSupplier.EdgeTTS => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.EdgeTTS".Translate(),
+                TTSSettings.TTSSupplier.GeminiTTS => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.GeminiTTS".Translate(),
+                TTSSettings.TTSSupplier.TTSWebUI => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI".Translate(),
+                TTSSettings.TTSSupplier.None => "Ustas.RimAI.Communication.Settings.TTS.None".Translate(),
                 _ => supplier.ToString(),
             };
         }

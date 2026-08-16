@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     public class TTSRequest
     {

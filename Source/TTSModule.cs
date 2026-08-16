@@ -1,8 +1,8 @@
 using System;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 using Verse;
 
-namespace RimTalk.TTS
+namespace Ustas.RimAI.Communication.Voices
 {
     /// <summary>
     /// Main implementation of TTS module with lifecycle management
@@ -55,25 +55,25 @@ namespace RimTalk.TTS
             catch { }
 
             // Output TTS API configuration
-            Log.Message("[RimTalk.TTS] ========== TTS API Configuration ==========");
-            Log.Message($"[RimTalk.TTS] Provider: {_settings.ApiProvider}");
-            var activeConfig = global::RimTalk.Settings.Get()?.GetActiveConfig();
+            Log.Message("[RimAI.Voices] ========== TTS API Configuration ==========");
+            Log.Message($"[RimAI.Voices] Provider: {_settings.ApiProvider}");
+            var activeConfig = global::Ustas.RimAI.Communication.Settings.Get()?.GetActiveConfig();
             string effectiveModel = (_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI)
                 ? (activeConfig?.SelectedModel == "Custom" ? activeConfig.CustomModelName : activeConfig?.SelectedModel)
                 : _settings.Model;
-            Log.Message($"[RimTalk.TTS] Model: {(effectiveModel ?? "(not set)")}");
+            Log.Message($"[RimAI.Voices] Model: {(effectiveModel ?? "(not set)")}");
             
             string baseUrl = _settings.ApiProvider == Data.TTSApiProvider.Custom 
                 ? (_settings.CustomBaseUrl ?? "(not set)")
                 : (_settings.ApiProvider == Data.TTSApiProvider.DeepSeek 
                     ? "https://api.deepseek.com" 
                     : "https://api.openai.com");
-            Log.Message($"[RimTalk.TTS] BaseUrl: {baseUrl}");
+            Log.Message($"[RimAI.Voices] BaseUrl: {baseUrl}");
             
-            Log.Message($"[RimTalk.TTS] Credential source: {((_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI) ? "OPENAI_RIMAI" : "provider-specific setting")}");
-            Log.Message("[RimTalk.TTS] ==========================================");
+            Log.Message($"[RimAI.Voices] Credential source: {((_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI) ? "OPENAI_RIMAI" : "provider-specific setting")}");
+            Log.Message("[RimAI.Voices] ==========================================");
 
-            Log.Message("[RimTalk.TTS] TTS Module initialized");
+            Log.Message("[RimAI.Voices] TTS Module initialized");
         }
 
         public void OnDialogueGenerated(string text, Pawn pawn, Guid dialogueId)
@@ -98,13 +98,13 @@ namespace RimTalk.TTS
         {
             if (!IsActive) return;
             
-            Log.Message("[RimTalk.TTS] Game loaded, resetting TTS state");
+            Log.Message("[RimAI.Voices] Game loaded, resetting TTS state");
             Service.TTSService.StopAll(permanentShutdown: false);
         }
 
         public void OnGameExit()
         {
-            Log.Message("[RimTalk.TTS] Game exiting, full shutdown");
+            Log.Message("[RimAI.Voices] Game exiting, full shutdown");
             
             Service.TTSService.StopAll(permanentShutdown: true);
             Service.AudioPlaybackService.FullReset(); // Then reset state

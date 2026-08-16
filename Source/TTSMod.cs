@@ -1,6 +1,6 @@
 using Verse;
 
-namespace RimTalk.TTS
+namespace Ustas.RimAI.Communication.Voices
 {
     /// <summary>
     /// Mod class for TTS module to handle settings

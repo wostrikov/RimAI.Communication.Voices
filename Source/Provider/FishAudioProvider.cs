@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using RimTalk.TTS.Service;
-using RimTalk.TTS.Service.FishAudioService;
+using Ustas.RimAI.Communication.Voices.Service;
+using Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 
-namespace RimTalk.TTS.Provider
+namespace Ustas.RimAI.Communication.Voices.Provider
 {
     /// <summary>
     /// ITTSProvider implementation that delegates to FishAudioTTSClient

@@ -2,14 +2,14 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using RimTalk.TTS.Data;
-using RimTalk.Client;
-using RimTalk.Data;
-using RimTalk.Util;
+using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Client;
+using Ustas.RimAI.Communication.Data;
+using Ustas.RimAI.Communication.Util;
 using UnityEngine.Networking;
 using Verse;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     //给 TTSService 返回结构化数据的辅助类
     public class PreProcessResult
@@ -50,7 +50,7 @@ namespace RimTalk.TTS.Service
         {
             if (settings == null)
             {
-                Log.Warning("[RimTalk.TTS] SimpleLLMClient: settings is null");
+                Log.Warning("[RimAI.Voices] SimpleLLMClient: settings is null");
                 return (null, false);
             }
 
@@ -61,26 +61,26 @@ namespace RimTalk.TTS.Service
 
             if (string.IsNullOrWhiteSpace(settings.ApiKey))
             {
-                Log.Warning("[RimTalk.TTS] SimpleLLMClient: API key not configured");
+                Log.Warning("[RimAI.Voices] SimpleLLMClient: API key not configured");
                 return (null, false);
             }
 
             if (string.IsNullOrWhiteSpace(settings.Model))
             {
-                Log.Warning("[RimTalk.TTS] SimpleLLMClient: Model not configured");
+                Log.Warning("[RimAI.Voices] SimpleLLMClient: Model not configured");
                 return (null, false);
             }
 
             if (string.IsNullOrWhiteSpace(prompt))
             {
-                Log.Warning("[RimTalk.TTS] Empty prompt provided to SimpleLLMClient");
+                Log.Warning("[RimAI.Voices] Empty prompt provided to SimpleLLMClient");
                 return (null, false);
             }
 
             string baseUrl = GetBaseUrl(settings);
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
-                Log.Warning("[RimTalk.TTS] SimpleLLMClient: Base URL is empty");
+                Log.Warning("[RimAI.Voices] SimpleLLMClient: Base URL is empty");
                 return (null, false);
             }
 
@@ -92,20 +92,20 @@ namespace RimTalk.TTS.Service
                 // Build simple OpenAI-compatible request with single user message
                 string jsonRequest = BuildRequest(prompt, text, settings.Model);
                 
-                Log.Message($"[RimTalk.TTS] Sending LLM request to {settings.ApiProvider}");
+                Log.Message($"[RimAI.Voices] Sending LLM request to {settings.ApiProvider}");
 
                 // Send HTTP request
                 var (responseJson, success) = await SendHttpRequestAsync(jsonRequest, baseUrl, settings.ApiKey);
 
                 if (!success)
                 {
-                    Log.Warning("[RimTalk.TTS] LLM HTTP request failed");
+                    Log.Warning("[RimAI.Voices] LLM HTTP request failed");
                     return (null, false);
                 }
 
                 if (string.IsNullOrEmpty(responseJson))
                 {
-                    Log.Warning("[RimTalk.TTS] LLM returned empty response");
+                    Log.Warning("[RimAI.Voices] LLM returned empty response");
                     return (null, false);
                 }
 
@@ -114,7 +114,7 @@ namespace RimTalk.TTS.Service
 
                 if (result == null)
                 {
-                    Log.Warning("[RimTalk.TTS] Failed to extract content from LLM response");
+                    Log.Warning("[RimAI.Voices] Failed to extract content from LLM response");
                     return (null, false);
                 }
 
@@ -122,7 +122,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] SimpleLLMClient.QueryAsync error: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] SimpleLLMClient.QueryAsync error: {ex.Message}\n{ex.StackTrace}");
                 return (null, false);
             }
         }
@@ -203,18 +203,18 @@ namespace RimTalk.TTS.Service
                 // Check for errors
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
-                    Log.Error($"[RimTalk.TTS] HTTP request failed: {webRequest.responseCode} {webRequest.error}");
-                    Log.Error($"[RimTalk.TTS] Response: {webRequest.downloadHandler?.text}");
+                    Log.Error($"[RimAI.Voices] HTTP request failed: {webRequest.responseCode} {webRequest.error}");
+                    Log.Error($"[RimAI.Voices] Response: {webRequest.downloadHandler?.text}");
                     return (null, false);
                 }
 
                 string responseText = webRequest.downloadHandler.text;
-                Log.Message("[RimTalk.TTS] HTTP response received");
+                Log.Message("[RimAI.Voices] HTTP response received");
                 return (responseText, true);
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] HTTP request error: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] HTTP request error: {ex.Message}\n{ex.StackTrace}");
                 return ("", false);
             }
         }
@@ -228,7 +228,7 @@ namespace RimTalk.TTS.Service
             IAIClient client = await AIClientFactory.GetAIClientAsync();
             if (client == null)
             {
-                Log.Warning("[RimTalk.TTS] Конфігурацію AI RimTalk не налаштовано");
+                Log.Warning("[RimAI.Voices] Конфігурацію AI RimTalk не налаштовано");
                 return (null, false);
             }
 
@@ -252,7 +252,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Не вдалося розібрати структуровану відповідь RimTalk: {ex.Message}");
+                Log.Error($"[RimAI.Voices] Не вдалося розібрати структуровану відповідь RimTalk: {ex.Message}");
                 return (null, false);
             }
         }
@@ -300,7 +300,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Failed to parse JSON response: {ex.Message}");
+                Log.Error($"[RimAI.Voices] Failed to parse JSON response: {ex.Message}");
                 return null;
             }
         }

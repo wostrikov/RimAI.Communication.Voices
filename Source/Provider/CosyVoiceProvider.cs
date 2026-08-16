@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using RimTalk.TTS.Service;
+using Ustas.RimAI.Communication.Voices.Service;
 
-namespace RimTalk.TTS.Provider
+namespace Ustas.RimAI.Communication.Voices.Provider
 {
     /// <summary>
     /// Provider wrapper for FunAudioLLM/CosyVoice2-0.5B (SiliconFlow-backed)

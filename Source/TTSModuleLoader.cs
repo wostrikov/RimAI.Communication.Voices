@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 using Verse;
 
-namespace RimTalk.TTS
+namespace Ustas.RimAI.Communication.Voices
 {
     /// <summary>
     /// Entry point for TTS module - applies Harmony patches to hook into main RimTalk
@@ -15,9 +15,9 @@ namespace RimTalk.TTS
         {
             try
             {
-                Log.Message("[RimTalk.TTS] Initializing TTS Module...");
+                Log.Message("[RimAI.Voices] Initializing TTS Module...");
                 
-                var harmony = new Harmony("jlibrary.rimtalk.tts");
+                var harmony = new Harmony("ustas.rimai.communication.voices");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
                 
                 TTSModule.Instance.Initialize();
@@ -25,11 +25,11 @@ namespace RimTalk.TTS
                 // Register application quit handler for proper cleanup
                 UnityEngine.Application.quitting += OnApplicationQuitting;
                 
-                Log.Message("[RimTalk.TTS] TTS Module initialized successfully");
+                Log.Message("[RimAI.Voices] TTS Module initialized successfully");
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Failed to initialize: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] Failed to initialize: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -37,12 +37,12 @@ namespace RimTalk.TTS
         {
             try
             {
-                Log.Message("[RimTalk.TTS] Application quitting, performing cleanup...");
+                Log.Message("[RimAI.Voices] Application quitting, performing cleanup...");
                 TTSModule.Instance.OnGameExit();
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Error during application quit: {ex.Message}");
+                Log.Error($"[RimAI.Voices] Error during application quit: {ex.Message}");
             }
         }
     }

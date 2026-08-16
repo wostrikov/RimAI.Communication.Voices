@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace RimTalk.TTS.Patch
+namespace Ustas.RimAI.Communication.Voices.Patch
 {
     /// <summary>
     /// Adds Voice Model selection button to character bio tab
@@ -35,7 +35,7 @@ namespace RimTalk.TTS.Patch
                     .GetValue(null);
             if (tmpStackElements == null) return;
 
-            string voiceLabelText = "RimTalk.TTS.VoiceModel".Translate();
+            string voiceLabelText = "Ustas.RimAI.Communication.Voices.VoiceModel".Translate();
             float textWidth = Text.CalcSize(voiceLabelText).x;
             float totalLabelWidth = 22f + 5f + textWidth + 5f; // Icon + padding + text + padding
 
@@ -51,8 +51,8 @@ namespace RimTalk.TTS.Patch
                     string displayVoice = string.IsNullOrEmpty(currentVoice) ? "Default" : 
                                          currentVoice == "NONE" ? "None" : currentVoice;
                     
-                    string tooltipText = $"{"RimTalk.TTS.VoiceModelTooltip".Translate().Colorize(ColoredText.TipSectionTitleColor)}\n\n" +
-                                       $"{"RimTalk.TTS.CurrentVoice".Translate()}: {displayVoice}";
+                    string tooltipText = $"{"Ustas.RimAI.Communication.Voices.VoiceModelTooltip".Translate().Colorize(ColoredText.TipSectionTitleColor)}\n\n" +
+                                       $"{"Ustas.RimAI.Communication.Voices.CurrentVoice".Translate()}: {displayVoice}";
                     TooltipHandler.TipRegion(rect, tooltipText);
 
                     Rect iconRect = new Rect(rect.x + 2f, rect.y + 1f, 20f, 20f);
@@ -79,12 +79,12 @@ namespace RimTalk.TTS.Patch
             // This ensures we only show voice UI for pawns that RimTalk considers eligible for talking
             try
             {
-                var pawnState = global::RimTalk.Data.Cache.Get(pawn);
+                var pawnState = global::Ustas.RimAI.Communication.Data.Cache.Get(pawn);
                 return pawnState != null;
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] Failed to check pawn eligibility for {pawn?.LabelShort}: {ex.Message}");
+                Log.Warning($"[RimAI.Voices] Failed to check pawn eligibility for {pawn?.LabelShort}: {ex.Message}");
                 return false;
             }
         }

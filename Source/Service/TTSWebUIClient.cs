@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Verse;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     /// <summary>
     /// HTTP client for TTS-WebUI (rsxdalv/TTS-WebUI).
@@ -59,7 +59,7 @@ namespace RimTalk.TTS.Service
             {
                 if (string.IsNullOrEmpty(request.Input))
                 {
-                    Log.Warning("[RimTalk.TTS] TTSWebUIClient: Input text is empty");
+                    Log.Warning("[RimAI.Voices] TTSWebUIClient: Input text is empty");
                     return null;
                 }
 
@@ -104,7 +104,7 @@ namespace RimTalk.TTS.Service
                 if (!response.IsSuccessStatusCode)
                 {
                     string errorContent = response.Content != null ? await response.Content.ReadAsStringAsync() : string.Empty;
-                    Log.Warning($"[RimTalk.TTS] TTSWebUIClient: API returned {response.StatusCode}: {errorContent}");
+                    Log.Warning($"[RimAI.Voices] TTSWebUIClient: API returned {response.StatusCode}: {errorContent}");
                     return null;
                 }
                 
@@ -113,7 +113,7 @@ namespace RimTalk.TTS.Service
                 
                 if (audioData == null || audioData.Length == 0)
                 {
-                    Log.Warning("[RimTalk.TTS] TTSWebUIClient: Empty audio response");
+                    Log.Warning("[RimAI.Voices] TTSWebUIClient: Empty audio response");
                     return null;
                 }
                 
@@ -121,17 +121,17 @@ namespace RimTalk.TTS.Service
             }
             catch (HttpRequestException ex)
             {
-                Log.Error($"[RimTalk.TTS] TTSWebUIClient: Network error - {ex.Message}. Make sure TTS-WebUI is running at {_baseUrl}");
+                Log.Error($"[RimAI.Voices] TTSWebUIClient: Network error - {ex.Message}. Make sure TTS-WebUI is running at {_baseUrl}");
                 return null;
             }
             catch (TaskCanceledException)
             {
-                Log.Message("[RimTalk.TTS] TTSWebUIClient: Request cancelled");
+                Log.Message("[RimAI.Voices] TTSWebUIClient: Request cancelled");
                 return null;
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] TTSWebUIClient: Unexpected error - {ex.GetType().Name}: {ex.Message}");
+                Log.Error($"[RimAI.Voices] TTSWebUIClient: Unexpected error - {ex.GetType().Name}: {ex.Message}");
                 return null;
             }
         }
@@ -160,7 +160,7 @@ namespace RimTalk.TTS.Service
                 if (!response.IsSuccessStatusCode)
                 {
                     // Some TTS-WebUI setups may not have this endpoint
-                    Log.Message($"[RimTalk.TTS] TTSWebUIClient: Voices endpoint not available ({response.StatusCode})");
+                    Log.Message($"[RimAI.Voices] TTSWebUIClient: Voices endpoint not available ({response.StatusCode})");
                     return result;
                 }
                 
@@ -173,7 +173,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] TTSWebUIClient: Failed to list voices - {ex.Message}");
+                Log.Warning($"[RimAI.Voices] TTSWebUIClient: Failed to list voices - {ex.Message}");
             }
             
             return result;
@@ -293,7 +293,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] TTSWebUIClient: Failed to parse voices JSON - {ex.Message}");
+                Log.Warning($"[RimAI.Voices] TTSWebUIClient: Failed to parse voices JSON - {ex.Message}");
             }
             
             return result;

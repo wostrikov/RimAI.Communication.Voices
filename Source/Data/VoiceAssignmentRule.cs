@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
-namespace RimTalk.TTS.Data
+namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
     /// Requirement type for voice assignment rules
@@ -79,7 +79,7 @@ namespace RimTalk.TTS.Data
         public override string GetDisplayString()
         {
             string genderLabel = Gender.GetLabel();
-            return "RimTalk.Settings.TTS.Rule.Gender".Translate(genderLabel);
+            return "Ustas.RimAI.Communication.Settings.TTS.Rule.Gender".Translate(genderLabel);
         }
     }
 
@@ -113,7 +113,7 @@ namespace RimTalk.TTS.Data
         public override string GetDisplayString()
         {
             string label = GetLabel();
-            return "RimTalk.Settings.TTS.Rule.Xenotype".Translate(label);
+            return "Ustas.RimAI.Communication.Settings.TTS.Rule.Xenotype".Translate(label);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace RimTalk.TTS.Data
         {
             var def = DefDatabase<ThingDef>.GetNamedSilentFail(RaceDefName);
             string label = def?.label ?? RaceDefName;
-            return "RimTalk.Settings.TTS.Rule.Race".Translate(label);
+            return "Ustas.RimAI.Communication.Settings.TTS.Rule.Race".Translate(label);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace RimTalk.TTS.Data
 
         public override string GetDisplayString()
         {
-            return "RimTalk.Settings.TTS.Rule.Age".Translate(MinAge, MaxAge);
+            return "Ustas.RimAI.Communication.Settings.TTS.Rule.Age".Translate(MinAge, MaxAge);
         }
     }
 
@@ -318,18 +318,18 @@ namespace RimTalk.TTS.Data
                 if (VoiceModelIds.Count == 0)
                 {
                     // No requirements and no voices = empty rule
-                    return "RimTalk.Settings.TTS.Rule.EmptyRule".Translate();
+                    return "Ustas.RimAI.Communication.Settings.TTS.Rule.EmptyRule".Translate();
                 }
                 else
                 {
                     // No requirements but has voices = universal rule (matches all pawns)
-                    reqStr = "RimTalk.Settings.TTS.Rule.UniversalRule".Translate();
+                    reqStr = "Ustas.RimAI.Communication.Settings.TTS.Rule.UniversalRule".Translate();
                 }
             }
             else
             {
                 var groups = new List<string>();
-                string orWord = "RimTalk.Settings.TTS.Rule.Or".Translate();
+                string orWord = "Ustas.RimAI.Communication.Settings.TTS.Rule.Or".Translate();
 
             // Gender group
             if (genderReqs.Count > 0)
@@ -374,18 +374,18 @@ namespace RimTalk.TTS.Data
                 }).Where(s => !string.IsNullOrEmpty(s));
                 if (labels.Any())
                 {
-                    string ageLabel = "RimTalk.Settings.TTS.Rule.AgeLabel".Translate();
+                    string ageLabel = "Ustas.RimAI.Communication.Settings.TTS.Rule.AgeLabel".Translate();
                     groups.Add($"({ageLabel}: {string.Join(orWord, labels)})");
                 }
             }
 
-                string andWord = "RimTalk.Settings.TTS.Rule.And".Translate();
+                string andWord = "Ustas.RimAI.Communication.Settings.TTS.Rule.And".Translate();
                 reqStr = string.Join(andWord, groups);
             }
             
             string voiceStr = VoiceModelIds.Count > 0 
-                ? "RimTalk.Settings.TTS.Rule.VoiceCount".Translate(VoiceModelIds.Count) 
-                : "RimTalk.Settings.TTS.Rule.NoVoices".Translate();
+                ? "Ustas.RimAI.Communication.Settings.TTS.Rule.VoiceCount".Translate(VoiceModelIds.Count) 
+                : "Ustas.RimAI.Communication.Settings.TTS.Rule.NoVoices".Translate();
             return $"{reqStr} {voiceStr}";
         }
 

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RimTalk.TTS.Patch;
+using Ustas.RimAI.Communication.Voices.Patch;
 using UnityEngine;
 using Verse;
 
-namespace RimTalk.TTS.Service;
+namespace Ustas.RimAI.Communication.Voices.Service;
 
 /// <summary>
 /// Service for playing audio using Unity's audio system
@@ -111,7 +111,7 @@ public static class AudioPlaybackService
 
             if (ttsWaitCycles >= maxTtsWaitCycles)
             {
-                Log.Warning($"[RimTalk.TTS] Timeout waiting for TTS (30s), skipping audio for dialogue {dialogueId}");
+                Log.Warning($"[RimAI.Voices] Timeout waiting for TTS (30s), skipping audio for dialogue {dialogueId}");
                 lock (_lock)
                 {
                     _isPlaying = false;
@@ -129,7 +129,7 @@ public static class AudioPlaybackService
             {
                 if (!_dialogueAudio.TryGetValue(dialogueId, out wavData))
                 {
-                    Log.Message($"[RimTalk.TTS] No audio found for dialogue {dialogueId}, skipping playback");
+                    Log.Message($"[RimAI.Voices] No audio found for dialogue {dialogueId}, skipping playback");
                     _isPlaying = false;
                     return;
                 }
@@ -137,7 +137,7 @@ public static class AudioPlaybackService
                 if (wavData == null || wavData.Length == 0)
                 {
                     _dialogueAudio.Remove(dialogueId);
-                    Log.Message($"[RimTalk.TTS] Audio is null or empty for dialogue {dialogueId}, skipping playback");
+                    Log.Message($"[RimAI.Voices] Audio is null or empty for dialogue {dialogueId}, skipping playback");
                     _isPlaying = false;
                     return;
                 }
@@ -163,17 +163,17 @@ public static class AudioPlaybackService
                 }
                 else
                 {
-                    Log.Error("[RimTalk.TTS] Failed to create audio clip from audio data or clip length is 0");
+                    Log.Error("[RimAI.Voices] Failed to create audio clip from audio data or clip length is 0");
                 }
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] AudioPlaybackService.PlayAudio - playback exception: {ex}");
+                Log.Error($"[RimAI.Voices] AudioPlaybackService.PlayAudio - playback exception: {ex}");
             }
         }
         catch (Exception ex)
         {
-            Log.Error($"[RimTalk.TTS] AudioPlaybackService.PlayAudio - outer exception: {ex}");
+            Log.Error($"[RimAI.Voices] AudioPlaybackService.PlayAudio - outer exception: {ex}");
         }
         finally
         {
@@ -228,7 +228,7 @@ public static class AudioPlaybackService
         }
         catch (Exception ex)
         {
-            Log.Error($"[RimTalk.TTS] AudioPlaybackService.LoadAudioClipFromData exception: {ex.GetType().Name}: {ex.Message}");
+            Log.Error($"[RimAI.Voices] AudioPlaybackService.LoadAudioClipFromData exception: {ex.GetType().Name}: {ex.Message}");
             return null;
         }
     }
@@ -263,7 +263,7 @@ public static class AudioPlaybackService
                     }
                     else
                     {
-                        Log.Error($"[RimTalk.TTS] Failed to load MP3: {www.error}");
+                        Log.Error($"[RimAI.Voices] Failed to load MP3: {www.error}");
                     }
                 }
             });
@@ -272,7 +272,7 @@ public static class AudioPlaybackService
         }
         catch (Exception ex)
         {
-            Log.Error($"[RimTalk.TTS] AudioPlaybackService.LoadAudioClipFromMP3 exception: {ex.GetType().Name}: {ex.Message}");
+            Log.Error($"[RimAI.Voices] AudioPlaybackService.LoadAudioClipFromMP3 exception: {ex.GetType().Name}: {ex.Message}");
             return null;
         }
         finally
@@ -315,7 +315,7 @@ public static class AudioPlaybackService
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] AudioPlaybackService: Failed to read basic header fields: {ex.GetType().Name}: {ex.Message}");
+                Log.Warning($"[RimAI.Voices] AudioPlaybackService: Failed to read basic header fields: {ex.GetType().Name}: {ex.Message}");
             }
 
             // Find data chunk safely
@@ -330,7 +330,7 @@ public static class AudioPlaybackService
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] AudioPlaybackService: Failed to read chunk id at pos {dataPos}: {ex.GetType().Name}: {ex.Message}");
+                    Log.Error($"[RimAI.Voices] AudioPlaybackService: Failed to read chunk id at pos {dataPos}: {ex.GetType().Name}: {ex.Message}");
                     return null;
                 }
 
@@ -342,7 +342,7 @@ public static class AudioPlaybackService
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] AudioPlaybackService: Failed to read chunk size for '{chunkId}' at pos {dataPos}: {ex.GetType().Name}: {ex.Message}");
+                    Log.Error($"[RimAI.Voices] AudioPlaybackService: Failed to read chunk size for '{chunkId}' at pos {dataPos}: {ex.GetType().Name}: {ex.Message}");
                     return null;
                 }
 
@@ -363,7 +363,7 @@ public static class AudioPlaybackService
                     }
                     catch (Exception ex)
                     {
-                        Log.Warning($"[RimTalk.TTS] AudioPlaybackService: Failed to parse fmt chunk: {ex.GetType().Name}: {ex.Message}");
+                        Log.Warning($"[RimAI.Voices] AudioPlaybackService: Failed to parse fmt chunk: {ex.GetType().Name}: {ex.Message}");
                     }
                 }
 
@@ -377,7 +377,7 @@ public static class AudioPlaybackService
                 long nextPos = (long)dataPos + 8 + chunkSize;
                 if (nextPos <= dataPos || nextPos > wavData.Length)
                 {
-                    Log.Error($"[RimTalk.TTS] AudioPlaybackService: Invalid chunk size leading to overflow: chunkId='{chunkId}', chunkSize={chunkSize}, pos={dataPos}, len={wavData.Length}");
+                    Log.Error($"[RimAI.Voices] AudioPlaybackService: Invalid chunk size leading to overflow: chunkId='{chunkId}', chunkSize={chunkSize}, pos={dataPos}, len={wavData.Length}");
                     return null;
                 }
                 dataPos = (int)nextPos;
@@ -417,7 +417,7 @@ public static class AudioPlaybackService
         }
         catch (Exception ex)
         {
-            Log.Error($"[RimTalk.TTS] AudioPlaybackService.LoadAudioClipFromWav exception: {ex}");
+            Log.Error($"[RimAI.Voices] AudioPlaybackService.LoadAudioClipFromWav exception: {ex}");
             return null;
         }
     }

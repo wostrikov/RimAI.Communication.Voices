@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Verse;
 
-namespace RimTalk.TTS.Service.EdgeTTSService
+namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
 {
     /// <summary>
     /// Edge TTS WebSocket 客户端

@@ -5,13 +5,13 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using RimTalk.Service;
+using Ustas.RimAI.Communication.Service;
 using Verse;
-using RimTalk.TTS.Service;
-using RimTalk.Data;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Service;
+using Ustas.RimAI.Communication.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 
-namespace RimTalk.TTS.Patch
+namespace Ustas.RimAI.Communication.Voices.Patch
 {
     /// <summary>
     /// Harmony patches to hook into main RimTalk events
@@ -38,7 +38,7 @@ namespace RimTalk.TTS.Patch
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] IsTalkIgnored exception: {ex}");
+                Log.Error($"[RimAI.Voices] IsTalkIgnored exception: {ex}");
             }
             return false;
         }
@@ -63,16 +63,16 @@ namespace RimTalk.TTS.Patch
                 var method = typeof(TalkService).GetMethod("CreateInteraction",
                     BindingFlags.NonPublic | BindingFlags.Static,
                     null,
-                    new[] { typeof(Pawn), typeof(global::RimTalk.Data.TalkResponse) },
+                    new[] { typeof(Pawn), typeof(global::Ustas.RimAI.Communication.Data.TalkResponse) },
                     null);
 
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] CreateInteraction_Patch: Method not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] CreateInteraction_Patch: Method not found, skipping patch");
                     return false;
                 }
 
-                Log.Message("[RimTalk.TTS] Successfully found CreateInteraction method");
+                Log.Message("[RimAI.Voices] Successfully found CreateInteraction method");
                 return true;
             }
 
@@ -81,7 +81,7 @@ namespace RimTalk.TTS.Patch
                 return typeof(TalkService).GetMethod("CreateInteraction",
                     BindingFlags.NonPublic | BindingFlags.Static,
                     null,
-                    new[] { typeof(Pawn), typeof(global::RimTalk.Data.TalkResponse) },
+                    new[] { typeof(Pawn), typeof(global::Ustas.RimAI.Communication.Data.TalkResponse) },
                     null);
             }
 
@@ -97,7 +97,7 @@ namespace RimTalk.TTS.Patch
                     if (pawn == null || talk == null)
                         return true;
 
-                    // Cast to RimTalk.Data.TalkResponse and read properties directly
+                    // Cast to Ustas.RimAI.Communication.Data.TalkResponse and read properties directly
                     var talkResp = talk as TalkResponse;
                     if (talkResp == null)
                         return true;
@@ -126,7 +126,7 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] CreateInteraction Prefix exception: {ex}");
+                    Log.Error($"[RimAI.Voices] CreateInteraction Prefix exception: {ex}");
                     return true; // On error, allow execution
                 }
             }
@@ -140,22 +140,22 @@ namespace RimTalk.TTS.Patch
         {
             static bool Prepare()
             {
-                Log.Message("[RimTalk.TTS] AddIgnored_Patch.Prepare() called");
-                var method = typeof(global::RimTalk.Data.TalkHistory).GetMethod("AddIgnored", BindingFlags.Public | BindingFlags.Static);
+                Log.Message("[RimAI.Voices] AddIgnored_Patch.Prepare() called");
+                var method = typeof(global::Ustas.RimAI.Communication.Data.TalkHistory).GetMethod("AddIgnored", BindingFlags.Public | BindingFlags.Static);
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] AddIgnored_Patch: Method not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] AddIgnored_Patch: Method not found, skipping patch");
                     return false;
                 }
-                Log.Message("[RimTalk.TTS] AddIgnored_Patch: Method found, patch will be applied");
+                Log.Message("[RimAI.Voices] AddIgnored_Patch: Method found, patch will be applied");
                 return true;
             }
 
             static MethodBase TargetMethod()
             {
-                Log.Message("[RimTalk.TTS] AddIgnored_Patch.TargetMethod() called");
-                var method = typeof(global::RimTalk.Data.TalkHistory).GetMethod("AddIgnored", BindingFlags.Public | BindingFlags.Static);
-                Log.Message($"[RimTalk.TTS] AddIgnored_Patch.TargetMethod() returning: {method?.Name ?? "NULL"}");
+                Log.Message("[RimAI.Voices] AddIgnored_Patch.TargetMethod() called");
+                var method = typeof(global::Ustas.RimAI.Communication.Data.TalkHistory).GetMethod("AddIgnored", BindingFlags.Public | BindingFlags.Static);
+                Log.Message($"[RimAI.Voices] AddIgnored_Patch.TargetMethod() returning: {method?.Name ?? "NULL"}");
                 return method;
             }
 
@@ -169,7 +169,7 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] AddIgnored_Patch Prefix exception: {ex}");
+                    Log.Error($"[RimAI.Voices] AddIgnored_Patch Prefix exception: {ex}");
                 }
             }
         }
@@ -182,20 +182,20 @@ namespace RimTalk.TTS.Patch
         {
             static bool Prepare()
             {
-                var ctor = typeof(global::RimTalk.Data.PawnState).GetConstructor(new[] { typeof(Pawn) });
+                var ctor = typeof(global::Ustas.RimAI.Communication.Data.PawnState).GetConstructor(new[] { typeof(Pawn) });
                 if (ctor == null)
                 {
-                    Log.Warning("[RimTalk.TTS] PawnStateConstructor_Patch: Constructor not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] PawnStateConstructor_Patch: Constructor not found, skipping patch");
                     return false;
                 }
 
-                Log.Message("[RimTalk.TTS] Successfully found PawnState constructor");
+                Log.Message("[RimAI.Voices] Successfully found PawnState constructor");
                 return true;
             }
 
             static MethodBase TargetMethod()
             {
-                return typeof(global::RimTalk.Data.PawnState).GetConstructor(new[] { typeof(Pawn) });
+                return typeof(global::Ustas.RimAI.Communication.Data.PawnState).GetConstructor(new[] { typeof(Pawn) });
             }
 
             // Postfix: Register the TalkResponses list with its owning Pawn
@@ -210,7 +210,7 @@ namespace RimTalk.TTS.Patch
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"[RimTalk.TTS] PawnStateConstructor_Patch Postfix exception: {ex}");
+                        Log.Error($"[RimAI.Voices] PawnStateConstructor_Patch Postfix exception: {ex}");
                     }
             }
         }
@@ -223,22 +223,22 @@ namespace RimTalk.TTS.Patch
         {
             static bool Prepare()
             {
-                var listType = typeof(List<global::RimTalk.Data.TalkResponse>);
+                var listType = typeof(List<global::Ustas.RimAI.Communication.Data.TalkResponse>);
                 var method = listType.GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
 
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] TalkResponsesAdd_Patch: List<TalkResponse>.Add method not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] TalkResponsesAdd_Patch: List<TalkResponse>.Add method not found, skipping patch");
                     return false;
                 }
 
-                Log.Message("[RimTalk.TTS] Successfully found List<TalkResponse>.Add method");
+                Log.Message("[RimAI.Voices] Successfully found List<TalkResponse>.Add method");
                 return true;
             }
 
             static MethodBase TargetMethod()
             {
-                var listType = typeof(List<global::RimTalk.Data.TalkResponse>);
+                var listType = typeof(List<global::Ustas.RimAI.Communication.Data.TalkResponse>);
                 return listType.GetMethod("Add", BindingFlags.Public | BindingFlags.Instance);
             }
 
@@ -261,7 +261,7 @@ namespace RimTalk.TTS.Patch
                     }
 
                     // Get the item that was just added
-                    var list = __instance as List<global::RimTalk.Data.TalkResponse>;
+                    var list = __instance as List<global::Ustas.RimAI.Communication.Data.TalkResponse>;
                     if (list == null || list.Count == 0)
                         return;
 
@@ -283,7 +283,7 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] TalkResponsesAdd_Patch exception: {ex}");
+                    Log.Error($"[RimAI.Voices] TalkResponsesAdd_Patch exception: {ex}");
                 }
             }
         }
@@ -296,21 +296,21 @@ namespace RimTalk.TTS.Patch
         {
             static bool Prepare()
             {
-                var method = typeof(global::RimTalk.Data.PawnState).GetMethod("IgnoreTalkResponse", BindingFlags.Public | BindingFlags.Instance);
+                var method = typeof(global::Ustas.RimAI.Communication.Data.PawnState).GetMethod("IgnoreTalkResponse", BindingFlags.Public | BindingFlags.Instance);
                 
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] IgnoreTalkResponse_Patch: Method not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] IgnoreTalkResponse_Patch: Method not found, skipping patch");
                     return false;
                 }
                 
-                Log.Message("[RimTalk.TTS] Successfully found IgnoreTalkResponse method");
+                Log.Message("[RimAI.Voices] Successfully found IgnoreTalkResponse method");
                 return true;
             }
 
             static MethodBase TargetMethod()
             {
-                return typeof(global::RimTalk.Data.PawnState).GetMethod("IgnoreTalkResponse", BindingFlags.Public | BindingFlags.Instance);
+                return typeof(global::Ustas.RimAI.Communication.Data.PawnState).GetMethod("IgnoreTalkResponse", BindingFlags.Public | BindingFlags.Instance);
             }
 
             // Prefix: Capture the dialogue ID before it's removed
@@ -325,7 +325,7 @@ namespace RimTalk.TTS.Patch
                         return;
 
                     // Get the list of TalkResponse objects from PawnState
-                    var pawnState = __instance as global::RimTalk.Data.PawnState;
+                    var pawnState = __instance as global::Ustas.RimAI.Communication.Data.PawnState;
                     if (pawnState == null) return;
 
                     var talkResponsesList = pawnState.TalkResponses as System.Collections.IList;
@@ -333,7 +333,7 @@ namespace RimTalk.TTS.Patch
                         return;
 
                     // Get the first TalkResponse (the one about to be ignored)
-                    var talkResponse = talkResponsesList[0] as global::RimTalk.Data.TalkResponse;
+                    var talkResponse = talkResponsesList[0] as global::Ustas.RimAI.Communication.Data.TalkResponse;
                     if (talkResponse == null)
                         return;
 
@@ -343,48 +343,48 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] IgnoreTalkResponse_Patch exception: {ex}");
+                    Log.Error($"[RimAI.Voices] IgnoreTalkResponse_Patch exception: {ex}");
                 }
             }
         }
 
         /// <summary>
-        /// Lifecycle patches for RimTalk.RimTalk GameComponent
+        /// Lifecycle patches for Ustas.RimAI.Communication.RimTalk GameComponent
         /// </summary>
         [HarmonyPatch]
         public static class StartedNewGame_Patch
         {
             static bool Prepare()
             {
-                Log.Message("[RimTalk.TTS] StartedNewGame_Patch.Prepare() called");
-                var type = typeof(global::RimTalk.RimTalk);
+                Log.Message("[RimAI.Voices] StartedNewGame_Patch.Prepare() called");
+                var type = typeof(global::Ustas.RimAI.Communication.RimTalk);
                 if (type == null)
                 {
-                    Log.Warning("[RimTalk.TTS] StartedNewGame_Patch: RimTalk.RimTalk type not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] StartedNewGame_Patch: Ustas.RimAI.Communication.RimTalk type not found, skipping patch");
                     return false;
                 }
-                var method = typeof(global::RimTalk.RimTalk).GetMethod("StartedNewGame", BindingFlags.Public | BindingFlags.Instance);
+                var method = typeof(global::Ustas.RimAI.Communication.RimTalk).GetMethod("StartedNewGame", BindingFlags.Public | BindingFlags.Instance);
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] StartedNewGame_Patch: Method not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] StartedNewGame_Patch: Method not found, skipping patch");
                     return false;
                 }
-                Log.Message("[RimTalk.TTS] StartedNewGame_Patch: Method found, patch will be applied");
+                Log.Message("[RimAI.Voices] StartedNewGame_Patch: Method found, patch will be applied");
                 return true;
             }
 
             static MethodBase TargetMethod()
             {
-                Log.Message("[RimTalk.TTS] StartedNewGame_Patch.TargetMethod() called");
-                var method = typeof(global::RimTalk.RimTalk).GetMethod("StartedNewGame", BindingFlags.Public | BindingFlags.Instance);
-                Log.Message($"[RimTalk.TTS] StartedNewGame_Patch.TargetMethod() returning: {method?.Name ?? "NULL"}");
+                Log.Message("[RimAI.Voices] StartedNewGame_Patch.TargetMethod() called");
+                var method = typeof(global::Ustas.RimAI.Communication.RimTalk).GetMethod("StartedNewGame", BindingFlags.Public | BindingFlags.Instance);
+                Log.Message($"[RimAI.Voices] StartedNewGame_Patch.TargetMethod() returning: {method?.Name ?? "NULL"}");
                 return method;
             }
 
             static void Postfix()
             {
                 TTSModule.Instance.OnGameLoaded();
-                Log.Message("[RimTalk.TTS] New game started, TTS state cleared");
+                Log.Message("[RimAI.Voices] New game started, TTS state cleared");
             }
         }
 
@@ -393,35 +393,35 @@ namespace RimTalk.TTS.Patch
         {
             static bool Prepare()
             {
-                Log.Message("[RimTalk.TTS] LoadedGame_Patch.Prepare() called");
-                var type = typeof(global::RimTalk.RimTalk);
+                Log.Message("[RimAI.Voices] LoadedGame_Patch.Prepare() called");
+                var type = typeof(global::Ustas.RimAI.Communication.RimTalk);
                 if (type == null)
                 {
-                    Log.Warning("[RimTalk.TTS] LoadedGame_Patch: RimTalk.RimTalk type not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] LoadedGame_Patch: Ustas.RimAI.Communication.RimTalk type not found, skipping patch");
                     return false;
                 }
-                var method = typeof(global::RimTalk.RimTalk).GetMethod("LoadedGame", BindingFlags.Public | BindingFlags.Instance);
+                var method = typeof(global::Ustas.RimAI.Communication.RimTalk).GetMethod("LoadedGame", BindingFlags.Public | BindingFlags.Instance);
                 if (method == null)
                 {
-                    Log.Warning("[RimTalk.TTS] LoadedGame_Patch: Method not found, skipping patch");
+                    Log.Warning("[RimAI.Voices] LoadedGame_Patch: Method not found, skipping patch");
                     return false;
                 }
-                Log.Message("[RimTalk.TTS] LoadedGame_Patch: Method found, patch will be applied");
+                Log.Message("[RimAI.Voices] LoadedGame_Patch: Method found, patch will be applied");
                 return true;
             }
 
             static MethodBase TargetMethod()
             {
-                Log.Message("[RimTalk.TTS] LoadedGame_Patch.TargetMethod() called");
-                var method = typeof(global::RimTalk.RimTalk).GetMethod("LoadedGame", BindingFlags.Public | BindingFlags.Instance);
-                Log.Message($"[RimTalk.TTS] LoadedGame_Patch.TargetMethod() returning: {method?.Name ?? "NULL"}");
+                Log.Message("[RimAI.Voices] LoadedGame_Patch.TargetMethod() called");
+                var method = typeof(global::Ustas.RimAI.Communication.RimTalk).GetMethod("LoadedGame", BindingFlags.Public | BindingFlags.Instance);
+                Log.Message($"[RimAI.Voices] LoadedGame_Patch.TargetMethod() returning: {method?.Name ?? "NULL"}");
                 return method;
             }
 
             static void Postfix()
             {
                 TTSModule.Instance.OnGameLoaded();
-                Log.Message("[RimTalk.TTS] Game loaded, TTS state cleared");
+                Log.Message("[RimAI.Voices] Game loaded, TTS state cleared");
             }
         }
 
@@ -451,7 +451,7 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] PawnDiscard_Patch exception: {ex}");
+                    Log.Error($"[RimAI.Voices] PawnDiscard_Patch exception: {ex}");
                 }
             }
         }
@@ -526,7 +526,7 @@ namespace RimTalk.TTS.Patch
                     {
                         _pendingToggle = true;
                         _pendingToggleValue = onOff;
-                        _pendingToggleMessage = "RimTalk.TTS.OnOffUpdated".Translate(onOff ? "RimTalk.TTS.On".Translate() : "RimTalk.TTS.Off".Translate());
+                        _pendingToggleMessage = "Ustas.RimAI.Communication.Voices.OnOffUpdated".Translate(onOff ? "Ustas.RimAI.Communication.Voices.On".Translate() : "Ustas.RimAI.Communication.Voices.Off".Translate());
                     }
                 }
             }
@@ -560,7 +560,7 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] PendingToggleExecutor exception: {ex}");
+                    Log.Error($"[RimAI.Voices] PendingToggleExecutor exception: {ex}");
                 }
             }
         }
@@ -580,14 +580,14 @@ namespace RimTalk.TTS.Patch
                 var pawnName = pawn?.LabelShort ?? pawn?.Name?.ToString() ?? "<unnamed>";
 
                 // Get RimTalk WorldComponent from current game
-                var worldComp = Current.Game?.World?.GetComponent<global::RimTalk.Data.RimTalkWorldComponent>();
+                var worldComp = Current.Game?.World?.GetComponent<global::Ustas.RimAI.Communication.Data.RimTalkWorldComponent>();
                 if (worldComp == null)
                 {
-                    Log.Warning("[RimTalk.TTS] AddPawnDialogueList: RimTalkWorldComponent not found in current game");
+                    Log.Warning("[RimAI.Voices] AddPawnDialogueList: RimTalkWorldComponent not found in current game");
                     return;
                 }
                 
-                PawnState pawnState = global::RimTalk.Data.Cache.Get(pawn);
+                PawnState pawnState = global::Ustas.RimAI.Communication.Data.Cache.Get(pawn);
                 if (pawnState == null)
                 {
                     return;
@@ -608,7 +608,7 @@ namespace RimTalk.TTS.Patch
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] AddPawnDialogueList (1 param) error for pawn '{pawn?.LabelShort}': {ex.Message}");
+                Log.Warning($"[RimAI.Voices] AddPawnDialogueList (1 param) error for pawn '{pawn?.LabelShort}': {ex.Message}");
             }
         }
 
@@ -646,12 +646,12 @@ namespace RimTalk.TTS.Patch
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning($"[RimTalk.TTS] AddPawnDialogueListForPawnState: failed to read TalkResponses via reflection for pawn '{pawnName}': {ex.Message}");
+                    Log.Warning($"[RimAI.Voices] AddPawnDialogueListForPawnState: failed to read TalkResponses via reflection for pawn '{pawnName}': {ex.Message}");
                 }
 
                 if (talkResponsesList == null)
                 {
-                    Log.Message($"[RimTalk.TTS] AddPawnDialogueList: exit for pawn '{pawnName}' (id={pawnId}) - talkResponsesList null");
+                    Log.Message($"[RimAI.Voices] AddPawnDialogueList: exit for pawn '{pawnName}' (id={pawnId}) - talkResponsesList null");
                     return;
                 }
 
@@ -660,7 +660,7 @@ namespace RimTalk.TTS.Patch
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] AddPawnDialogueListForPawnState error for pawn '{pawn?.LabelShort}': {ex.Message}");
+                Log.Warning($"[RimAI.Voices] AddPawnDialogueListForPawnState error for pawn '{pawn?.LabelShort}': {ex.Message}");
             }
         }
 
@@ -675,10 +675,10 @@ namespace RimTalk.TTS.Patch
         {
             static bool Prepare()
             {
-                var method = typeof(global::RimTalk.Data.Cache).GetMethod("InitializePlayerPawn", BindingFlags.Public | BindingFlags.Static);
+                var method = typeof(global::Ustas.RimAI.Communication.Data.Cache).GetMethod("InitializePlayerPawn", BindingFlags.Public | BindingFlags.Static);
                 if (method == null)
                 {
-                    Log.Message("[RimTalk.TTS] Cache.InitializePlayerPawn not found, skipping patch");
+                    Log.Message("[RimAI.Voices] Cache.InitializePlayerPawn not found, skipping patch");
                     return false;
                 }
                 return true;
@@ -686,7 +686,7 @@ namespace RimTalk.TTS.Patch
 
             static MethodBase TargetMethod()
             {
-                return typeof(global::RimTalk.Data.Cache).GetMethod("InitializePlayerPawn", BindingFlags.Public | BindingFlags.Static);
+                return typeof(global::Ustas.RimAI.Communication.Data.Cache).GetMethod("InitializePlayerPawn", BindingFlags.Public | BindingFlags.Static);
             }
 
             static void Postfix()
@@ -697,7 +697,7 @@ namespace RimTalk.TTS.Patch
 
         public static void UpdatePlayerPawnVoice()
         {
-            var pawn = global::RimTalk.Data.Cache.GetPlayer();
+            var pawn = global::Ustas.RimAI.Communication.Data.Cache.GetPlayer();
             var settings = TTSConfig.Settings;
 
             Data.PawnVoiceManager.SetVoiceModel(pawn, settings.PlayerReferenceVoiceModelId);

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Verse;
 
-namespace RimTalk.TTS.Data
+namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
     /// Manages pawn-specific voice model assignments and language settings

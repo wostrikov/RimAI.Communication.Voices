@@ -1,6 +1,6 @@
 using Verse;
 
-namespace RimTalk.TTS.Data
+namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
     /// GameComponent to hook PawnVoiceManager.ExposeData into the save/load cycle per game.

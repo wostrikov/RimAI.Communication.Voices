@@ -1,4 +1,4 @@
-namespace RimTalk.TTS.Data
+namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
     /// TTS API providers (OpenAI-compatible)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Verse;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     /// <summary>
     /// Client for Azure Text-to-Speech REST API
@@ -82,7 +82,7 @@ namespace RimTalk.TTS.Service
                 if (!resp.IsSuccessStatusCode)
                 {
                     var errorText = resp.Content != null ? await resp.Content.ReadAsStringAsync() : string.Empty;
-                    Log.Error($"[RimTalk.TTS] AzureTTSClient: API returned {resp.StatusCode}: {errorText}");
+                    Log.Error($"[RimAI.Voices] AzureTTSClient: API returned {resp.StatusCode}: {errorText}");
                     return null;
                 }
 
@@ -91,7 +91,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] AzureTTSClient.GenerateSpeechAsync exception: {ex.GetType().Name}: {ex.Message}");
+                Log.Error($"[RimAI.Voices] AzureTTSClient.GenerateSpeechAsync exception: {ex.GetType().Name}: {ex.Message}");
                 return null;
             }
         }
@@ -325,7 +325,7 @@ namespace RimTalk.TTS.Service
                 if (!resp.IsSuccessStatusCode)
                 {
                     var errorText = resp.Content != null ? await resp.Content.ReadAsStringAsync() : string.Empty;
-                    Log.Warning($"[RimTalk.TTS] AzureTTSClient.GetVoicesAsync: API returned {resp.StatusCode}: {errorText}");
+                    Log.Warning($"[RimAI.Voices] AzureTTSClient.GetVoicesAsync: API returned {resp.StatusCode}: {errorText}");
                     return result;
                 }
 
@@ -337,7 +337,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] AzureTTSClient.GetVoicesAsync exception: {ex.GetType().Name}: {ex.Message}");
+                Log.Error($"[RimAI.Voices] AzureTTSClient.GetVoicesAsync exception: {ex.GetType().Name}: {ex.Message}");
                 return result;
             }
         }
@@ -376,7 +376,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] AzureTTSClient.ParseVoiceList: Failed to parse JSON - {ex.Message}");
+                Log.Warning($"[RimAI.Voices] AzureTTSClient.ParseVoiceList: Failed to parse JSON - {ex.Message}");
             }
             return result;
         }

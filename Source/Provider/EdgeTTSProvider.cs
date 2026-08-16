@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using RimTalk.TTS.Service;
-using RimTalk.TTS.Service.EdgeTTSService;
+using Ustas.RimAI.Communication.Voices.Service;
+using Ustas.RimAI.Communication.Voices.Service.EdgeTTSService;
 
-namespace RimTalk.TTS.Provider
+namespace Ustas.RimAI.Communication.Voices.Provider
 {
     /// <summary>
     /// Provider wrapper for Edge-TTS (Microsoft Edge's free TTS service)

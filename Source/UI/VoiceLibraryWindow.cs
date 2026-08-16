@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 using RimWorld;
 
-namespace RimTalk.TTS.UI
+namespace Ustas.RimAI.Communication.Voices.UI
 {
     /// <summary>
     /// Window displaying available voices for AzureTTS/EdgeTTS

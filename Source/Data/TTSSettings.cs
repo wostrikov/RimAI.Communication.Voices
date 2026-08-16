@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Verse;
 
-namespace RimTalk.TTS.Data
+namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
     /// TTS module settings - independent from main RimTalk settings
@@ -151,7 +151,7 @@ namespace RimTalk.TTS.Data
                 MigrateLegacyPrompt();
                 if (ApiProvider == TTSApiProvider.RimTalkSame || ApiProvider == TTSApiProvider.OpenAI)
                 {
-                    // OpenAI preprocessing is owned by RimTalk. Never retain a duplicate secret/model.
+                    // OpenAI preprocessing is owned by Ustas.RimAI.Communication. Never retain a duplicate secret/model.
                     ApiKey = "";
                     Model = "";
                 }

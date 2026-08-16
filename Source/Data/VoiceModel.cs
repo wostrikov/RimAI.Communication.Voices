@@ -1,6 +1,6 @@
 using Verse;
 
-namespace RimTalk.TTS.Data
+namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
     /// Represents a TTS voice model configuration

@@ -1,7 +1,7 @@
 using System;
 using Verse;
 
-namespace RimTalk.TTS
+namespace Ustas.RimAI.Communication.Voices
 {
     /// <summary>
     /// Public interface for TTS module lifecycle and coordination.

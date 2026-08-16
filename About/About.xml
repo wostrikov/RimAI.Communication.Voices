@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<packageId>nitoritech.rimtalk.tts</packageId>
+	<packageId>ustas.rimai.communication.voices</packageId>
 	<name>RimAI.Communication.Voices</name>
 	<author>Nitori_Tachyon</author>
 	<description>RimAI.Communication.Voices — text-to-speech for RimAI dialogue.
@@ -83,7 +83,7 @@ This mod operates non-invasively through Harmony patches and does not modify Rim
 			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
 		</li>
 		<li>
-			<packageId>cj.rimtalk</packageId>
+			<packageId>ustas.rimai.communication</packageId>
 			<displayName>RimAI.Communication</displayName>
 			<steamWorkshopUrl>steam://url/CommunityFilePage/3551203752</steamWorkshopUrl>
 			<downloadUrl>https://github.com/jlibrary/RimTalk/</downloadUrl>
@@ -91,6 +91,6 @@ This mod operates non-invasively through Harmony patches and does not modify Rim
 	</modDependencies>
 	<loadAfter>
 		<li>brrainz.harmony</li>
-		<li>cj.rimtalk</li>
+		<li>ustas.rimai.communication</li>
 	</loadAfter>
 </ModMetaData>

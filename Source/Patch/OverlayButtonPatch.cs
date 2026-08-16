@@ -4,13 +4,13 @@ using System.Reflection;
 using Verse;
 using System;
 using RimWorld;
-using RimTalk.TTS.Service;
-using RimTalk.Service;
-using RimTalk.Data;
-using RimTalk.Util;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Service;
+using Ustas.RimAI.Communication.Service;
+using Ustas.RimAI.Communication.Data;
+using Ustas.RimAI.Communication.Util;
+using Ustas.RimAI.Communication.Voices.Data;
 
-namespace RimTalk.TTS.Patch
+namespace Ustas.RimAI.Communication.Voices.Patch
 {
     public static class OverlayButtonPatch
     {
@@ -23,10 +23,10 @@ namespace RimTalk.TTS.Patch
         [HarmonyPatch]
         public static class Overlay_MapComponentOnGUI_Postfix
         {
-            // Target the non-public instance method DrawSettingsDropdown on RimTalk.UI.Overlay
+            // Target the non-public instance method DrawSettingsDropdown on Ustas.RimAI.Communication.UI.Overlay
             static MethodBase TargetMethod()
             {
-                return typeof(global::RimTalk.UI.Overlay).GetMethod("MapComponentOnGUI", BindingFlags.Public | BindingFlags.Instance);
+                return typeof(global::Ustas.RimAI.Communication.UI.Overlay).GetMethod("MapComponentOnGUI", BindingFlags.Public | BindingFlags.Instance);
             }
 
             static void Postfix(object __instance)
@@ -54,26 +54,26 @@ namespace RimTalk.TTS.Patch
                     ignoreButtonScreenRect.Set(gearRect.x - resetBtnWidth - generateBtnWidth - ignoreBtnWidth - 2*padding, gearRect.y, ignoreBtnWidth, btnHeight);
                     displayButtonScreenRect.Set(gearRect.x - resetBtnWidth - generateBtnWidth - ignoreBtnWidth - displayBtnWidth - 2*padding, gearRect.y, ignoreBtnWidth, btnHeight);
 
-                    if (Widgets.ButtonText(resetButtonScreenRect, "RimTalk.TTS.Reset".Translate()))
+                    if (Widgets.ButtonText(resetButtonScreenRect, "Ustas.RimAI.Communication.Voices.Reset".Translate()))
                     {
                         ResetButtonFunc();
                     }
-                    if (Widgets.ButtonText(generateButtonScreenRect, "RimTalk.TTS.Generate".Translate()))
+                    if (Widgets.ButtonText(generateButtonScreenRect, "Ustas.RimAI.Communication.Voices.Generate".Translate()))
                     {
                         generateButtonFunc();
                     }
-                    if (Widgets.ButtonText(ignoreButtonScreenRect, "RimTalk.TTS.Ignore".Translate()))
+                    if (Widgets.ButtonText(ignoreButtonScreenRect, "Ustas.RimAI.Communication.Voices.Ignore".Translate()))
                     {
                         ignoreButtonFunc();
                     }
-                    if (Widgets.ButtonText(displayButtonScreenRect, "RimTalk.TTS.Display".Translate()))
+                    if (Widgets.ButtonText(displayButtonScreenRect, "Ustas.RimAI.Communication.Voices.Display".Translate()))
                     {
                         displayButtonFunc();
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"[RimTalk.TTS] Overlay_DrawSettingsDropdown_Postfix exception: {ex}");
+                    Log.Error($"[RimAI.Voices] Overlay_DrawSettingsDropdown_Postfix exception: {ex}");
                 }
             }
         }
@@ -81,10 +81,10 @@ namespace RimTalk.TTS.Patch
         [HarmonyPatch]
         public static class Overlay_HandleInput_Prefix
         {
-            // Target the non-public instance method HandleInput on RimTalk.UI.Overlay
+            // Target the non-public instance method HandleInput on Ustas.RimAI.Communication.UI.Overlay
             static MethodBase TargetMethod()
             {
-                return typeof(global::RimTalk.UI.Overlay).GetMethod("HandleInput", BindingFlags.NonPublic | BindingFlags.Instance);
+                return typeof(global::Ustas.RimAI.Communication.UI.Overlay).GetMethod("HandleInput", BindingFlags.NonPublic | BindingFlags.Instance);
             }
 
             static bool Prefix(object __instance)
@@ -128,13 +128,13 @@ namespace RimTalk.TTS.Patch
 
         private static void ResetButtonFunc()
         {
-            Messages.Message("RimTalk.TTS.ResetComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            Messages.Message("Ustas.RimAI.Communication.Voices.ResetComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
             TTSService.StopAll(false);
         }
 
         private static void generateButtonFunc()
         {
-            Messages.Message("RimTalk.TTS.GenerateComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            Messages.Message("Ustas.RimAI.Communication.Voices.GenerateComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
             // Select a pawn based on the current iteration strategy
             Pawn selectedPawn = PawnSelector.SelectNextAvailablePawn();
 
@@ -143,7 +143,7 @@ namespace RimTalk.TTS.Patch
                 // 1. ALWAYS try to get from the general pool first.
                 bool talkGenerated;
                 // If the pawn is a free colonist not in danger and the pool has requests
-                if (!selectedPawn.IsFreeNonSlaveColonist || selectedPawn.IsQuestLodger() || TalkRequestPool.IsEmpty || global::RimTalk.Util.PawnUtil.IsInDanger(selectedPawn,true)) talkGenerated=false;
+                if (!selectedPawn.IsFreeNonSlaveColonist || selectedPawn.IsQuestLodger() || TalkRequestPool.IsEmpty || global::Ustas.RimAI.Communication.Util.PawnUtil.IsInDanger(selectedPawn,true)) talkGenerated=false;
                 else
                 {
                     var request = TalkRequestPool.GetRequestFromPool(selectedPawn);
@@ -153,7 +153,7 @@ namespace RimTalk.TTS.Patch
                 // 2. If the pawn has a specific talk request, try generating it
                 if (!talkGenerated)
                 {
-                    var pawnState = global::RimTalk.Data.Cache.Get(selectedPawn);
+                    var pawnState = global::Ustas.RimAI.Communication.Data.Cache.Get(selectedPawn);
                     if (pawnState.GetNextTalkRequest() != null)
                     {
                         talkGenerated = TalkService.GenerateTalk(pawnState.GetNextTalkRequest());
@@ -173,9 +173,9 @@ namespace RimTalk.TTS.Patch
 
         private static void ignoreButtonFunc()
         {
-            Messages.Message("RimTalk.TTS.IgnoreComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            Messages.Message("Ustas.RimAI.Communication.Voices.IgnoreComplete".Translate(), MessageTypeDefOf.TaskCompletion, false);
             
-            foreach (var pawn in global::RimTalk.Data.Cache.GetAll())
+            foreach (var pawn in global::Ustas.RimAI.Communication.Data.Cache.GetAll())
             {
                 pawn.IgnoreAllTalkResponses();
             }

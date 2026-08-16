@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using RimTalk.TTS.Service;
+using Ustas.RimAI.Communication.Voices.Service;
 using Verse;
 
-namespace RimTalk.TTS.Provider
+namespace Ustas.RimAI.Communication.Voices.Provider
 {
     public class GeminiTTSProvider : ITTSProvider
     {

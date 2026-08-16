@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RimTalk.TTS.Data;
-using RimTalkPatches = RimTalk.TTS.Patch.RimTalkPatches;
+using Ustas.RimAI.Communication.Voices.Data;
+using RimTalkPatches = Ustas.RimAI.Communication.Voices.Patch.RimTalkPatches;
 using Verse;
 
-namespace RimTalk.TTS.Service
+namespace Ustas.RimAI.Communication.Voices.Service
 {
     /// <summary>
     /// Coordinates Text-to-Speech generation for dialogue.
@@ -35,7 +35,7 @@ namespace RimTalk.TTS.Service
                 // Create new provider
                 _provider = CreateProvider(supplier, settings);
                 
-                Log.Message($"[RimTalk.TTS] TTS provider set to {supplier}");
+                Log.Message($"[RimAI.Voices] TTS provider set to {supplier}");
             }
         }
 
@@ -47,7 +47,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] Error shutting down provider: {ex.Message}");
+                Log.Warning($"[RimAI.Voices] Error shutting down provider: {ex.Message}");
             }
         }
 
@@ -64,7 +64,7 @@ namespace RimTalk.TTS.Service
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RimTalk.TTS] Error resetting runtime state: {ex.Message}");
+                Log.Warning($"[RimAI.Voices] Error resetting runtime state: {ex.Message}");
             }
         }
 
@@ -116,7 +116,7 @@ namespace RimTalk.TTS.Service
             // Perform early validation checks
             if (!ValidateDialogueRequest(text, pawn, dialogueId, settings, out string reason))
             {
-                Log.Message($"[RimTalk.TTS] Rejected - {reason}");
+                Log.Message($"[RimAI.Voices] Rejected - {reason}");
                 CleanupAndRelease(dialogueId);
                 return;
             }
@@ -229,7 +229,7 @@ namespace RimTalk.TTS.Service
                 // Check if should continue after preprocessing
                 if (!ShouldContinueProcessing(dialogueId, settings, out string reason))
                 {
-                    Log.Message($"[RimTalk.TTS] {reason} (discarding audio)");
+                    Log.Message($"[RimAI.Voices] {reason} (discarding audio)");
                     CleanupAndRelease(dialogueId);
                     return;
                 }
@@ -245,12 +245,12 @@ namespace RimTalk.TTS.Service
             }
             catch (OperationCanceledException)
             {
-                Log.Message($"[RimTalk.TTS] Dialogue {dialogueId} generation cancelled");
+                Log.Message($"[RimAI.Voices] Dialogue {dialogueId} generation cancelled");
                 CleanupAndRelease(dialogueId);
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Exception - {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] Exception - {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
                 CleanupAndRelease(dialogueId);
             }
         }
@@ -273,13 +273,13 @@ namespace RimTalk.TTS.Service
                 }
                 else
                 {
-                    Log.Warning($"[RimTalk.TTS] Translation/PreProcess returned empty result");
+                    Log.Warning($"[RimAI.Voices] Translation/PreProcess returned empty result");
                     return null;
                 }
             }
             else
             {
-                Log.Warning($"[RimTalk.TTS] Translation language not configured");
+                Log.Warning($"[RimAI.Voices] Translation language not configured");
                 return null;
             }
         }
@@ -339,7 +339,7 @@ namespace RimTalk.TTS.Service
             // Check if should continue
             if (!ShouldContinueProcessing(dialogueId, settings, out string reason))
             {
-                Log.Message($"[RimTalk.TTS] {reason} (discarding audio)");
+                Log.Message($"[RimAI.Voices] {reason} (discarding audio)");
                 CleanupAndRelease(dialogueId);
                 return;
             }
@@ -348,7 +348,7 @@ namespace RimTalk.TTS.Service
             {
                 if (!RimTalkPatches.IsBlocked(dialogueId))
                 {
-                    Log.Message($"[RimTalk.TTS] Dialogue {dialogueId} is no longer blocked after generation (discarding audio)");
+                    Log.Message($"[RimAI.Voices] Dialogue {dialogueId} is no longer blocked after generation (discarding audio)");
                     CleanupFailedDialogue(dialogueId);
                 }
                 else
@@ -359,7 +359,7 @@ namespace RimTalk.TTS.Service
             }
             else
             {
-                Log.Warning("[RimTalk.TTS] Failed - API returned no audio data");
+                Log.Warning("[RimAI.Voices] Failed - API returned no audio data");
                 CleanupAndRelease(dialogueId);
             }
         }
@@ -470,7 +470,7 @@ namespace RimTalk.TTS.Service
                 }
                 catch (Exception exCount)
                 {
-                    Log.Warning($"[RimTalk.TTS] ReloadMap: failed to get pawn count for map '{map}': {exCount}");
+                    Log.Warning($"[RimAI.Voices] ReloadMap: failed to get pawn count for map '{map}': {exCount}");
                 }
 
                 foreach (var pawn in map.mapPawns.AllPawns)
@@ -485,19 +485,19 @@ namespace RimTalk.TTS.Service
                         {
                             var pawnId = pawn?.thingIDNumber.ToString() ?? "<null>";
                             var pawnName = pawn?.LabelShort ?? pawn?.Name?.ToString() ?? "<unnamed>";
-                            Log.Error($"[RimTalk.TTS] ReloadMap: AddPawnDialogueList failed for pawn '{pawnName}' (id={pawnId}): {exPawn}");
+                            Log.Error($"[RimAI.Voices] ReloadMap: AddPawnDialogueList failed for pawn '{pawnName}' (id={pawnId}): {exPawn}");
                         }
                         catch (Exception exInner)
                         {
                             // Best effort logging; avoid throwing from logger
-                            Log.Error($"[RimTalk.TTS] ReloadMap: failed to log pawn exception: {exInner}");
+                            Log.Error($"[RimAI.Voices] ReloadMap: failed to log pawn exception: {exInner}");
                         }
                     }
                 }
 }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] ReloadMap: Unexpected error iterating pawns on map '{map?.ToString() ?? "<null>"}': {ex}");
+                Log.Error($"[RimAI.Voices] ReloadMap: Unexpected error iterating pawns on map '{map?.ToString() ?? "<null>"}': {ex}");
             }
         }
     }

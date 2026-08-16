@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 using RimWorld;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 
-namespace RimTalk.TTS.UI
+namespace Ustas.RimAI.Communication.Voices.UI
 {
     /// <summary>
     /// Voice model selection window for individual pawns
@@ -57,12 +57,12 @@ namespace RimTalk.TTS.UI
         {
             Text.Font = GameFont.Medium;
             Rect titleRect = new Rect(inRect.x, inRect.y, inRect.width, 35f);
-            Widgets.Label(titleRect, "RimTalk.TTS.VoiceSelection".Translate(_pawn.LabelShort));
+            Widgets.Label(titleRect, "Ustas.RimAI.Communication.Voices.VoiceSelection".Translate(_pawn.LabelShort));
 
             Text.Font = GameFont.Small;
             Rect instructRect = new Rect(inRect.x, titleRect.yMax + 5f, inRect.width, 30f);
             GUI.color = new Color(0.8f, 0.8f, 0.8f);
-            Widgets.Label(instructRect, "RimTalk.TTS.VoiceSelectionDesc".Translate());
+            Widgets.Label(instructRect, "Ustas.RimAI.Communication.Voices.VoiceSelectionDesc".Translate());
             GUI.color = Color.white;
 
             // Voice model list
@@ -81,18 +81,18 @@ namespace RimTalk.TTS.UI
 
             // Option: None (disable TTS for this pawn)
             DrawVoiceOption(ref y, listViewRect.width, VoiceModel.NONE_MODEL_ID, 
-                "RimTalk.TTS.VoiceNone".Translate(), 
-                "RimTalk.TTS.VoiceNoneDesc".Translate());
+                "Ustas.RimAI.Communication.Voices.VoiceNone".Translate(), 
+                "Ustas.RimAI.Communication.Voices.VoiceNoneDesc".Translate());
 
             // Option: Default (use default voice model from settings)
             DrawVoiceOption(ref y, listViewRect.width, VoiceModel.DEFAULT_MODEL_ID, 
-                "RimTalk.TTS.VoiceDefault".Translate(), 
-                "RimTalk.TTS.VoiceDefaultDesc".Translate());
+                "Ustas.RimAI.Communication.Voices.VoiceDefault".Translate(), 
+                "Ustas.RimAI.Communication.Voices.VoiceDefaultDesc".Translate());
 
             // Option: Rule-based (determine voice by rules)
             DrawVoiceOption(ref y, listViewRect.width, VoiceModel.RULE_BASED_MODEL_ID, 
-                "RimTalk.TTS.VoiceRuleBased".Translate(), 
-                "RimTalk.TTS.VoiceRuleBasedDesc".Translate());
+                "Ustas.RimAI.Communication.Voices.VoiceRuleBased".Translate(), 
+                "Ustas.RimAI.Communication.Voices.VoiceRuleBasedDesc".Translate());
 
             // Custom voice models - with validation
             if (_voiceModels != null && _voiceModels.Count > 0)
@@ -114,7 +114,7 @@ namespace RimTalk.TTS.UI
                 Rect noModelsRect = new Rect(10f, y, listViewRect.width - 20f, 60f);
                 GUI.color = new Color(0.7f, 0.7f, 0.7f);
                 Text.Font = GameFont.Tiny;
-                Widgets.Label(noModelsRect, "RimTalk.Settings.TTS.NoCustomModels".Translate());
+                Widgets.Label(noModelsRect, "Ustas.RimAI.Communication.Settings.TTS.NoCustomModels".Translate());
                 Text.Font = GameFont.Small;
                 GUI.color = Color.white;
                 y += 65f;
@@ -125,7 +125,7 @@ namespace RimTalk.TTS.UI
             // Language section
             float languageSectionY = listOutRect.yMax + 10f;
             Rect languageLabelRect = new Rect(inRect.x, languageSectionY, inRect.width, 22f);
-            Widgets.Label(languageLabelRect, "RimTalk.TTS.CustomLanguage".Translate());
+            Widgets.Label(languageLabelRect, "Ustas.RimAI.Communication.Voices.CustomLanguage".Translate());
             
             Rect languageInputRect = new Rect(inRect.x, languageLabelRect.yMax + 2f, inRect.width, 24f);
             _customLanguage = Widgets.TextField(languageInputRect, _customLanguage ?? "");
@@ -136,8 +136,8 @@ namespace RimTalk.TTS.UI
             Text.Font = GameFont.Tiny;
             string globalLang = _settings?.TTSTranslationLanguage ?? "";
             string hintText = string.IsNullOrEmpty(globalLang) 
-                ? "RimTalk.TTS.CustomLanguageHintNoGlobal".Translate()
-                : "RimTalk.TTS.CustomLanguageHint".Translate(globalLang);
+                ? "Ustas.RimAI.Communication.Voices.CustomLanguageHintNoGlobal".Translate()
+                : "Ustas.RimAI.Communication.Voices.CustomLanguageHint".Translate(globalLang);
             Widgets.Label(languageHintRect, hintText);
             Text.Font = GameFont.Small;
             GUI.color = Color.white;
@@ -151,16 +151,16 @@ namespace RimTalk.TTS.UI
             Rect saveButton = new Rect(inRect.center.x - buttonWidth - spacing / 2f, buttonY, buttonWidth, buttonHeight);
             Rect cancelButton = new Rect(inRect.center.x + spacing / 2f, buttonY, buttonWidth, buttonHeight);
 
-            if (Widgets.ButtonText(saveButton, "RimTalk.TTS.Save".Translate()))
+            if (Widgets.ButtonText(saveButton, "Ustas.RimAI.Communication.Voices.Save".Translate()))
             {
                 SaveVoiceModel(_selectedVoiceId);
                 SaveLanguage(_customLanguage);
-                Messages.Message("RimTalk.TTS.VoiceUpdated".Translate(_pawn.LabelShort), 
+                Messages.Message("Ustas.RimAI.Communication.Voices.VoiceUpdated".Translate(_pawn.LabelShort), 
                     MessageTypeDefOf.TaskCompletion, false);
                 Close();
             }
 
-            if (Widgets.ButtonText(cancelButton, "RimTalk.TTS.Cancel".Translate()))
+            if (Widgets.ButtonText(cancelButton, "Ustas.RimAI.Communication.Voices.Cancel".Translate()))
             {
                 Close();
             }
@@ -233,7 +233,7 @@ namespace RimTalk.TTS.UI
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Failed to get current voice model: {ex.Message}");
+                Log.Error($"[RimAI.Voices] Failed to get current voice model: {ex.Message}");
             }
             return VoiceModel.DEFAULT_MODEL_ID;
         }
@@ -247,7 +247,7 @@ namespace RimTalk.TTS.UI
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Failed to get current language: {ex.Message}");
+                Log.Error($"[RimAI.Voices] Failed to get current language: {ex.Message}");
             }
             return "";
         }
@@ -261,7 +261,7 @@ namespace RimTalk.TTS.UI
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Failed to save voice model: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] Failed to save voice model: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
@@ -274,7 +274,7 @@ namespace RimTalk.TTS.UI
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimTalk.TTS] Failed to save language: {ex.Message}\n{ex.StackTrace}");
+                Log.Error($"[RimAI.Voices] Failed to save language: {ex.Message}\n{ex.StackTrace}");
             }
         }
     }

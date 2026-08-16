@@ -3,9 +3,9 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using RimWorld;
-using RimTalk.TTS.Data;
+using Ustas.RimAI.Communication.Voices.Data;
 
-namespace RimTalk.TTS.UI
+namespace Ustas.RimAI.Communication.Voices.UI
 {
     /// <summary>
     /// Window for editing a single voice assignment rule
@@ -53,7 +53,7 @@ namespace RimTalk.TTS.UI
             // Title
             Rect titleRect = new Rect(0f, 0f, inRect.width, 40f);
             Text.Font = GameFont.Medium;
-            Widgets.Label(titleRect, "RimTalk.Settings.TTS.RuleEditor.Title".Translate());
+            Widgets.Label(titleRect, "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Title".Translate());
             Text.Font = GameFont.Small;
 
             // Four-panel layout
@@ -89,7 +89,7 @@ namespace RimTalk.TTS.UI
             Widgets.DrawBox(rect);
 
             Rect titleRect = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 25f);
-            Widgets.Label(titleRect, "RimTalk.Settings.TTS.RuleEditor.SelectedRequirements".Translate());
+            Widgets.Label(titleRect, "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.SelectedRequirements".Translate());
 
             Rect scrollRect = new Rect(rect.x + 5f, rect.y + 30f, rect.width - 10f, rect.height - 35f);
             Rect viewRect = new Rect(0f, 0f, scrollRect.width - 20f, rule.Requirements.Count * 30f);
@@ -127,7 +127,7 @@ namespace RimTalk.TTS.UI
             Widgets.DrawBox(rect);
 
             Rect titleRect = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 25f);
-            Widgets.Label(titleRect, "RimTalk.Settings.TTS.RuleEditor.AvailableRequirements".Translate());
+            Widgets.Label(titleRect, "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AvailableRequirements".Translate());
 
             Rect scrollRect = new Rect(rect.x + 5f, rect.y + 30f, rect.width - 10f, rect.height - 35f);
             
@@ -193,7 +193,7 @@ namespace RimTalk.TTS.UI
                 genderCollapsed = !genderCollapsed;
             }
             string genderArrow = genderCollapsed ? "▶ " : "▼ ";
-            Widgets.Label(genderHeaderRect, genderArrow + "RimTalk.Settings.TTS.RuleEditor.Gender".Translate());
+            Widgets.Label(genderHeaderRect, genderArrow + "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Gender".Translate());
             y += 27f;
             
             if (!genderCollapsed)
@@ -227,7 +227,7 @@ namespace RimTalk.TTS.UI
                     xenotypeCollapsed = !xenotypeCollapsed;
                 }
                 string xenotypeArrow = xenotypeCollapsed ? "▶ " : "▼ ";
-                Widgets.Label(xenotypeHeaderRect, xenotypeArrow + "RimTalk.Settings.TTS.RuleEditor.Xenotype".Translate());
+                Widgets.Label(xenotypeHeaderRect, xenotypeArrow + "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Xenotype".Translate());
                 y += 27f;
 
                 if (!xenotypeCollapsed)
@@ -275,7 +275,7 @@ namespace RimTalk.TTS.UI
                     raceCollapsed = !raceCollapsed;
                 }
                 string raceArrow = raceCollapsed ? "▶ " : "▼ ";
-                Widgets.Label(raceHeaderRect, raceArrow + "RimTalk.Settings.TTS.RuleEditor.Race".Translate());
+                Widgets.Label(raceHeaderRect, raceArrow + "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Race".Translate());
                 y += 27f;
 
                 if (!raceCollapsed)
@@ -307,7 +307,7 @@ namespace RimTalk.TTS.UI
                 ageCollapsed = !ageCollapsed;
             }
             string ageArrow = ageCollapsed ? "▶ " : "▼ ";
-            Widgets.Label(ageHeaderRect, ageArrow + "RimTalk.Settings.TTS.RuleEditor.Age".Translate());
+            Widgets.Label(ageHeaderRect, ageArrow + "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Age".Translate());
             y += 27f;
 
             if (!ageCollapsed)
@@ -330,29 +330,29 @@ namespace RimTalk.TTS.UI
                 y += 27f;
                 
                 Rect addAgeButtonRect = new Rect(10f, y, viewRect.width - 20f, 25f);
-                if (Widgets.ButtonText(addAgeButtonRect, "RimTalk.Settings.TTS.RuleEditor.AddAge".Translate()))
+                if (Widgets.ButtonText(addAgeButtonRect, "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AddAge".Translate()))
                 {
                     bool minValid = int.TryParse(minAgeBuffer, out int minAge);
                     bool maxValid = int.TryParse(maxAgeBuffer, out int maxAge);
                     
                     if (!minValid || !maxValid)
                     {
-                        Messages.Message("RimTalk.Settings.TTS.RuleEditor.AgeInvalidNumberError".Translate(), MessageTypeDefOf.RejectInput, false);
+                        Messages.Message("Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeInvalidNumberError".Translate(), MessageTypeDefOf.RejectInput, false);
                     }
                     else
                     {
                         // Validate age range
                         if (minAge < 0 || minAge > 999999)
                         {
-                            Messages.Message("RimTalk.Settings.TTS.RuleEditor.AgeRangeError".Translate(), MessageTypeDefOf.RejectInput, false);
+                            Messages.Message("Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError".Translate(), MessageTypeDefOf.RejectInput, false);
                         }
                         else if (maxAge < 0 || maxAge > 999999)
                         {
-                            Messages.Message("RimTalk.Settings.TTS.RuleEditor.AgeRangeError".Translate(), MessageTypeDefOf.RejectInput, false);
+                            Messages.Message("Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError".Translate(), MessageTypeDefOf.RejectInput, false);
                         }
                         else if (maxAge < minAge)
                         {
-                            Messages.Message("RimTalk.Settings.TTS.RuleEditor.MaxLessThanMinError".Translate(), MessageTypeDefOf.RejectInput, false);
+                            Messages.Message("Ustas.RimAI.Communication.Settings.TTS.RuleEditor.MaxLessThanMinError".Translate(), MessageTypeDefOf.RejectInput, false);
                         }
                         else
                         {
@@ -379,7 +379,7 @@ namespace RimTalk.TTS.UI
             Widgets.DrawBox(rect);
 
             Rect titleRect = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 25f);
-            Widgets.Label(titleRect, "RimTalk.Settings.TTS.RuleEditor.SelectedVoiceModels".Translate());
+            Widgets.Label(titleRect, "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.SelectedVoiceModels".Translate());
 
             Rect scrollRect = new Rect(rect.x + 5f, rect.y + 30f, rect.width - 10f, rect.height - 35f);
             Rect viewRect = new Rect(0f, 0f, scrollRect.width - 20f, rule.VoiceModelIds.Count * 30f);
@@ -421,7 +421,7 @@ namespace RimTalk.TTS.UI
             Widgets.DrawBox(rect);
 
             Rect titleRect = new Rect(rect.x + 5f, rect.y + 5f, rect.width - 10f, 25f);
-            Widgets.Label(titleRect, "RimTalk.Settings.TTS.RuleEditor.UnselectedVoiceModels".Translate());
+            Widgets.Label(titleRect, "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.UnselectedVoiceModels".Translate());
 
             Rect scrollRect = new Rect(rect.x + 5f, rect.y + 30f, rect.width - 10f, rect.height - 35f);
             
@@ -458,19 +458,19 @@ namespace RimTalk.TTS.UI
             if (Widgets.ButtonText(helpRect, "?"))
             {
                 Find.WindowStack.Add(new Dialog_MessageBox(
-                    "RimTalk.Settings.TTS.RuleEditor.Help".Translate(),
-                    "RimTalk.TTS.OK".Translate()));
+                    "Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Help".Translate(),
+                    "Ustas.RimAI.Communication.Voices.OK".Translate()));
             }
 
             Rect saveRect = new Rect(rect.x + rect.width - (buttonWidth * 2 + gap), rect.y, buttonWidth, 30f);
-            if (Widgets.ButtonText(saveRect, "RimTalk.TTS.Save".Translate()))
+            if (Widgets.ButtonText(saveRect, "Ustas.RimAI.Communication.Voices.Save".Translate()))
             {
                 onSave?.Invoke();
                 Close();
             }
 
             Rect cancelRect = new Rect(rect.x + rect.width - buttonWidth, rect.y, buttonWidth, 30f);
-            if (Widgets.ButtonText(cancelRect, "RimTalk.TTS.Cancel".Translate()))
+            if (Widgets.ButtonText(cancelRect, "Ustas.RimAI.Communication.Voices.Cancel".Translate()))
             {
                 Close();
             }
