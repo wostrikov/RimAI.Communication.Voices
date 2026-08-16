@@ -14,6 +14,13 @@ namespace RimTalk.TTS
             // Settings are automatically loaded by Verse framework
             GetSettings<Data.TTSSettings>();
             AppStopwatch = System.Diagnostics.Stopwatch.StartNew();
+            Ustas.RimAI.Core.Modules.RimAIModuleRegistry.Current.Register(
+                new Ustas.RimAI.Core.Modules.RimAIModuleDescriptor(
+                    "voices",
+                    "RimAI.Communication.Voices",
+                    "RimAI.Communication.Voices",
+                    "Communication",
+                    "RimAI.Communication"));
         }
 
         public override string SettingsCategory()

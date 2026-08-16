@@ -46,6 +46,9 @@
             <!-- Do not copy the assembly into our output; the game loads mod assemblies from its folder. -->
             <Private>false</Private>
         </Reference>
+        <ProjectReference Include="..\..\RimAI.Core\src\RimAI.Core\RimAI.Core.csproj">
+            <Private>false</Private>
+        </ProjectReference>
     </ItemGroup>
 
 </Project>
