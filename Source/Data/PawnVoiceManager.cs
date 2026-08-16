@@ -218,18 +218,12 @@ namespace Ustas.RimAI.Communication.Voices.Data
         }
         
         /// <summary>
-        /// Get effective language for a pawn (returns pawn-specific or fallback to global setting)
+        /// Pawn-specific language overrides are no longer an AI-language owner.
+        /// Preprocessing uses <see cref="Ustas.RimAI.Communication.Voices.Service.VoiceSharedAiText.Language"/>.
         /// </summary>
         public static string GetEffectiveLanguage(Pawn pawn, TTSSettings settings)
         {
-            string pawnLanguage = GetLanguage(pawn);
-            if (!string.IsNullOrWhiteSpace(pawnLanguage))
-            {
-                return pawnLanguage;
-            }
-            
-            // Fallback to global setting
-            return settings?.TTSTranslationLanguage;
+            return Ustas.RimAI.Communication.Voices.Service.VoiceSharedAiText.Language;
         }
         
         /// <summary>

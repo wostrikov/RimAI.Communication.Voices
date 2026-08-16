@@ -104,18 +104,10 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
             listing.Gap();
 
-            // LLM API Configuration Section
             DrawApiConfigSection(listing, settings);
 
             listing.Gap();
 
-            // Translation Language
-            listing.Label("Ustas.RimAI.Communication.Settings.TTS.TranslationLanguage".Translate());
-            settings.TTSTranslationLanguage = listing.TextEntry(settings.TTSTranslationLanguage);
-
-            listing.Gap();
-
-            // Processing Prompt Section (similar to RimTalk main module)
             DrawProcessingPromptSection(listing, settings);
 
             listing.Gap();
@@ -1044,63 +1036,32 @@ namespace Ustas.RimAI.Communication.Voices.UI
             Text.Font = GameFont.Medium;
             listing.Label("Ustas.RimAI.Communication.Settings.TTS.LLMApiConfig".Translate());
             Text.Font = GameFont.Small;
-            
-            listing.Gap(6f);
-
-            // Provider Selection
-            listing.Label("Ustas.RimAI.Communication.Settings.TTS.ProviderLabel".Translate());
-            if (listing.RadioButton("Використовувати спільну конфігурацію текстового ШІ RimAI", settings.ApiProvider == TTSApiProvider.RimTalkSame))
-            {
-                settings.ApiProvider = TTSApiProvider.RimTalkSame;
-            }
-            if (listing.RadioButton("DeepSeek", settings.ApiProvider == TTSApiProvider.DeepSeek))
-            {
-                settings.ApiProvider = TTSApiProvider.DeepSeek;
-            }
-            if (listing.RadioButton("OpenAI", settings.ApiProvider == TTSApiProvider.OpenAI))
-            {
-                settings.ApiProvider = TTSApiProvider.OpenAI;
-            }
-            if (listing.RadioButton("Ustas.RimAI.Communication.Settings.TTS.CustomProvider".Translate(), settings.ApiProvider == TTSApiProvider.Custom))
-            {
-                settings.ApiProvider = TTSApiProvider.Custom;
-            }
 
             listing.Gap(6f);
 
-            bool inheritedOpenAI = settings.ApiProvider == TTSApiProvider.RimTalkSame || settings.ApiProvider == TTSApiProvider.OpenAI;
-            if (inheritedOpenAI)
-            {
-                var config = global::Ustas.RimAI.Communication.Settings.Get()?.GetActiveConfig();
-                string effectiveModel = config == null ? "не налаштовано" :
-                    (config.SelectedModel == "Custom" ? config.CustomModelName : config.SelectedModel);
-                listing.Label("Використовується спільна модель RimAI: " + effectiveModel);
-                listing.Label("OpenAI credential: OPENAI_RIMAI / legacy fallback");
-                settings.ApiKey = "";
-                settings.Model = "";
-            }
-            else
-            {
-                listing.Label("Ustas.RimAI.Communication.Settings.TTS.LLMModelLabel".Translate());
-                settings.Model = listing.TextEntry(settings.Model ?? "");
-                listing.Gap(6f);
-                listing.Label("Ustas.RimAI.Communication.Settings.TTS.LLMApiKeyLabel".Translate());
-                settings.ApiKey = GUI.PasswordField(listing.GetRect(30f), settings.ApiKey ?? "", '•');
-            }
+            listing.CheckboxLabeled(
+                "Ustas.RimAI.Communication.Settings.TTS.UseLlmPreprocess".Translate(),
+                ref settings.EnableTextPreprocessing);
 
             listing.Gap(6f);
 
-            // Custom Base URL (only for Custom provider)
-            if (settings.ApiProvider == TTSApiProvider.Custom)
-            {
-                listing.Label("Ustas.RimAI.Communication.Settings.TTS.CustomBaseUrlLabel".Translate());
-                settings.CustomBaseUrl = listing.TextEntry(settings.CustomBaseUrl ?? "");
-            }
+            string model = VoiceSharedAiText.EffectiveModel;
+            if (string.IsNullOrWhiteSpace(model))
+                model = "Ustas.RimAI.Communication.Settings.TTS.NotSet".Translate();
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.SharedModel".Translate(model));
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.SharedLanguage".Translate(VoiceSharedAiText.Language));
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
 
             listing.Gap(6f);
 
-            // Remove brackets during preprocessing
-            listing.CheckboxLabeled("Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcess".Translate(), ref settings.RemoveBracketsInPreProcess, "Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcessTooltip".Translate());
+            listing.CheckboxLabeled(
+                "Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcess".Translate(),
+                ref settings.RemoveBracketsInPreProcess,
+                "Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcessTooltip".Translate());
         }
 
         private static string SupplierString(TTSSettings.TTSSupplier supplier)

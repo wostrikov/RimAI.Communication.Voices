@@ -54,23 +54,10 @@ namespace Ustas.RimAI.Communication.Voices
             }
             catch { }
 
-            // Output TTS API configuration
-            Log.Message("[RimAI.Voices] ========== TTS API Configuration ==========");
-            Log.Message($"[RimAI.Voices] Provider: {_settings.ApiProvider}");
-            var activeConfig = global::Ustas.RimAI.Communication.Settings.Get()?.GetActiveConfig();
-            string effectiveModel = (_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI)
-                ? (activeConfig?.SelectedModel == "Custom" ? activeConfig.CustomModelName : activeConfig?.SelectedModel)
-                : _settings.Model;
-            Log.Message($"[RimAI.Voices] Model: {(effectiveModel ?? "(not set)")}");
-            
-            string baseUrl = _settings.ApiProvider == Data.TTSApiProvider.Custom 
-                ? (_settings.CustomBaseUrl ?? "(not set)")
-                : (_settings.ApiProvider == Data.TTSApiProvider.DeepSeek 
-                    ? "https://api.deepseek.com" 
-                    : "https://api.openai.com");
-            Log.Message($"[RimAI.Voices] BaseUrl: {baseUrl}");
-            
-            Log.Message($"[RimAI.Voices] Credential source: {((_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI) ? "OPENAI_RIMAI" : "provider-specific setting")}");
+            Log.Message("[RimAI.Voices] ========== Shared RimAI text-AI ==========");
+            Log.Message($"[RimAI.Voices] Provider: {Service.VoiceSharedAiText.Provider}");
+            Log.Message($"[RimAI.Voices] Model: {(string.IsNullOrWhiteSpace(Service.VoiceSharedAiText.EffectiveModel) ? "(not set)" : Service.VoiceSharedAiText.EffectiveModel)}");
+            Log.Message($"[RimAI.Voices] Language: {Service.VoiceSharedAiText.Language}");
             Log.Message("[RimAI.Voices] ==========================================");
 
             Log.Message("[RimAI.Voices] TTS Module initialized");

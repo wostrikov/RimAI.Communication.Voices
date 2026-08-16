@@ -54,15 +54,8 @@ namespace Ustas.RimAI.Communication.Voices.Data
         public string FishAudioApiKey = "";//Deprecated
         public float TTSVolume = 0.8f;//Deprecated
         public List<VoiceModel> VoiceModels = new();//Deprecated
-        public string TTSTranslationLanguage = "";
         public string DefaultVoiceModelId = "";//Deprecated
-        
-        // LLM API Configuration (for text processing/translation)
-        public TTSApiProvider ApiProvider = TTSApiProvider.RimTalkSame;
-        public string ApiKey = "";
-        public string Model = "";
-        public string CustomBaseUrl = ""; // For custom provider
-        
+        public bool EnableTextPreprocessing = true; 
         // Custom TTS processing prompt (empty = use default from TTSConstant)
         public string CustomTTSProcessingPrompt = "";
         
@@ -112,9 +105,9 @@ namespace Ustas.RimAI.Communication.Voices.Data
             Scribe_Values.Look(ref FishAudioApiKey, "fishAudioApiKey", "");
             Scribe_Values.Look(ref TTSVolume, "ttsVolume", 0.8f);
             Scribe_Collections.Look(ref VoiceModels, "voiceModels", LookMode.Deep);
-            Scribe_Values.Look(ref TTSTranslationLanguage, "ttsTranslationLanguage", "");
             Scribe_Values.Look(ref DefaultVoiceModelId, "defaultVoiceModelId", "");
             Scribe_Values.Look(ref CustomTTSProcessingPrompt, "customTTSProcessingPrompt", "");
+            Scribe_Values.Look(ref EnableTextPreprocessing, "enableTextPreprocessing", true);
             Scribe_Values.Look(ref TTSModel, "ttsModel", "s1");
             Scribe_Values.Look(ref TTSTemperature, "ttsTemperature", 0.9f);
             Scribe_Values.Look(ref TTSTopP, "ttsTopP", 0.9f);
@@ -136,12 +129,6 @@ namespace Ustas.RimAI.Communication.Voices.Data
             Scribe_Collections.Look(ref SupplierAdvancedMode, "supplierAdvancedMode", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref SupplierVoiceRules, "supplierVoiceRules", LookMode.Value, LookMode.Deep);
             Scribe_Values.Look(ref PlayerReferenceVoiceModelId, "playerReferenceVoiceModelId", VoiceModel.NONE_MODEL_ID);
-
-            // LLM API configuration
-            Scribe_Values.Look<TTSApiProvider>(ref ApiProvider, "apiProvider", TTSApiProvider.RimTalkSame);
-            Scribe_Values.Look(ref ApiKey, "apiKey", "");
-            Scribe_Values.Look(ref Model, "model", "deepseek-chat");
-            Scribe_Values.Look(ref CustomBaseUrl, "customBaseUrl", "");
             Scribe_Values.Look(ref RemoveBracketsInPreProcess, "removeBracketsInPreProcess", false);
 
             LoadOldSettings();
@@ -149,12 +136,6 @@ namespace Ustas.RimAI.Communication.Voices.Data
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 MigrateLegacyPrompt();
-                if (ApiProvider == TTSApiProvider.RimTalkSame || ApiProvider == TTSApiProvider.OpenAI)
-                {
-                    // OpenAI preprocessing is owned by Ustas.RimAI.Communication. Never retain a duplicate secret/model.
-                    ApiKey = "";
-                    Model = "";
-                }
             }
         }
 

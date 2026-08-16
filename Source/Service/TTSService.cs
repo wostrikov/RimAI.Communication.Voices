@@ -260,28 +260,17 @@ namespace Ustas.RimAI.Communication.Voices.Service
         /// </summary>
         private static async Task<string> ProcessTextAsync(string text, Pawn pawn, Guid dialogueId, TTSSettings settings)
         {
-            // Get effective language for this pawn (pawn-specific or global fallback)
-            string language = Data.PawnVoiceManager.GetEffectiveLanguage(pawn, settings);
-            
-            if (!string.IsNullOrWhiteSpace(language))
-            {
-                var preProcessResult = await InputPreProcessService.PreProcessAsync(text, language, settings);
-                
-                if (preProcessResult != null && !string.IsNullOrEmpty(preProcessResult.Text))
-                {
-                    return preProcessResult.Text;
-                }
-                else
-                {
-                    Log.Warning($"[RimAI.Voices] Translation/PreProcess returned empty result");
-                    return null;
-                }
-            }
-            else
-            {
-                Log.Warning($"[RimAI.Voices] Translation language not configured");
-                return null;
-            }
+            if (!settings.EnableTextPreprocessing)
+                return text;
+
+            string language = VoiceSharedAiText.Language;
+            var preProcessResult = await InputPreProcessService.PreProcessAsync(text, language, settings);
+
+            if (preProcessResult != null && !string.IsNullOrEmpty(preProcessResult.Text))
+                return preProcessResult.Text;
+
+            Log.Warning("[RimAI.Voices] Translation/PreProcess returned empty result");
+            return null;
         }
 
         /// <summary>

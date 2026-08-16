@@ -4,6 +4,7 @@ using UnityEngine;
 using Verse;
 using RimWorld;
 using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Service;
 
 namespace Ustas.RimAI.Communication.Voices.UI
 {
@@ -14,7 +15,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
     {
         private readonly Pawn _pawn;
         private string _selectedVoiceId;
-        private string _customLanguage;
         private Vector2 _scrollPos = Vector2.zero;
         private readonly TTSSettings _settings;
         private readonly List<VoiceModel> _voiceModels;
@@ -41,7 +41,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
             }
             
             _selectedVoiceId = GetCurrentVoiceModel();
-            _customLanguage = GetCurrentLanguage();
 
             doCloseX = true;
             draggable = true;
@@ -122,23 +121,18 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
             Widgets.EndScrollView();
 
-            // Language section
+            // Language section — shared RimAI AI language, not a Voices-owned setting
             float languageSectionY = listOutRect.yMax + 10f;
             Rect languageLabelRect = new Rect(inRect.x, languageSectionY, inRect.width, 22f);
-            Widgets.Label(languageLabelRect, "Ustas.RimAI.Communication.Voices.CustomLanguage".Translate());
-            
-            Rect languageInputRect = new Rect(inRect.x, languageLabelRect.yMax + 2f, inRect.width, 24f);
-            _customLanguage = Widgets.TextField(languageInputRect, _customLanguage ?? "");
-            
-            // Language hint
-            Rect languageHintRect = new Rect(inRect.x, languageInputRect.yMax + 2f, inRect.width, 18f);
+            Widgets.Label(languageLabelRect, "Ustas.RimAI.Communication.Voices.SharedLanguage".Translate());
+
+            Rect languageValueRect = new Rect(inRect.x, languageLabelRect.yMax + 2f, inRect.width, 24f);
+            Widgets.Label(languageValueRect, VoiceSharedAiText.Language);
+
+            Rect languageHintRect = new Rect(inRect.x, languageValueRect.yMax + 2f, inRect.width, 18f);
             GUI.color = new Color(0.6f, 0.6f, 0.6f);
             Text.Font = GameFont.Tiny;
-            string globalLang = _settings?.TTSTranslationLanguage ?? "";
-            string hintText = string.IsNullOrEmpty(globalLang) 
-                ? "Ustas.RimAI.Communication.Voices.CustomLanguageHintNoGlobal".Translate()
-                : "Ustas.RimAI.Communication.Voices.CustomLanguageHint".Translate(globalLang);
-            Widgets.Label(languageHintRect, hintText);
+            Widgets.Label(languageHintRect, "Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint".Translate());
             Text.Font = GameFont.Small;
             GUI.color = Color.white;
 
@@ -154,7 +148,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
             if (Widgets.ButtonText(saveButton, "Ustas.RimAI.Communication.Voices.Save".Translate()))
             {
                 SaveVoiceModel(_selectedVoiceId);
-                SaveLanguage(_customLanguage);
                 Messages.Message("Ustas.RimAI.Communication.Voices.VoiceUpdated".Translate(_pawn.LabelShort), 
                     MessageTypeDefOf.TaskCompletion, false);
                 Close();
@@ -238,43 +231,15 @@ namespace Ustas.RimAI.Communication.Voices.UI
             return VoiceModel.DEFAULT_MODEL_ID;
         }
 
-        private string GetCurrentLanguage()
-        {
-            try
-            {
-                // Get custom language from PawnVoiceManager (null/empty = use global)
-                return Data.PawnVoiceManager.GetLanguage(_pawn) ?? "";
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[RimAI.Voices] Failed to get current language: {ex.Message}");
-            }
-            return "";
-        }
-
         private void SaveVoiceModel(string voiceId)
         {
             try
             {
-                // Save voice model directly to PawnVoiceManager
                 Data.PawnVoiceManager.SetVoiceModel(_pawn, voiceId);
             }
             catch (Exception ex)
             {
                 Log.Error($"[RimAI.Voices] Failed to save voice model: {ex.Message}\n{ex.StackTrace}");
-            }
-        }
-
-        private void SaveLanguage(string language)
-        {
-            try
-            {
-                // Save custom language to PawnVoiceManager (empty = use global)
-                Data.PawnVoiceManager.SetLanguage(_pawn, language);
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[RimAI.Voices] Failed to save language: {ex.Message}\n{ex.StackTrace}");
             }
         }
     }

@@ -5,11 +5,11 @@
     <!-- Settings_TTS.cs -->
     <RimTalk.Settings.TTS>TTS</RimTalk.Settings.TTS>
     <RimTalk.Settings.TTS.Title>Text-to-Speech Settings</RimTalk.Settings.TTS.Title>
-    <RimTalk.Settings.TTS.Enable>Enable TTS</RimTalk.Settings.TTS.Enable>
-    <RimTalk.Settings.TTS.EnableTooltip>Automatically converts dialogue to speech when displayed.</RimTalk.Settings.TTS.EnableTooltip>
+    <RimTalk.Settings.TTS.Enable>Enable voicing</RimTalk.Settings.TTS.Enable>
+    <RimTalk.Settings.TTS.EnableTooltip>Automatically converts on-screen dialogue into speech.</RimTalk.Settings.TTS.EnableTooltip>
     <RimTalk.Settings.TTS.ButtonEnable>Enable on-off button</RimTalk.Settings.TTS.ButtonEnable>
     <RimTalk.Settings.TTS.ButtonEnableTooltip>Enable a toggle button on in-game UI, its setting won't be saved. Ignored when TTS is disabled.</RimTalk.Settings.TTS.ButtonEnableTooltip>
-    <RimTalk.TTS.OnOffUpdated>Text to Speech Module {0}</RimTalk.TTS.OnOffUpdated>
+    <RimTalk.TTS.OnOffUpdated>Voicing {0}</RimTalk.TTS.OnOffUpdated>
     <RimTalk.TTS.On>turned on</RimTalk.TTS.On>
     <RimTalk.TTS.Off>turned off</RimTalk.TTS.Off>
     <RimTalk.Settings.TTS.ApiKey>API Key:</RimTalk.Settings.TTS.ApiKey>
@@ -20,19 +20,19 @@
     <RimTalk.Settings.TTS.VolumeLabel>Volume: {0}</RimTalk.Settings.TTS.VolumeLabel>
     <RimTalk.Settings.TTS.TemperatureLabel>Temperature: {0} (Used only by Fish Audio)</RimTalk.Settings.TTS.TemperatureLabel>
     <RimTalk.Settings.TTS.TopPLabel>Top P: {0} (Used only by Fish Audio)</RimTalk.Settings.TTS.TopPLabel>
-    <RimTalk.Settings.TTS.TranslationLanguage>Voice Language (must):</RimTalk.Settings.TTS.TranslationLanguage>
+    <RimTalk.Settings.TTS.TranslationLanguage>AI language:</RimTalk.Settings.TTS.TranslationLanguage>
     <RimTalk.Settings.TTS.TranslationLanguageInfo>Leave empty to disable translation. Enter a language (e.g., "English", "Chinese", "Japanese") to translate all dialogue before TTS.</RimTalk.Settings.TTS.TranslationLanguageInfo>
-    <RimTalk.Settings.TTS.ProcessingPromptLabel>TTS Processing Prompt:</RimTalk.Settings.TTS.ProcessingPromptLabel>
+    <RimTalk.Settings.TTS.ProcessingPromptLabel>Text preparation prompt:</RimTalk.Settings.TTS.ProcessingPromptLabel>
     <RimTalk.Settings.TTS.Model>TTS Model</RimTalk.Settings.TTS.Model>
     <RimTalk.Settings.TTS.ModelInfo>Fish Audio S1 is recommended.</RimTalk.Settings.TTS.ModelInfo>
     <RimTalk.Settings.TTS.Temperature>Temperature (The lower the stabler, the higher the more emotional)</RimTalk.Settings.TTS.Temperature>
     <RimTalk.Settings.TTS.TopP>Top P (Consistency control, the lower the more consistent, also more rigid)</RimTalk.Settings.TTS.TopP>
-    <RimTalk.Settings.TTS.ProcessingPrompt>TTS Processing Prompt</RimTalk.Settings.TTS.ProcessingPrompt>
-    <RimTalk.Settings.TTS.ProcessingPromptInfo>Use {language} for target language. This prompt is used to process text before sending to TTS API.</RimTalk.Settings.TTS.ProcessingPromptInfo>
+    <RimTalk.Settings.TTS.ProcessingPrompt>Text preparation prompt</RimTalk.Settings.TTS.ProcessingPrompt>
+    <RimTalk.Settings.TTS.ProcessingPromptInfo>Use {language} for the target language. This prompt prepares text before speech synthesis.</RimTalk.Settings.TTS.ProcessingPromptInfo>
     <RimTalk.Settings.TTS.Volume>Volume</RimTalk.Settings.TTS.Volume>
     <RimTalk.Settings.TTS.VoiceModels>Voice Model configs</RimTalk.Settings.TTS.VoiceModels>
     <RimTalk.Settings.TTS.DefaultVoiceModel>Default Voice Model</RimTalk.Settings.TTS.DefaultVoiceModel>
-    <RimTalk.Settings.TTS.None>None (Skip TTS)</RimTalk.Settings.TTS.None>
+    <RimTalk.Settings.TTS.None>None (skip voicing)</RimTalk.Settings.TTS.None>
     <RimTalk.Settings.TTS.ModelID>Model ID</RimTalk.Settings.TTS.ModelID>
     <RimTalk.Settings.TTS.ModelName>Custom Name</RimTalk.Settings.TTS.ModelName>
     <RimTalk.Settings.TTS.AddVoiceModel>Add Voice Model</RimTalk.Settings.TTS.AddVoiceModel>
@@ -40,7 +40,7 @@
     <RimTalk.Settings.TTS.DefaultModel>Default Model: {0}</RimTalk.Settings.TTS.DefaultModel>
     <RimTalk.Settings.TTS.PlayerVoiceModel>Player Voice Model</RimTalk.Settings.TTS.PlayerVoiceModel>
     <RimTalk.Settings.TTS.NotSet>(Not Set)</RimTalk.Settings.TTS.NotSet>
-    <RimTalk.Settings.TTS.NoneModel>None (Skip TTS)</RimTalk.Settings.TTS.NoneModel>
+    <RimTalk.Settings.TTS.NoneModel>None (skip voicing)</RimTalk.Settings.TTS.NoneModel>
     <RimTalk.Settings.TTS.ClearDefault>(Clear Default)</RimTalk.Settings.TTS.ClearDefault>
     <RimTalk.Settings.TTS.ColumnDescription>Left column: Model Name (for display), Right column: Model ID (for API calls). For Azure Custom Voice, use format "deploymentId:voiceName" (e.g., "abc123:MyVoice"). WARNING: For CosyVoice and IndexTTS, deleting a model also deletes its information stored on SiliconFlow. IRREVERSIBLE!</RimTalk.Settings.TTS.ColumnDescription>
     <RimTalk.Settings.TTS.ColumnModelName>Model Name</RimTalk.Settings.TTS.ColumnModelName>
@@ -63,7 +63,7 @@
     <RimTalk.Settings.TTS.NoCustomModels>No custom voice models configured yet.\n\nAdd models in TTS Settings to see them here.</RimTalk.Settings.TTS.NoCustomModels>
 
     <!-- LLM API Settings -->
-    <RimTalk.Settings.TTS.LLMApiConfig>Voice text pre-processing LLM API Configuration</RimTalk.Settings.TTS.LLMApiConfig>
+    <RimTalk.Settings.TTS.LLMApiConfig>Text preprocessing</RimTalk.Settings.TTS.LLMApiConfig>
     <RimTalk.Settings.TTS.ProviderLabel>API Provider:</RimTalk.Settings.TTS.ProviderLabel>
     <RimTalk.Settings.TTS.CustomProvider>Custom</RimTalk.Settings.TTS.CustomProvider>
     <RimTalk.Settings.TTS.LLMModelLabel>Model:</RimTalk.Settings.TTS.LLMModelLabel>
@@ -75,7 +75,7 @@
     <!-- PersonaEditorWindow.cs -->
     <RimTalk.PersonaEditor.VoiceModel>Voice Model</RimTalk.PersonaEditor.VoiceModel>
     <RimTalk.PersonaEditor.UseDefault>Use Default</RimTalk.PersonaEditor.UseDefault>
-    <RimTalk.PersonaEditor.None>None (Skip TTS)</RimTalk.PersonaEditor.None>
+    <RimTalk.PersonaEditor.None>None (skip voicing)</RimTalk.PersonaEditor.None>
 
     <!-- BioTabVoicePatch.cs & VoiceSelectionWindow.cs -->
     <RimTalk.TTS.VoiceModel>Voice</RimTalk.TTS.VoiceModel>
@@ -202,4 +202,191 @@
     <RimTalk.Settings.TTS.Rule.Or> or </RimTalk.Settings.TTS.Rule.Or>
     <RimTalk.Settings.TTS.Rule.And> and </RimTalk.Settings.TTS.Rule.And>
     <RimTalk.Settings.TTS.Rule.AgeLabel>Age</RimTalk.Settings.TTS.Rule.AgeLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.CustomModelIdLabel>Custom model id (optional):</Ustas.RimAI.Communication.Settings.TTS.CustomModelIdLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSWebUIBaseUrlLabel>TTS-WebUI API Base URL: {0}</Ustas.RimAI.Communication.Settings.TTS.TTSWebUIBaseUrlLabel>
+    <Ustas.RimAI.Communication.Voices.VoiceDefaultDesc>Use the default voice model from TTS settings</Ustas.RimAI.Communication.Voices.VoiceDefaultDesc>
+    <Ustas.RimAI.Communication.Settings.TTS.ColumnDescription>Left column: Model Name (for display), Right column: Model ID (for API calls). For Azure Custom Voice, use format "deploymentId:voiceName" (e.g., "abc123:MyVoice"). WARNING: For CosyVoice and IndexTTS, deleting a model also deletes its information stored on SiliconFlow. IRREVERSIBLE!</Ustas.RimAI.Communication.Settings.TTS.ColumnDescription>
+    <Ustas.RimAI.Communication.Voices.CurrentVoice>Current Voice</Ustas.RimAI.Communication.Voices.CurrentVoice>
+    <Ustas.RimAI.Communication.Settings.TTS.NameLabel>Name:</Ustas.RimAI.Communication.Settings.TTS.NameLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.AzureTTS>AzureTTS (WIP)</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.AzureTTS>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.UnselectedVoiceModels>Available Voice Models</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.UnselectedVoiceModels>
+    <Ustas.RimAI.Communication.Settings.TTS.TopP>Top P (Consistency control, the lower the more consistent, also more rigid)</Ustas.RimAI.Communication.Settings.TTS.TopP>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier>TTS Provider</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier>
+    <Ustas.RimAI.Communication.Voices.UploadFailed.ServerError>Upload failed: server error</Ustas.RimAI.Communication.Voices.UploadFailed.ServerError>
+    <Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.Enabled>Advanced Mode: Enabled</Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.Enabled>
+    <Ustas.RimAI.Communication.Settings.TTS.Title>Text-to-Speech Settings</Ustas.RimAI.Communication.Settings.TTS.Title>
+    <Ustas.RimAI.Communication.Settings.TTS.AzureRegionLabel>Azure Region: {0}</Ustas.RimAI.Communication.Settings.TTS.AzureRegionLabel>
+    <Ustas.RimAI.Communication.Voices.IgnoreComplete>Ignored all existing dialogues</Ustas.RimAI.Communication.Voices.IgnoreComplete>
+    <Ustas.RimAI.Communication.Voices.CustomLanguageHintNoGlobal>Leave empty to use global setting (currently not set)</Ustas.RimAI.Communication.Voices.CustomLanguageHintNoGlobal>
+    <Ustas.RimAI.Communication.Settings.TTS.Delete>Delete</Ustas.RimAI.Communication.Settings.TTS.Delete>
+    <Ustas.RimAI.Communication.Voices.ResetComplete>Cleared all audio waiting to be played/generated</Ustas.RimAI.Communication.Voices.ResetComplete>
+    <Ustas.RimAI.Communication.Voices.VoiceRuleBasedDesc>Determine voice automatically based on assignment rules</Ustas.RimAI.Communication.Voices.VoiceRuleBasedDesc>
+    <Ustas.RimAI.Communication.Settings.TTS.ProviderLabel>API Provider:</Ustas.RimAI.Communication.Settings.TTS.ProviderLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.GenerateCooldownMiliSecondsLabel>Generate Cooldown (miliseconds): {0}</Ustas.RimAI.Communication.Settings.TTS.GenerateCooldownMiliSecondsLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.CosyVoice>Use Default CosyVoice Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.CosyVoice>
+    <Ustas.RimAI.Communication.Voices.Reset>Audio clear</Ustas.RimAI.Communication.Voices.Reset>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.GeminiTTS>GeminiTTS (WIP)</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.GeminiTTS>
+    <Ustas.RimAI.Communication.Voices.PersonaEditor.None>None (skip voicing)</Ustas.RimAI.Communication.Voices.PersonaEditor.None>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.FishAudio>Fish Audio</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.FishAudio>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.Race>Race: {0}</Ustas.RimAI.Communication.Settings.TTS.Rule.Race>
+    <Ustas.RimAI.Communication.Settings.TTS.AddModelButton>Add Model</Ustas.RimAI.Communication.Settings.TTS.AddModelButton>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelName>Custom Name</Ustas.RimAI.Communication.Settings.TTS.ModelName>
+    <Ustas.RimAI.Communication.Voices.Generate>Generate dialogue</Ustas.RimAI.Communication.Voices.Generate>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.Gender>Gender: {0}</Ustas.RimAI.Communication.Settings.TTS.Rule.Gender>
+    <Ustas.RimAI.Communication.Settings.TTS.DefaultVoiceModel>Default Voice Model</Ustas.RimAI.Communication.Settings.TTS.DefaultVoiceModel>
+    <Ustas.RimAI.Communication.Voices.VoiceRuleBased>Rule-based</Ustas.RimAI.Communication.Voices.VoiceRuleBased>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.GeminiTTS>Use Default Gemini TTS Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.GeminiTTS>
+    <Ustas.RimAI.Communication.Settings.TTS.ColumnModelName>Model Name</Ustas.RimAI.Communication.Settings.TTS.ColumnModelName>
+    <Ustas.RimAI.Communication.Settings.TTS.LLMApiConfig>Text preprocessing</Ustas.RimAI.Communication.Settings.TTS.LLMApiConfig>
+    <Ustas.RimAI.Communication.Settings.TTS.NoCustomModels>No custom voice models configured yet.\n\nAdd models in TTS Settings to see them here.</Ustas.RimAI.Communication.Settings.TTS.NoCustomModels>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.VoiceCount>→ {0} voice(s)</Ustas.RimAI.Communication.Settings.TTS.Rule.VoiceCount>
+    <Ustas.RimAI.Communication.Settings.TTS.IDLabel>ID:</Ustas.RimAI.Communication.Settings.TTS.IDLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.ColumnModelID>Model ID</Ustas.RimAI.Communication.Settings.TTS.ColumnModelID>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt>Reset Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.NoVoices>→ No voices</Ustas.RimAI.Communication.Settings.TTS.Rule.NoVoices>
+    <Ustas.RimAI.Communication.Settings.TTS.AddModelSection>Add Model:</Ustas.RimAI.Communication.Settings.TTS.AddModelSection>
+    <Ustas.RimAI.Communication.Settings.TTS.CustomRegionLabel>Custom region (if not in list):</Ustas.RimAI.Communication.Settings.TTS.CustomRegionLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.EdgeVoiceLibrary>View EdgeTTS Voice Library</Ustas.RimAI.Communication.Settings.TTS.EdgeVoiceLibrary>
+    <Ustas.RimAI.Communication.Settings.TTS.ButtonEnableTooltip>Enable a toggle button on in-game UI, its setting won't be saved. Ignored when TTS is disabled.</Ustas.RimAI.Communication.Settings.TTS.ButtonEnableTooltip>
+    <Ustas.RimAI.Communication.Voices.GenerateComplete>Generation started</Ustas.RimAI.Communication.Voices.GenerateComplete>
+    <Ustas.RimAI.Communication.Voices.OnOffUpdated>Voicing {0}</Ustas.RimAI.Communication.Voices.OnOffUpdated>
+    <Ustas.RimAI.Communication.Settings.TTS.ProcessingPrompt>Text preparation prompt</Ustas.RimAI.Communication.Settings.TTS.ProcessingPrompt>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelConfigurations>Voice Model Configurations</Ustas.RimAI.Communication.Settings.TTS.ModelConfigurations>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.EmptyRule>Empty rule</Ustas.RimAI.Communication.Settings.TTS.Rule.EmptyRule>
+    <Ustas.RimAI.Communication.Settings.TTS.TranslationLanguage>AI language:</Ustas.RimAI.Communication.Settings.TTS.TranslationLanguage>
+    <Ustas.RimAI.Communication.Voices.Off>turned off</Ustas.RimAI.Communication.Voices.Off>
+    <Ustas.RimAI.Communication.Voices.VoiceDefault>Default</Ustas.RimAI.Communication.Voices.VoiceDefault>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.SelectedVoiceModels>Selected Voice Models (Random Selection)</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.SelectedVoiceModels>
+    <Ustas.RimAI.Communication.Voices.VoiceUpdated>Voice model updated for {0}</Ustas.RimAI.Communication.Voices.VoiceUpdated>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.MaxLessThanMinError>Max age must not be less than min age</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.MaxLessThanMinError>
+    <Ustas.RimAI.Communication.Voices.VoiceSelection>Voice Selection - {0}</Ustas.RimAI.Communication.Voices.VoiceSelection>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Age>Age Range:</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Age>
+    <Ustas.RimAI.Communication.Voices.UploadFailed.NameEmpty>Upload failed: name is empty</Ustas.RimAI.Communication.Voices.UploadFailed.NameEmpty>
+    <Ustas.RimAI.Communication.Settings.TTS.PlayerVoiceModel>Player Voice Model</Ustas.RimAI.Communication.Settings.TTS.PlayerVoiceModel>
+    <Ustas.RimAI.Communication.Voices.SyncFailed>User voice sync failed</Ustas.RimAI.Communication.Voices.SyncFailed>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.Xenotype>Xenotype: {0}</Ustas.RimAI.Communication.Settings.TTS.Rule.Xenotype>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelID>Model ID</Ustas.RimAI.Communication.Settings.TTS.ModelID>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.AzureTTS>Use Default Azure TTS Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.AzureTTS>
+    <Ustas.RimAI.Communication.Voices.DeleteFailed>Delete failed</Ustas.RimAI.Communication.Voices.DeleteFailed>
+    <Ustas.RimAI.Communication.Settings.TTS.NoneModel>None (skip voicing)</Ustas.RimAI.Communication.Settings.TTS.NoneModel>
+    <Ustas.RimAI.Communication.Settings.TTS.Info>Requires Fish Audio API key and voice reference ID. Text in brackets will be automatically removed before speech synthesis.</Ustas.RimAI.Communication.Settings.TTS.Info>
+    <Ustas.RimAI.Communication.Settings.TTS.EnableTooltip>Automatically converts on-screen dialogue into speech.</Ustas.RimAI.Communication.Settings.TTS.EnableTooltip>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetModelsButton>Synchronize model list</Ustas.RimAI.Communication.Settings.TTS.ResetModelsButton>
+    <Ustas.RimAI.Communication.Voices.VoiceNoneDesc>Disable TTS for this character</Ustas.RimAI.Communication.Voices.VoiceNoneDesc>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.Or> or </Ustas.RimAI.Communication.Settings.TTS.Rule.Or>
+    <Ustas.RimAI.Communication.Settings.TTS.CustomBaseUrlLabel>Custom Base URL:</Ustas.RimAI.Communication.Settings.TTS.CustomBaseUrlLabel>
+    <Ustas.RimAI.Communication.Voices.VoiceModelTooltip>Voice Model Selection</Ustas.RimAI.Communication.Voices.VoiceModelTooltip>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeInvalidNumberError>Please enter valid numbers for age</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeInvalidNumberError>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Race>Race (HAR mod):</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Race>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.TTSWebUI>Use Default TTS-WebUI Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.TTSWebUI>
+    <Ustas.RimAI.Communication.Settings.TTS.SpeedLabel>Speed: {0}</Ustas.RimAI.Communication.Settings.TTS.SpeedLabel>
+    <Ustas.RimAI.Communication.Voices.Cancel>Cancel</Ustas.RimAI.Communication.Voices.Cancel>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Help>How to Use:
+
+1. Adding Requirements:
+   - Click buttons in the lower-left panel to add requirements
+   - Upper-left panel shows selected requirements
+   - Click × to remove requirements
+
+2. Adding Voice Models:
+   - Click voice models in the lower-right panel to add them
+   - Upper-right panel shows selected voice models
+   - Click × to remove voice models
+   - One voice will be randomly selected from the selected voices when matched
+
+3. Matching Logic:
+   - Same type requirements automatically use "OR" logic
+     Example: Selecting both "Male" and "Female" will match all male or female characters
+   - Different type results use "AND" logic
+     Example: Selecting "Male", "Baseliner", "Hussars", and "Age 20-30" will match male characters aged 20-30 who are either Baseliner or Hussars
+   - Empty type = always matches
+
+4. Overall Rule Priority (unrelated to this window, refers to the main settings rule logic):
+   - Evaluates characters from top to bottom
+   - Randomly selects one voice from the first matched rule
+   - Use ↑↓ buttons to adjust priority</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Help>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSConfig>TTS Configs</Ustas.RimAI.Communication.Settings.TTS.TTSConfig>
+    <Ustas.RimAI.Communication.Settings.TTS.ApiKey>API Key:</Ustas.RimAI.Communication.Settings.TTS.ApiKey>
+    <Ustas.RimAI.Communication.Settings.TTS.Enable>Enable voicing</Ustas.RimAI.Communication.Settings.TTS.Enable>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSWebUICustomUrlLabel>Custom URL (if not in list):</Ustas.RimAI.Communication.Settings.TTS.TTSWebUICustomUrlLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.Model>TTS Model</Ustas.RimAI.Communication.Settings.TTS.Model>
+    <Ustas.RimAI.Communication.Settings.TTS.Temperature>Temperature (The lower the stabler, the higher the more emotional)</Ustas.RimAI.Communication.Settings.TTS.Temperature>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.EdgeTTS>EdgeTTS (Free)</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.EdgeTTS>
+    <Ustas.RimAI.Communication.Settings.TTS.Rules>Display/Collapse Rule List</Ustas.RimAI.Communication.Settings.TTS.Rules>
+    <Ustas.RimAI.Communication.Settings.TTS.AzureVoiceLibrary>View AzureTTS Voice Library</Ustas.RimAI.Communication.Settings.TTS.AzureVoiceLibrary>
+    <Ustas.RimAI.Communication.Settings.TTS.None>None (skip voicing)</Ustas.RimAI.Communication.Settings.TTS.None>
+    <Ustas.RimAI.Communication.Voices.On>turned on</Ustas.RimAI.Communication.Voices.On>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelLabel.CosyVoice>TTS Model (CosyVoice): {0}</Ustas.RimAI.Communication.Settings.TTS.ModelLabel.CosyVoice>
+    <Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcessTooltip>When enabled, removes content within brackets (including parentheses, square brackets, asterisks, etc.) from voice text before LLM preprocessing. May slightly reduce emotional tone matching, but eliminates the risk of the TTS reading out various descriptive text</Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcessTooltip>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Title>Edit Voice Assignment Rule</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Title>
+    <Ustas.RimAI.Communication.Settings.TTS.TemperatureLabel>Temperature: {0} (Used only by Fish Audio)</Ustas.RimAI.Communication.Settings.TTS.TemperatureLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.VoiceModels>Voice Model configs</Ustas.RimAI.Communication.Settings.TTS.VoiceModels>
+    <Ustas.RimAI.Communication.Voices.Ignore>Ignore existing dialogues</Ustas.RimAI.Communication.Voices.Ignore>
+    <Ustas.RimAI.Communication.Settings.TTS.CustomProvider>Custom</Ustas.RimAI.Communication.Settings.TTS.CustomProvider>
+    <Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptInfo>Use {language} for the target language. This prompt prepares text before speech synthesis.</Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptInfo>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelLabel>TTS Model: {0}</Ustas.RimAI.Communication.Settings.TTS.ModelLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSWebUIModelHint>Model name depends on your TTS-WebUI extensions (e.g., bark, tortoise, xtts, kokoro)</Ustas.RimAI.Communication.Settings.TTS.TTSWebUIModelHint>
+    <Ustas.RimAI.Communication.Settings.TTS.UploadTextPreview>Reference text (for model):</Ustas.RimAI.Communication.Settings.TTS.UploadTextPreview>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelInfo>Fish Audio S1 is recommended.</Ustas.RimAI.Communication.Settings.TTS.ModelInfo>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleBased>Rule-based</Ustas.RimAI.Communication.Settings.TTS.RuleBased>
+    <Ustas.RimAI.Communication.Voices.Save>Save</Ustas.RimAI.Communication.Voices.Save>
+    <Ustas.RimAI.Communication.Settings.TTS.VolumeLabel>Volume: {0}</Ustas.RimAI.Communication.Settings.TTS.VolumeLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptTip>Use {language} for target language and {text} for dialogue text. External editor recommended for complex prompts.</Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptTip>
+    <Ustas.RimAI.Communication.Settings.TTS>TTS</Ustas.RimAI.Communication.Settings.TTS>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.Age>Age: {0}-{1}</Ustas.RimAI.Communication.Settings.TTS.Rule.Age>
+    <Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcess>Exclude bracketed content during preprocessing</Ustas.RimAI.Communication.Settings.TTS.RemoveBracketsInPreProcess>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AvailableRequirements>Available Requirement Types</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AvailableRequirements>
+    <Ustas.RimAI.Communication.Settings.TTS.TranslationLanguageInfo>Leave empty to disable translation. Enter a language (e.g., "English", "Chinese", "Japanese") to translate all dialogue before TTS.</Ustas.RimAI.Communication.Settings.TTS.TranslationLanguageInfo>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelFaster>s1 (Faster, Recommended)</Ustas.RimAI.Communication.Settings.TTS.ModelFaster>
+    <Ustas.RimAI.Communication.Voices.CustomLanguageHint>Leave empty to use global setting: {0}</Ustas.RimAI.Communication.Voices.CustomLanguageHint>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelLabel.IndexTTS>TTS Model (IndexTTS): {0}</Ustas.RimAI.Communication.Settings.TTS.ModelLabel.IndexTTS>
+    <Ustas.RimAI.Communication.Settings.TTS.UploadFilePath>File path (local):</Ustas.RimAI.Communication.Settings.TTS.UploadFilePath>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.And> and </Ustas.RimAI.Communication.Settings.TTS.Rule.And>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSWebUIModelLabel>TTS-WebUI Model: {0}</Ustas.RimAI.Communication.Settings.TTS.TTSWebUIModelLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.EdgeTTS>Use Default Edge-TTS Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.EdgeTTS>
+    <Ustas.RimAI.Communication.Voices.UploadComplete>Upload complete</Ustas.RimAI.Communication.Voices.UploadComplete>
+    <Ustas.RimAI.Communication.Voices.VoiceNone>None</Ustas.RimAI.Communication.Voices.VoiceNone>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI>TTS-WebUI (Local)</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice>CosyVoice2</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError>Age must be between 0 and 999999</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError>
+    <Ustas.RimAI.Communication.Settings.TTS.ClearDefault>(Clear Default)</Ustas.RimAI.Communication.Settings.TTS.ClearDefault>
+    <Ustas.RimAI.Communication.Settings.TTS.UploadUserVoiceLabel>Upload user voice (only required when uploading):</Ustas.RimAI.Communication.Settings.TTS.UploadUserVoiceLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.UniversalRule>All characters</Ustas.RimAI.Communication.Settings.TTS.Rule.UniversalRule>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Gender>Gender:</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Gender>
+    <Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptLabel>Text preparation prompt:</Ustas.RimAI.Communication.Settings.TTS.ProcessingPromptLabel>
+    <Ustas.RimAI.Communication.Voices.VoiceModel>Voice</Ustas.RimAI.Communication.Voices.VoiceModel>
+    <Ustas.RimAI.Communication.Settings.TTS.Volume>Volume</Ustas.RimAI.Communication.Settings.TTS.Volume>
+    <Ustas.RimAI.Communication.Settings.TTS.ButtonEnable>Enable on-off button</Ustas.RimAI.Communication.Settings.TTS.ButtonEnable>
+    <Ustas.RimAI.Communication.Settings.TTS.LLMModelLabel>Model:</Ustas.RimAI.Communication.Settings.TTS.LLMModelLabel>
+    <Ustas.RimAI.Communication.Voices.PersonaEditor.UseDefault>Use Default</Ustas.RimAI.Communication.Voices.PersonaEditor.UseDefault>
+    <Ustas.RimAI.Communication.Settings.TTS.UploadButton>Upload (If nothing happens, click "Synchronize model list" at the bottom)</Ustas.RimAI.Communication.Settings.TTS.UploadButton>
+    <Ustas.RimAI.Communication.Voices.SyncComplete>User voice sync complete</Ustas.RimAI.Communication.Voices.SyncComplete>
+    <Ustas.RimAI.Communication.Settings.TTS.TopPLabel>Top P: {0} (Used only by Fish Audio)</Ustas.RimAI.Communication.Settings.TTS.TopPLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.RulesList>Voice Assignment Rules (Priority Order):</Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.RulesList>
+    <Ustas.RimAI.Communication.Voices.VoiceSelectionDesc>Choose a voice model for this character's dialogue.</Ustas.RimAI.Communication.Voices.VoiceSelectionDesc>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AddAge>Add Age Requirement</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AddAge>
+    <Ustas.RimAI.Communication.Settings.TTS.Rule.AgeLabel>Age</Ustas.RimAI.Communication.Settings.TTS.Rule.AgeLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.ModelHighQuality>fishaudio-1 (v1.6)</Ustas.RimAI.Communication.Settings.TTS.ModelHighQuality>
+    <Ustas.RimAI.Communication.Voices.OK>OK</Ustas.RimAI.Communication.Voices.OK>
+    <Ustas.RimAI.Communication.Voices.CustomLanguage>Custom Voice Language (leave empty to use global):</Ustas.RimAI.Communication.Voices.CustomLanguage>
+    <Ustas.RimAI.Communication.Voices.UploadFailed.LocalFileNotFound>Upload failed: local file not found</Ustas.RimAI.Communication.Voices.UploadFailed.LocalFileNotFound>
+    <Ustas.RimAI.Communication.Settings.TTS.DefaultModel>Default Model: {0}</Ustas.RimAI.Communication.Settings.TTS.DefaultModel>
+    <Ustas.RimAI.Communication.Voices.PersonaEditor.VoiceModel>Voice Model</Ustas.RimAI.Communication.Voices.PersonaEditor.VoiceModel>
+    <Ustas.RimAI.Communication.Voices.DeleteComplete>Delete complete</Ustas.RimAI.Communication.Voices.DeleteComplete>
+    <Ustas.RimAI.Communication.Settings.TTS.NotSet>(Not Set)</Ustas.RimAI.Communication.Settings.TTS.NotSet>
+    <Ustas.RimAI.Communication.Settings.TTS.LLMApiKeyLabel>API Key:</Ustas.RimAI.Communication.Settings.TTS.LLMApiKeyLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Xenotype>Xenotype (Biotech DLC):</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.Xenotype>
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.IndexTTS>IndexTTS2</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.IndexTTS>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.IndexTTS>Use Default IndexTTS Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.IndexTTS>
+    <Ustas.RimAI.Communication.Voices.Display>Display next</Ustas.RimAI.Communication.Voices.Display>
+    <Ustas.RimAI.Communication.Settings.TTS.UploadName>Voice name:</Ustas.RimAI.Communication.Settings.TTS.UploadName>
+    <Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.Disabled>Advanced Mode: Disabled</Ustas.RimAI.Communication.Settings.TTS.AdvancedMode.Disabled>
+    <Ustas.RimAI.Communication.Settings.TTS.AddVoiceModel>Add Voice Model</Ustas.RimAI.Communication.Settings.TTS.AddVoiceModel>
+    <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.SelectedRequirements>Selected Requirements (All Must Match)</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.SelectedRequirements>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.FishAudio>Use Default FishAudio Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.FishAudio>
+    <Ustas.RimAI.Communication.Settings.TTS.UseLlmPreprocess>Use AI to prepare text for voicing</Ustas.RimAI.Communication.Settings.TTS.UseLlmPreprocess>
+    <Ustas.RimAI.Communication.Settings.TTS.SharedModel>Shared RimAI model: {0}</Ustas.RimAI.Communication.Settings.TTS.SharedModel>
+    <Ustas.RimAI.Communication.Settings.TTS.SharedLanguage>Language: {0}</Ustas.RimAI.Communication.Settings.TTS.SharedLanguage>
+    <Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint>From the shared RimAI AI configuration</Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint>
+    <Ustas.RimAI.Communication.Voices.SharedLanguage>AI language (shared RimAI configuration):</Ustas.RimAI.Communication.Voices.SharedLanguage>
 </LanguageData>

@@ -1,4 +1,3 @@
-using System.Text;
 using System.Threading.Tasks;
 using Ustas.RimAI.Communication.Voices.Data;
 using Verse;
@@ -6,13 +5,10 @@ using Verse;
 namespace Ustas.RimAI.Communication.Voices.Service
 {
     /// <summary>
-    /// Translation service using TTS module's own LLM API configuration
+    /// Prepares dialogue text using the canonical shared RimAI gameplay AI configuration.
     /// </summary>
     public static class InputPreProcessService
     {
-        /// <summary>
-        /// Translate text to target language using configured LLM API
-        /// </summary>
         public static async Task<PreProcessResult> PreProcessAsync(string text, string targetLanguage, TTSSettings settings)
         {
             if (settings == null)
@@ -23,26 +19,24 @@ namespace Ustas.RimAI.Communication.Voices.Service
 
             try
             {
-                // Get TTS processing prompt from settings or use default
                 string promptTemplate = TTSConstant.GetTTSProcessingPrompt(settings);
-                
-                // Build translation prompt
-                string prompt = promptTemplate
-                    .Replace("{language}", targetLanguage);
+                string language = string.IsNullOrWhiteSpace(targetLanguage)
+                    ? VoiceSharedAiText.Language
+                    : targetLanguage;
+                string prompt = VoiceSharedAiText.SubstitutePrompt(promptTemplate, text)
+                    .Replace("{language}", language)
+                    .Replace("{text}", text ?? string.Empty);
 
-                // Call SimpleLLMClient directly with settings
                 var (response, success) = await InputPreProcessClient.QueryAsync(prompt, text, settings);
+                if (response == null)
+                    return null;
                 response.Text = CleanText(response.Text);
 
                 if (success && !string.IsNullOrEmpty(response.Text))
-                {
                     return response;
-                }
-                else
-                {
-                    Log.Warning("[RimAI.Voices] Empty response from preprocess API");
-                    return null;
-                }
+
+                Log.Warning("[RimAI.Voices] Empty response from preprocess API");
+                return null;
             }
             catch (System.Exception ex)
             {
@@ -50,13 +44,14 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 return null;
             }
         }
+
         private static string CleanText(string text)
         {
             if (string.IsNullOrEmpty(text)) return text;
 
             text = System.Text.RegularExpressions.Regex.Replace(
                         System.Text.RegularExpressions.Regex.Replace(
-                            text.Normalize(NormalizationForm.FormKC), @"\([^)]*\)", ""
+                            text.Normalize(System.Text.NormalizationForm.FormKC), @"\([^)]*\)", ""
                         )
                         , @"\s+", " "
                     ).Trim();

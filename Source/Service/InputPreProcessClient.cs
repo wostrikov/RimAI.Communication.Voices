@@ -6,12 +6,10 @@ using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Client;
 using Ustas.RimAI.Communication.Data;
 using Ustas.RimAI.Communication.Util;
-using UnityEngine.Networking;
 using Verse;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
-    //给 TTSService 返回结构化数据的辅助类
     public class PreProcessResult
     {
         public string Text;
@@ -24,50 +22,18 @@ namespace Ustas.RimAI.Communication.Voices.Service
         public string text;
         public string emotion;
     }
+
     /// <summary>
-    /// Simple LLM client for TTS text processing - no role concept, just plain text in/out
+    /// LLM client for Voices text preprocessing. Always uses the canonical
+    /// shared RimAI gameplay text-AI configuration.
     /// </summary>
     public static class InputPreProcessClient
     {
-        /// <summary>
-        /// Get base URL for the configured provider
-        /// </summary>
-        private static string GetBaseUrl(TTSSettings settings)
-        {
-            return settings.ApiProvider switch
-            {
-                TTSApiProvider.DeepSeek => "https://api.deepseek.com",
-                TTSApiProvider.OpenAI => "https://api.openai.com",
-                TTSApiProvider.Custom => settings.CustomBaseUrl,
-                _ => ""
-            };
-        }
-
-        /// <summary>
-        /// Send a simple text query and get text response (no role/conversation context)
-        /// </summary>
         public static async Task<(PreProcessResult response, bool success)> QueryAsync(string prompt, string text, TTSSettings settings)
         {
             if (settings == null)
             {
                 Log.Warning("[RimAI.Voices] SimpleLLMClient: settings is null");
-                return (null, false);
-            }
-
-            if (settings.ApiProvider == TTSApiProvider.RimTalkSame || settings.ApiProvider == TTSApiProvider.OpenAI)
-            {
-                return await QueryViaRimTalkAsync(prompt, text, settings);
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ApiKey))
-            {
-                Log.Warning("[RimAI.Voices] SimpleLLMClient: API key not configured");
-                return (null, false);
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.Model))
-            {
-                Log.Warning("[RimAI.Voices] SimpleLLMClient: Model not configured");
                 return (null, false);
             }
 
@@ -77,158 +43,18 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 return (null, false);
             }
 
-            string baseUrl = GetBaseUrl(settings);
-            if (string.IsNullOrWhiteSpace(baseUrl))
-            {
-                Log.Warning("[RimAI.Voices] SimpleLLMClient: Base URL is empty");
-                return (null, false);
-            }
-
-            try
-            {
-                if (settings.RemoveBracketsInPreProcess)
-                    text = RemoveBrackets(text);
-                
-                // Build simple OpenAI-compatible request with single user message
-                string jsonRequest = BuildRequest(prompt, text, settings.Model);
-                
-                Log.Message($"[RimAI.Voices] Sending LLM request to {settings.ApiProvider}");
-
-                // Send HTTP request
-                var (responseJson, success) = await SendHttpRequestAsync(jsonRequest, baseUrl, settings.ApiKey);
-
-                if (!success)
-                {
-                    Log.Warning("[RimAI.Voices] LLM HTTP request failed");
-                    return (null, false);
-                }
-
-                if (string.IsNullOrEmpty(responseJson))
-                {
-                    Log.Warning("[RimAI.Voices] LLM returned empty response");
-                    return (null, false);
-                }
-
-                // Extract structured PreProcessResult from response
-                PreProcessResult result = ExtractContentFromResponse(responseJson);
-
-                if (result == null)
-                {
-                    Log.Warning("[RimAI.Voices] Failed to extract content from LLM response");
-                    return (null, false);
-                }
-
-                return (result, true);
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[RimAI.Voices] SimpleLLMClient.QueryAsync error: {ex.Message}\n{ex.StackTrace}");
-                return (null, false);
-            }
+            return await QueryViaSharedConfigAsync(prompt, text, settings);
         }
 
-        private static string BuildRequest(string prompt, string text, string model)
-        {
-            var escapedPrompt = prompt
-                .Replace("\\", "\\\\")
-                .Replace("\"", "\\\"")
-                .Replace("\n", "\\n")
-                .Replace("\r", "\\r")
-                .Replace("\t", "\\t");
-            var escapedText = text
-                .Replace("\\", "\\\\")
-                .Replace("\"", "\\\"")
-                .Replace("\n", "\\n")
-                .Replace("\r", "\\r")
-                .Replace("\t", "\\t");
-
-            return $@"{{
-  ""model"": ""{model}"",
-  ""messages"": [
-    {{
-      ""role"": ""system"",
-      ""content"": ""{escapedPrompt}""
-    }},
-    {{
-      ""role"": ""user"",
-      ""content"": ""{escapedText}""
-    }}
-  ],
-  ""response_format"":{{""type"":""json_object""}} 
-}}";
-        }
-
-        private static async Task<(string response, bool success)> SendHttpRequestAsync(string jsonContent, string baseUrl, string apiKey)
-        {
-            // OpenAI-compatible endpoint format
-            baseUrl = baseUrl?.Trim().TrimEnd('/');
-            string endpoint;
-            if (baseUrl.Contains("/v1/chat/completions"))
-            {
-                endpoint = baseUrl;
-            }
-            else if (baseUrl.EndsWith("/v1"))
-            {
-                endpoint = baseUrl + "/chat/completions";
-            }
-            else
-            {
-                endpoint = baseUrl + "/v1/chat/completions";
-            }
-
-            try
-            {
-                byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
-
-                using var webRequest = new UnityWebRequest(endpoint, "POST");
-                webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                webRequest.downloadHandler = new DownloadHandlerBuffer();
-                webRequest.SetRequestHeader("Content-Type", "application/json");
-
-                // OpenAI-compatible: Bearer token
-                if (!string.IsNullOrEmpty(apiKey))
-                {
-                    webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-                }
-
-                var asyncOperation = webRequest.SendWebRequest();
-
-                // Wait for completion
-                while (!asyncOperation.isDone)
-                {
-                    if (Current.Game == null) return (null, false);
-                    await Task.Delay(250);
-                }
-
-                // Check for errors
-                if (webRequest.result != UnityWebRequest.Result.Success)
-                {
-                    Log.Error($"[RimAI.Voices] HTTP request failed: {webRequest.responseCode} {webRequest.error}");
-                    Log.Error($"[RimAI.Voices] Response: {webRequest.downloadHandler?.text}");
-                    return (null, false);
-                }
-
-                string responseText = webRequest.downloadHandler.text;
-                Log.Message("[RimAI.Voices] HTTP response received");
-                return (responseText, true);
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[RimAI.Voices] HTTP request error: {ex.Message}\n{ex.StackTrace}");
-                return ("", false);
-            }
-        }
-
-        private static async Task<(PreProcessResult response, bool success)> QueryViaRimTalkAsync(
+        private static async Task<(PreProcessResult response, bool success)> QueryViaSharedConfigAsync(
             string prompt, string text, TTSSettings settings)
         {
-            if (string.IsNullOrWhiteSpace(prompt)) return (null, false);
             if (settings.RemoveBracketsInPreProcess) text = RemoveBrackets(text);
 
             IAIClient client = await AIClientFactory.GetAIClientAsync();
             if (client == null)
             {
-                Log.Warning("[RimAI.Voices] Конфігурацію AI RimTalk не налаштовано");
+                Log.Warning("[RimAI.Voices] Shared RimAI gameplay AI configuration is not available");
                 return (null, false);
             }
 
@@ -252,75 +78,24 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimAI.Voices] Не вдалося розібрати структуровану відповідь RimTalk: {ex.Message}");
+                Log.Error($"[RimAI.Voices] Failed to parse structured preprocessing response: {ex.Message}");
                 return (null, false);
             }
         }
 
-        private static PreProcessResult ExtractContentFromResponse(string jsonResponse)
-        {
-            try
-            {
-                // Simple JSON parsing to extract content field
-                // Looking for: "choices":[{"message":{"content":"..."}}]
-                
-                int contentIndex = jsonResponse.IndexOf("\"content\"");
-                if (contentIndex == -1) return null;
-
-                int startQuote = jsonResponse.IndexOf("\"", contentIndex + 9);
-                if (startQuote == -1) return null;
-                
-                startQuote++; // Move past the opening quote
-                
-                // Find the closing quote, handling escaped quotes
-                int endQuote = startQuote;
-                while (endQuote < jsonResponse.Length)
-                {
-                    if (jsonResponse[endQuote] == '\"' && jsonResponse[endQuote - 1] != '\\')
-                    {
-                        break;
-                    }
-                    endQuote++;
-                }
-
-                if (endQuote >= jsonResponse.Length) return null;
-
-                string content = jsonResponse.Substring(startQuote, endQuote - startQuote);
-
-                // Unescape JSON string
-                content = content
-                    .Replace("\\n", "\n")
-                    .Replace("\\r", "\r")
-                    .Replace("\\t", "\t")
-                    .Replace("\\\"", "\"")
-                    .Replace("\\\\", "\\");
-
-                var parsed = JsonUtil.DeserializeFromJson<PreProcessResultJson>(content);
-                return new PreProcessResult { Text = parsed.text, Emotion = parsed.emotion };
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"[RimAI.Voices] Failed to parse JSON response: {ex.Message}");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Remove content within various bracket types and replace with ellipsis
-        /// </summary>
         private static string RemoveBrackets(string text)
         {
             if (string.IsNullOrEmpty(text)) return text;
 
-            text = Regex.Replace(text, @"\([^()]*\)", "...");  // (content)
-            text = Regex.Replace(text, @"\uff08[^\uff08\uff09]*\uff09", "...");  // （content）full-width
-            text = Regex.Replace(text, @"\[[^\[\]]*\]", "...");  // [content]
-            text = Regex.Replace(text, @"\u3010[^\u3010\u3011]*\u3011", "...");  // 【content】full-width
-            text = Regex.Replace(text, @"\*[^*]*\*", "...");  // *content*
-            text = Regex.Replace(text, @"<[^<>]*>", "...");  // <content>
-            text = Regex.Replace(text, @"/[^/]*/", "...");  // /content/
-            text = Regex.Replace(text, @"\\[^\\]*\\", "...");  // \content\
-            text = Regex.Replace(text, @"#[^#]*#", "...");  // #content#
+            text = Regex.Replace(text, @"\([^()]*\)", "...");
+            text = Regex.Replace(text, @"\uff08[^\uff08\uff09]*\uff09", "...");
+            text = Regex.Replace(text, @"\[[^\[\]]*\]", "...");
+            text = Regex.Replace(text, @"\u3010[^\u3010\u3011]*\u3011", "...");
+            text = Regex.Replace(text, @"\*[^*]*\*", "...");
+            text = Regex.Replace(text, @"<[^<>]*>", "...");
+            text = Regex.Replace(text, @"/[^/]*/", "...");
+            text = Regex.Replace(text, @"\\[^\\]*\\", "...");
+            text = Regex.Replace(text, @"#[^#]*#", "...");
 
             return text;
         }
