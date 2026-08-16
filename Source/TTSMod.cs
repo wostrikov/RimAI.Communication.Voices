@@ -18,11 +18,14 @@ namespace RimTalk.TTS
 
         public override string SettingsCategory()
         {
-            return Content?.Name ?? "RimAI.Voices";
+            return Content?.Name ?? "RimAI.Communication.Voices";
         }
 
         public override void DoSettingsWindowContents(UnityEngine.Rect inRect)
         {
+            HarmonyLib.AccessTools.TypeByName("Ustas.RimAI.Core.Modules.RimAISettingsNavigation")
+                ?.GetMethod("Open")
+                ?.Invoke(null, new object[] { "communication", "voices" });
             var settings = GetSettings<Data.TTSSettings>();
             UI.SettingsUI.DrawTTSSettings(inRect, settings);
         }
