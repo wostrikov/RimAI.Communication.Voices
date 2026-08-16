@@ -1,6 +1,7 @@
 using HarmonyLib;
 using System;
 using System.Reflection;
+using Ustas.RimAI.Communication.Voices.Integration;
 using Verse;
 
 namespace Ustas.RimAI.Communication.Voices
@@ -19,6 +20,7 @@ namespace Ustas.RimAI.Communication.Voices
                 
                 var harmony = new Harmony("ustas.rimai.communication.voices");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
+                TalkLifecycleBridge.Register();
                 
                 TTSModule.Instance.Initialize();
                 
