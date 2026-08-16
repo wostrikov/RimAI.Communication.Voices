@@ -1049,7 +1049,7 @@ namespace RimTalk.TTS.UI
 
             // Provider Selection
             listing.Label("RimTalk.Settings.TTS.ProviderLabel".Translate());
-            if (listing.RadioButton("Використовувати конфігурацію RimTalk", settings.ApiProvider == TTSApiProvider.RimTalkSame))
+            if (listing.RadioButton("Використовувати спільну конфігурацію текстового ШІ RimAI", settings.ApiProvider == TTSApiProvider.RimTalkSame))
             {
                 settings.ApiProvider = TTSApiProvider.RimTalkSame;
             }
@@ -1074,8 +1074,8 @@ namespace RimTalk.TTS.UI
                 var config = global::RimTalk.Settings.Get()?.GetActiveConfig();
                 string effectiveModel = config == null ? "не налаштовано" :
                     (config.SelectedModel == "Custom" ? config.CustomModelName : config.SelectedModel);
-                listing.Label("Використовується модель, вибрана в RimTalk: " + effectiveModel);
-                listing.Label("OpenAI credential: OPENAI_RIMTALK ✓");
+                listing.Label("Використовується спільна модель RimAI: " + effectiveModel);
+                listing.Label("OpenAI credential: OPENAI_RIMAI / legacy fallback");
                 settings.ApiKey = "";
                 settings.Model = "";
             }

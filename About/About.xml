@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
 	<packageId>nitoritech.rimtalk.tts</packageId>
-	<name>RimTalk TTS Addon</name>
+	<name>RimAI.Voices</name>
 	<author>Nitori_Tachyon</author>
 	<description>Text-to-Speech extension for RimTalk that brings your colonists' voices to life!
 

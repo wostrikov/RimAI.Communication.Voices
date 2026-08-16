@@ -70,7 +70,7 @@ namespace RimTalk.TTS
                     : "https://api.openai.com");
             Log.Message($"[RimTalk.TTS] BaseUrl: {baseUrl}");
             
-            Log.Message($"[RimTalk.TTS] Credential source: {((_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI) ? "OPENAI_RIMTALK" : "provider-specific setting")}");
+            Log.Message($"[RimTalk.TTS] Credential source: {((_settings.ApiProvider == Data.TTSApiProvider.RimTalkSame || _settings.ApiProvider == Data.TTSApiProvider.OpenAI) ? "OPENAI_RIMAI" : "provider-specific setting")}");
             Log.Message("[RimTalk.TTS] ==========================================");
 
             Log.Message("[RimTalk.TTS] TTS Module initialized");
