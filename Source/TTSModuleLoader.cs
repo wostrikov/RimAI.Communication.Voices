@@ -2,6 +2,7 @@ using HarmonyLib;
 using System;
 using System.Reflection;
 using Ustas.RimAI.Communication.Voices.Integration;
+using Ustas.RimAI.Core.Handshake;
 using Verse;
 
 namespace Ustas.RimAI.Communication.Voices
@@ -16,21 +17,27 @@ namespace Ustas.RimAI.Communication.Voices
         {
             try
             {
+                if (!RimAiHandshake.IsApproved(RimAiModuleIds.Voices))
+                {
+                    return;
+                }
+
                 Log.Message("[RimAI.Voices] Initializing TTS Module...");
-                
+
                 var harmony = new Harmony("ustas.rimai.communication.voices");
                 harmony.PatchAll(Assembly.GetExecutingAssembly());
                 TalkLifecycleBridge.Register();
-                
+
                 TTSModule.Instance.Initialize();
-                
-                // Register application quit handler for proper cleanup
+
                 UnityEngine.Application.quitting += OnApplicationQuitting;
-                
+                RimAiHandshakeRegistry.Current.MarkActivated(RimAiModuleIds.Voices);
+
                 Log.Message("[RimAI.Voices] TTS Module initialized successfully");
             }
             catch (Exception ex)
             {
+                RimAiHandshakeRegistry.Current.MarkFailed(RimAiModuleIds.Voices);
                 Log.Error($"[RimAI.Voices] Failed to initialize: {ex.Message}\n{ex.StackTrace}");
             }
         }

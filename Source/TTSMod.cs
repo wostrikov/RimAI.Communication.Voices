@@ -1,3 +1,4 @@
+using Ustas.RimAI.Core.Handshake;
 using Ustas.RimAI.Core.Modules;
 using Verse;
 
@@ -5,12 +6,22 @@ namespace Ustas.RimAI.Communication.Voices
 {
     public class TTSMod : Mod
     {
+        public const string HandshakeModuleVersion = "1.0.0";
         public static System.Diagnostics.Stopwatch AppStopwatch = null;
 
         public TTSMod(ModContentPack content) : base(content)
         {
             GetSettings<Data.TTSSettings>();
             AppStopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var handshake = RimAiHandshake.Register(RimAiHandshakeDescriptor.Current(
+                RimAiModuleIds.Voices,
+                HandshakeModuleVersion,
+                isOptional: true));
+            if (!handshake.IsCompatible)
+            {
+                return;
+            }
+
             RimAIModuleRegistry.Current.Register(
                 new RimAIModuleDescriptor(
                     "voices",
