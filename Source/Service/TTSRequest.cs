@@ -14,6 +14,12 @@ namespace Ustas.RimAI.Communication.Voices.Service
         // voice URI or preset (can be empty string for dynamic references)
         public string Voice { get; set; }
 
+        // Free-form delivery guidance (OpenAI gpt-4o-mini-tts "instructions")
+        public string Instructions { get; set; }
+
+        // Requested audio container, e.g. mp3 or wav
+        public string ResponseFormat { get; set; } = "mp3";
+
         // optional synthesis parameters
         public float Speed { get; set; } = 1.0f;
         public float Volume { get; set; } = 1.0f;

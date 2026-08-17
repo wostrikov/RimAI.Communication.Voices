@@ -90,6 +90,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     return new Provider.EdgeTTSProvider();
                 case TTSSettings.TTSSupplier.GeminiTTS:
                     return new Provider.GeminiTTSProvider();
+                case TTSSettings.TTSSupplier.OpenAI:
+                    var openAiProvider = new Provider.OpenAITTSProvider();
+                    // SupplierRegion doubles as the base URL slot for OpenAI-compatible endpoints.
+                    openAiProvider.SetBaseUrl(settings?.GetSupplierRegion(supplier));
+                    return openAiProvider;
                 case TTSSettings.TTSSupplier.TTSWebUI:
                     var ttsWebUIProvider = new Provider.TTSWebUIProvider();
                     if (settings != null)
@@ -306,10 +311,12 @@ namespace Ustas.RimAI.Communication.Voices.Service
         {
             var ttsRequest = new Service.TTSRequest
             {
-                ApiKey = settings.GetSupplierApiKey(settings.Supplier),
+                ApiKey = GetApiKeyForSupplier(settings.Supplier, settings),
                 Model = settings.GetSupplierModel(settings.Supplier),
                 Input = inputText,
                 InstructText = instructText,
+                Instructions = settings.GetSupplierInstructions(settings.Supplier),
+                ResponseFormat = settings.GetSupplierResponseFormat(settings.Supplier),
                 Voice = voiceModelId,
                 Speed = settings.GetSupplierSpeed(settings.Supplier),
                 Volume = settings.GetSupplierVolume(settings.Supplier),
@@ -389,8 +396,19 @@ namespace Ustas.RimAI.Communication.Voices.Service
             return settings.GetSupplierDefaultVoiceModelId(settings.Supplier);
         }
 
+        /// <summary>
+        /// Effective credential for a supplier. OpenAI voicing owns its own credential
+        /// domain (OPENAI_RIMAI_TTS) and never reuses the gameplay text credential.
+        /// </summary>
         private static string GetApiKeyForSupplier(TTSSettings.TTSSupplier supplier, TTSSettings settings)
         {
+            if (supplier == TTSSettings.TTSSupplier.OpenAI)
+            {
+                string fromEnvironment = Data.OpenAITtsCredential.Resolve();
+                if (!string.IsNullOrWhiteSpace(fromEnvironment))
+                    return fromEnvironment;
+            }
+
             if (settings == null) return string.Empty;
 
             // Prefer SupplierApiKeys dictionary if present

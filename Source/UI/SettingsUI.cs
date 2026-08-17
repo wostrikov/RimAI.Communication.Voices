@@ -61,8 +61,12 @@ namespace Ustas.RimAI.Communication.Voices.UI
             float uploadSectionHeight = (settings.Supplier == TTSSettings.TTSSupplier.CosyVoice || settings.Supplier == TTSSettings.TTSSupplier.IndexTTS) ? 280f : 0f;
             // ResetModels button height (CosyVoice, IndexTTS, AzureTTS, EdgeTTS)
             float resetButtonHeight = (settings.Supplier == TTSSettings.TTSSupplier.CosyVoice || settings.Supplier == TTSSettings.TTSSupplier.IndexTTS || settings.Supplier == TTSSettings.TTSSupplier.AzureTTS || settings.Supplier == TTSSettings.TTSSupplier.EdgeTTS) ? 40f : 0f;
+            // OpenAI adds endpoint, model, format and instruction controls
+            float openAiSectionHeight = settings.Supplier == TTSSettings.TTSSupplier.OpenAI ? 400f : 0f;
+            // Rule list is only expanded on demand
+            float rulesSectionHeight = showRulesList ? 60f : 0f;
             // Processing prompt area height (text area)
-            float contentHeight = baseHeight + (voiceModelCount * voiceModelRowHeight) + uploadSectionHeight + resetButtonHeight;
+            float contentHeight = baseHeight + (voiceModelCount * voiceModelRowHeight) + uploadSectionHeight + resetButtonHeight + openAiSectionHeight + rulesSectionHeight;
             bool isOn = settings.EnableTTS;
             
             Rect viewRect = new Rect(0f, 0f, inRect.width - 20f, contentHeight);
@@ -123,47 +127,28 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
             if (Widgets.ButtonText(supplierRect, supplierDisplay))
             {
+                var supplierOrder = new[]
+                {
+                    TTSSettings.TTSSupplier.OpenAI,
+                    TTSSettings.TTSSupplier.FishAudio,
+                    TTSSettings.TTSSupplier.CosyVoice,
+                    TTSSettings.TTSSupplier.IndexTTS,
+                    TTSSettings.TTSSupplier.AzureTTS,
+                    TTSSettings.TTSSupplier.EdgeTTS,
+                    TTSSettings.TTSSupplier.GeminiTTS,
+                    TTSSettings.TTSSupplier.TTSWebUI,
+                    TTSSettings.TTSSupplier.None
+                };
+
                 var options = new System.Collections.Generic.List<FloatMenuOption>();
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.FishAudio".Translate(), delegate
+                foreach (var candidate in supplierOrder)
                 {
-                    settings.Supplier = TTSSettings.TTSSupplier.FishAudio;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.CosyVoice;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.IndexTTS".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.IndexTTS;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.AzureTTS".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.AzureTTS;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.EdgeTTS".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.EdgeTTS;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.GeminiTTS".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.GeminiTTS;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.TTSWebUI;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
-                options.Add(new FloatMenuOption("Ustas.RimAI.Communication.Settings.TTS.None".Translate(), delegate
-                {
-                    settings.Supplier = TTSSettings.TTSSupplier.None;
-                    TTSService.SetProvider(settings.Supplier, settings);
-                }));
+                    var selected = candidate;
+                    options.Add(new FloatMenuOption(SupplierString(selected), delegate
+                    {
+                        SelectSupplier(settings, selected);
+                    }));
+                }
 
                 Find.WindowStack.Add(new FloatMenu(options));
             }
@@ -173,8 +158,14 @@ namespace Ustas.RimAI.Communication.Voices.UI
             // Per-supplier API key and model configuration
             if (settings.Supplier != TTSSettings.TTSSupplier.None)
             {
+                // OpenAI voicing takes its credential from the environment, not from a text field
+                if (settings.Supplier == TTSSettings.TTSSupplier.OpenAI)
+                {
+                    DrawOpenAiCredential(listing);
+                    listing.Gap();
+                }
                 // EdgeTTS doesn't need API key - skip it
-                if (settings.Supplier != TTSSettings.TTSSupplier.EdgeTTS)
+                else if (settings.Supplier != TTSSettings.TTSSupplier.EdgeTTS)
                 {
                     listing.Label("Ustas.RimAI.Communication.Settings.TTS.ApiKey".Translate());
                     string currentApiKey = settings.GetSupplierApiKey(settings.Supplier);
@@ -277,6 +268,11 @@ namespace Ustas.RimAI.Communication.Voices.UI
                     }
                 }
 
+                if (settings.Supplier == TTSSettings.TTSSupplier.OpenAI)
+                {
+                    DrawOpenAiSection(listing, settings);
+                }
+
                 // TTSWebUI base URL configuration
                 if (settings.Supplier == TTSSettings.TTSSupplier.TTSWebUI)
                 {
@@ -352,20 +348,24 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
                 listing.Gap();
 
-                float currentTemp = settings.GetSupplierTemperature(settings.Supplier);
-                listing.Label("Ustas.RimAI.Communication.Settings.TTS.TemperatureLabel".Translate(currentTemp.ToString("F2")));
-                float newTemp = listing.Slider(currentTemp, 0.7f, 1.0f);
-                if (newTemp != currentTemp)
-                    settings.SetSupplierTemperature(settings.Supplier, newTemp);
+                // Sampling knobs only exist on the Fish Audio style backends
+                if (TTSSettings.SupportsSampling(settings.Supplier))
+                {
+                    float currentTemp = settings.GetSupplierTemperature(settings.Supplier);
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.TemperatureLabel".Translate(currentTemp.ToString("F2")));
+                    float newTemp = listing.Slider(currentTemp, 0.7f, 1.0f);
+                    if (newTemp != currentTemp)
+                        settings.SetSupplierTemperature(settings.Supplier, newTemp);
 
-                // Top P
-                float currentTopP = settings.GetSupplierTopP(settings.Supplier);
-                listing.Label("Ustas.RimAI.Communication.Settings.TTS.TopPLabel".Translate(currentTopP.ToString("F2")));
-                float newTopP = listing.Slider(currentTopP, 0.7f, 1.0f);
-                if (newTopP != currentTopP)
-                    settings.SetSupplierTopP(settings.Supplier, newTopP);
+                    // Top P
+                    float currentTopP = settings.GetSupplierTopP(settings.Supplier);
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.TopPLabel".Translate(currentTopP.ToString("F2")));
+                    float newTopP = listing.Slider(currentTopP, 0.7f, 1.0f);
+                    if (newTopP != currentTopP)
+                        settings.SetSupplierTopP(settings.Supplier, newTopP);
 
-                listing.Gap();
+                    listing.Gap();
+                }
 
                 // Speed slider (0.25 - 4.0)
                 float currentSpeed = settings.GetSupplierSpeed(settings.Supplier);
@@ -383,6 +383,237 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
             listing.End();
             Widgets.EndScrollView();
+        }
+
+        private static System.Collections.Generic.List<string> openAiModelChoices = new System.Collections.Generic.List<string>();
+        private static bool openAiModelsLoading = false;
+
+        private static void SelectSupplier(TTSSettings settings, TTSSettings.TTSSupplier supplier)
+        {
+            settings.Supplier = supplier;
+
+            if (supplier == TTSSettings.TTSSupplier.OpenAI)
+            {
+                EnsureOpenAiDefaults(settings);
+                SeedVoiceRulesIfEmpty(settings, supplier);
+            }
+
+            TTSService.SetProvider(settings.Supplier, settings);
+        }
+
+        /// <summary>
+        /// Fill in the endpoint, model and voice presets so OpenAI is usable straight after
+        /// being selected instead of requiring manual entry.
+        /// </summary>
+        private static void EnsureOpenAiDefaults(TTSSettings settings)
+        {
+            string baseUrl = settings.GetSupplierRegion(TTSSettings.TTSSupplier.OpenAI);
+            if (string.IsNullOrWhiteSpace(baseUrl) || !baseUrl.TrimStart().StartsWith("http", System.StringComparison.OrdinalIgnoreCase))
+            {
+                settings.SetSupplierRegion(TTSSettings.TTSSupplier.OpenAI, Service.OpenAITTSClient.DefaultBaseUrl);
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.GetSupplierModel(TTSSettings.TTSSupplier.OpenAI)))
+            {
+                settings.SetSupplierModel(TTSSettings.TTSSupplier.OpenAI, Service.OpenAITTSClient.DefaultModel);
+            }
+
+            var voiceModels = settings.GetSupplierVoiceModels(TTSSettings.TTSSupplier.OpenAI);
+            if (voiceModels == null || voiceModels.Count == 0)
+            {
+                settings.SetSupplierVoiceModels(
+                    TTSSettings.TTSSupplier.OpenAI,
+                    TTSSettings.GetDefaultVoiceModels(TTSSettings.TTSSupplier.OpenAI));
+            }
+        }
+
+        /// <summary>
+        /// First-run convenience: a supplier that has no rules and no chosen default voice
+        /// gets the generated spread, so pawns do not all share one voice out of the box.
+        /// Existing user configuration is never overwritten.
+        /// </summary>
+        private static void SeedVoiceRulesIfEmpty(TTSSettings settings, TTSSettings.TTSSupplier supplier)
+        {
+            var existingRules = settings.GetSupplierVoiceRules(supplier);
+            if (existingRules != null && existingRules.Count > 0)
+                return;
+
+            string defaultVoice = settings.GetSupplierDefaultVoiceModelId(supplier);
+            bool defaultIsUnset = string.IsNullOrWhiteSpace(defaultVoice) || defaultVoice == VoiceModel.NONE_MODEL_ID;
+            if (!defaultIsUnset)
+                return;
+
+            var generated = VoiceRulePresets.Generate(supplier, settings.GetSupplierVoiceModels(supplier));
+            if (generated.Count == 0)
+                return;
+
+            settings.SetSupplierVoiceRules(supplier, generated);
+            settings.SetSupplierDefaultVoiceModelId(supplier, VoiceModel.RULE_BASED_MODEL_ID);
+        }
+
+        private static void DrawOpenAiCredential(Listing_Standard listing)
+        {
+            bool present = Data.OpenAITtsCredential.Present;
+            GUI.color = present ? Color.green : Color.red;
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.Credential".Translate(Data.OpenAITtsCredential.Display));
+            GUI.color = Color.white;
+
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialHint".Translate(Data.OpenAITtsCredential.Variable));
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+        }
+
+        private static void DrawOpenAiSection(Listing_Standard listing, TTSSettings settings)
+        {
+            var supplier = TTSSettings.TTSSupplier.OpenAI;
+            EnsureOpenAiDefaults(settings);
+
+            string baseUrl = settings.GetSupplierRegion(supplier);
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.BaseUrlLabel".Translate(baseUrl));
+            listing.Gap(6f);
+
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.CustomUrlLabel".Translate());
+            string editedUrl = listing.TextEntry(baseUrl);
+            if (editedUrl != baseUrl)
+            {
+                settings.SetSupplierRegion(supplier, editedUrl);
+                TTSService.SetProvider(supplier, settings);
+            }
+
+            listing.Gap(6f);
+
+            // Model selection from a list instead of free text
+            string currentModel = settings.GetSupplierModel(supplier);
+            if (string.IsNullOrWhiteSpace(currentModel))
+                currentModel = Service.OpenAITTSClient.DefaultModel;
+
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelLabel".Translate(currentModel));
+            Rect modelRect = listing.GetRect(30f);
+            if (Widgets.ButtonText(modelRect, currentModel))
+            {
+                var options = new System.Collections.Generic.List<FloatMenuOption>();
+                foreach (var candidate in BuildOpenAiModelChoices())
+                {
+                    var picked = candidate;
+                    options.Add(new FloatMenuOption(picked, delegate
+                    {
+                        settings.SetSupplierModel(supplier, picked);
+                    }));
+                }
+
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+
+            listing.Gap(6f);
+
+            GUI.enabled = !openAiModelsLoading;
+            Rect refreshRect = listing.GetRect(30f);
+            if (Widgets.ButtonText(refreshRect, openAiModelsLoading
+                    ? "Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsLoading".Translate()
+                    : "Ustas.RimAI.Communication.Settings.TTS.OpenAI.RefreshModels".Translate()))
+            {
+                RefreshOpenAiModels(settings);
+            }
+            GUI.enabled = true;
+
+            listing.Gap(6f);
+
+            // Audio container
+            string currentFormat = settings.GetSupplierResponseFormat(supplier);
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.FormatLabel".Translate(currentFormat));
+            Rect formatRect = listing.GetRect(30f);
+            if (Widgets.ButtonText(formatRect, currentFormat))
+            {
+                var options = new System.Collections.Generic.List<FloatMenuOption>();
+                foreach (var format in Service.OpenAITTSClient.ResponseFormats)
+                {
+                    var picked = format;
+                    options.Add(new FloatMenuOption(picked, delegate
+                    {
+                        settings.SetSupplierResponseFormat(supplier, picked);
+                    }));
+                }
+
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+
+            listing.Gap(6f);
+
+            // Delivery instructions (style steering)
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsLabel".Translate());
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+
+            string instructions = settings.GetSupplierInstructions(supplier) ?? "";
+            Rect instructionsRect = listing.GetRect(70f);
+            string editedInstructions = Widgets.TextArea(instructionsRect, instructions);
+            if (editedInstructions != instructions)
+                settings.SetSupplierInstructions(supplier, editedInstructions);
+
+            listing.Gap(6f);
+            Rect exampleRect = listing.GetRect(30f);
+            if (Widgets.ButtonText(exampleRect, "Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample".Translate()))
+            {
+                settings.SetSupplierInstructions(
+                    supplier,
+                    "Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText".Translate());
+            }
+        }
+
+        private static System.Collections.Generic.List<string> BuildOpenAiModelChoices()
+        {
+            var choices = new System.Collections.Generic.List<string>(Service.OpenAITTSClient.KnownModels);
+            foreach (var fetched in openAiModelChoices)
+            {
+                if (!choices.Contains(fetched))
+                    choices.Add(fetched);
+            }
+            return choices;
+        }
+
+        private static void RefreshOpenAiModels(TTSSettings settings)
+        {
+            string apiKey = Data.OpenAITtsCredential.Resolve();
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                Messages.Message(
+                    "Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialMissing".Translate(Data.OpenAITtsCredential.Variable),
+                    MessageTypeDefOf.RejectInput,
+                    false);
+                return;
+            }
+
+            Service.OpenAITTSClient.SetBaseUrl(settings.GetSupplierRegion(TTSSettings.TTSSupplier.OpenAI));
+            openAiModelsLoading = true;
+
+            System.Threading.Tasks.Task.Run(async () =>
+            {
+                var models = await Service.OpenAITTSClient.ListSpeechModelsAsync(apiKey);
+                EnqueueMainThreadAction(() =>
+                {
+                    openAiModelsLoading = false;
+                    if (models != null && models.Count > 0)
+                    {
+                        openAiModelChoices = models;
+                        Messages.Message(
+                            "Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshed".Translate(models.Count),
+                            MessageTypeDefOf.TaskCompletion,
+                            false);
+                    }
+                    else
+                    {
+                        Messages.Message(
+                            "Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshFailed".Translate(),
+                            MessageTypeDefOf.RejectInput,
+                            false);
+                    }
+                });
+            });
         }
 
         private static void DrawProcessingPromptSection(Listing_Standard listing, TTSSettings settings)
@@ -473,15 +704,22 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_GeminiTTS;
             }
 
-            // Reset buttons - Third row: TTSWebUI
+            // Reset buttons - Third row: TTSWebUI, OpenAI
             listing.Gap(6f);
             Rect resetButtonsRect3 = listing.GetRect(30f);
             Rect ttswebuiRect = new Rect(resetButtonsRect3.x, resetButtonsRect3.y, btnW, resetButtonsRect3.height);
+            Rect openAiRect = new Rect(resetButtonsRect3.x + btnW + gap, resetButtonsRect3.y, btnW, resetButtonsRect3.height);
 
             if (Widgets.ButtonText(ttswebuiRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.TTSWebUI".Translate()))
             {
                 settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_TTSWebUI;
                 processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_TTSWebUI;
+            }
+
+            if (Widgets.ButtonText(openAiRect, "Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI".Translate()))
+            {
+                settings.CustomTTSProcessingPrompt = Data.TTSConstant.DefaultTTSProcessingPrompt_OpenAI;
+                processingPromptBuffer = Data.TTSConstant.DefaultTTSProcessingPrompt_OpenAI;
             }
         }
 
@@ -708,7 +946,43 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 }
             }
 
+            listing.Gap(6f);
+
+            Rect generateRect = listing.GetRect(30f);
+            if (Widgets.ButtonText(generateRect, "Ustas.RimAI.Communication.Settings.TTS.GenerateRules".Translate()))
+            {
+                GenerateVoiceRules(settings, voiceModels);
+            }
+
+            TooltipHandler.TipRegion(generateRect, "Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip".Translate());
+
             listing.Gap();
+        }
+
+        /// <summary>
+        /// Replace the rule list with a generated gender and age spread over the configured
+        /// voices, and switch the default voice to rule-based so pawns actually differ.
+        /// </summary>
+        private static void GenerateVoiceRules(TTSSettings settings, System.Collections.Generic.List<VoiceModel> voiceModels)
+        {
+            var generated = VoiceRulePresets.Generate(settings.Supplier, voiceModels);
+            if (generated.Count == 0)
+            {
+                Messages.Message(
+                    "Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed".Translate(),
+                    MessageTypeDefOf.RejectInput,
+                    false);
+                return;
+            }
+
+            settings.SetSupplierVoiceRules(settings.Supplier, generated);
+            settings.SetSupplierDefaultVoiceModelId(settings.Supplier, VoiceModel.RULE_BASED_MODEL_ID);
+            selectedRuleIndex = -1;
+
+            Messages.Message(
+                "Ustas.RimAI.Communication.Settings.TTS.RulesGenerated".Translate(generated.Count),
+                MessageTypeDefOf.TaskCompletion,
+                false);
         }
 
         private static void DrawPlayerVoiceSelector(Listing_Standard listing, TTSSettings settings)
@@ -876,7 +1150,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 }
             }
 
-            if (settings.Supplier == TTSSettings.TTSSupplier.CosyVoice || settings.Supplier == TTSSettings.TTSSupplier.IndexTTS || settings.Supplier == TTSSettings.TTSSupplier.AzureTTS || settings.Supplier == TTSSettings.TTSSupplier.EdgeTTS || settings.Supplier == TTSSettings.TTSSupplier.GeminiTTS)
+            if (settings.Supplier == TTSSettings.TTSSupplier.CosyVoice || settings.Supplier == TTSSettings.TTSSupplier.IndexTTS || settings.Supplier == TTSSettings.TTSSupplier.AzureTTS || settings.Supplier == TTSSettings.TTSSupplier.EdgeTTS || settings.Supplier == TTSSettings.TTSSupplier.GeminiTTS || settings.Supplier == TTSSettings.TTSSupplier.OpenAI)
             {
                 listing.Gap(6f);
                 // Single Reset Models button placed after the full list
@@ -1075,6 +1349,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 TTSSettings.TTSSupplier.EdgeTTS => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.EdgeTTS".Translate(),
                 TTSSettings.TTSSupplier.GeminiTTS => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.GeminiTTS".Translate(),
                 TTSSettings.TTSSupplier.TTSWebUI => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI".Translate(),
+                TTSSettings.TTSSupplier.OpenAI => "Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.OpenAI".Translate(),
                 TTSSettings.TTSSupplier.None => "Ustas.RimAI.Communication.Settings.TTS.None".Translate(),
                 _ => supplier.ToString(),
             };

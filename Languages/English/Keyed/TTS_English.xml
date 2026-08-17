@@ -389,4 +389,26 @@
     <Ustas.RimAI.Communication.Settings.TTS.SharedLanguage>Language: {0}</Ustas.RimAI.Communication.Settings.TTS.SharedLanguage>
     <Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint>From the shared RimAI AI configuration</Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint>
     <Ustas.RimAI.Communication.Voices.SharedLanguage>AI language (shared RimAI configuration):</Ustas.RimAI.Communication.Voices.SharedLanguage>
+
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.OpenAI>OpenAI</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.OpenAI>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.Credential>Voicing credential: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.Credential>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialHint>The key is read from the {0} environment variable. Restart RimWorld after changing it.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialHint>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialMissing>Environment variable {0} is not set</Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialMissing>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.BaseUrlLabel>OpenAI API base URL: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.BaseUrlLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.CustomUrlLabel>Endpoint (change only for a compatible gateway):</Ustas.RimAI.Communication.Settings.TTS.OpenAI.CustomUrlLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelLabel>Speech model: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.RefreshModels>Refresh model list from the API</Ustas.RimAI.Communication.Settings.TTS.OpenAI.RefreshModels>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsLoading>Loading models…</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsLoading>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshed>Found {0} speech model(s)</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshed>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshFailed>Could not read the model list, keeping the built-in one</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshFailed>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.FormatLabel>Audio format: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.FormatLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsLabel>Delivery instructions (tone, tempo, manner):</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint>Applies to gpt-4o-mini-tts. The tts-1 models ignore this field.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample>Insert an example</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText>Speak like a weathered rim-world colonist: calm, slightly tired, unhurried, with short natural pauses.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI>Use Default OpenAI Prompt</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI>
+    <Ustas.RimAI.Communication.Settings.TTS.GenerateRules>Generate rules from the voice list</Ustas.RimAI.Communication.Settings.TTS.GenerateRules>
+    <Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip>Replaces the rules with a generated set by gender and age, spreading the configured voices across pawns, and switches the default voice to rule-based.</Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip>
+    <Ustas.RimAI.Communication.Settings.TTS.RulesGenerated>Generated {0} voice rule(s)</Ustas.RimAI.Communication.Settings.TTS.RulesGenerated>
+    <Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed>Add voice models first</Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed>
 </LanguageData>

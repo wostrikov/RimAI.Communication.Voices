@@ -125,6 +125,22 @@ namespace Ustas.RimAI.Communication.Voices.Data
             Доступні голоси: Kore, Puck, Aoede, Enceladus, Charon, Fenrir, Leda, Callirrhoe та інші.
             """;
 
+        public static readonly string DefaultTTSProcessingPrompt_OpenAI =
+            """
+            Ти професійно готуєш текст для OpenAI Text-to-Speech.
+
+            Правила:
+            1. Переклади весь текст мовою {language}.
+            2. У дужках перекладай лише вміст і зберігай дужки.
+            3. Не додавай жодних технічних позначок чи розмітки: модель озвучує текст буквально, а стиль задають окремі інструкції.
+            4. Замінюй трикрапки на природну пунктуацію, щоб пауза звучала природно.
+            5. Виведи лише JSON:
+            {
+                "text": "<повністю перекладений мовою {language} текст зі збереженими дужками та їхнім перекладеним вмістом>",
+                "emotion": "<порожній рядок>"
+            }
+            """;
+
         public static readonly string DefaultTTSProcessingPrompt_TTSWebUI =
             """
             Ти професійно готуєш текст для TTS-WebUI.

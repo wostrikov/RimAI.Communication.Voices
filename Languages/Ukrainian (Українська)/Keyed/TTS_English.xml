@@ -501,4 +501,26 @@
     <Ustas.RimAI.Communication.Settings.TTS.SharedLanguage>Мова: {0}</Ustas.RimAI.Communication.Settings.TTS.SharedLanguage>
     <Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint>З глобальної конфігурації RimAI</Ustas.RimAI.Communication.Settings.TTS.SharedLanguageHint>
     <Ustas.RimAI.Communication.Voices.SharedLanguage>Мова ШІ (спільна конфігурація RimAI):</Ustas.RimAI.Communication.Voices.SharedLanguage>
+
+    <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.OpenAI>OpenAI</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.OpenAI>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.Credential>Ключ озвучення: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.Credential>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialHint>Ключ береться зі системної змінної {0}. Після її зміни перезапустіть RimWorld.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialHint>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialMissing>Системну змінну {0} не задано</Ustas.RimAI.Communication.Settings.TTS.OpenAI.CredentialMissing>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.BaseUrlLabel>Базова URL-адреса API OpenAI: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.BaseUrlLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.CustomUrlLabel>Адреса запитів (змінюйте лише для сумісного шлюзу):</Ustas.RimAI.Communication.Settings.TTS.OpenAI.CustomUrlLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelLabel>Модель озвучення: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.RefreshModels>Оновити список моделей з API</Ustas.RimAI.Communication.Settings.TTS.OpenAI.RefreshModels>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsLoading>Завантаження моделей…</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsLoading>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshed>Знайдено моделей озвучення: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshed>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshFailed>Не вдалося прочитати список моделей, залишено вбудований</Ustas.RimAI.Communication.Settings.TTS.OpenAI.ModelsRefreshFailed>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.FormatLabel>Формат аудіо: {0}</Ustas.RimAI.Communication.Settings.TTS.OpenAI.FormatLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsLabel>Вказівки щодо подачі (тон, темп, манера):</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsLabel>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint>Діють для gpt-4o-mini-tts. Моделі tts-1 це поле ігнорують.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample>Вставити приклад</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText>Говори як бувалий колоніст на краю світу: спокійно, трохи втомлено, без поспіху, з короткими природними паузами.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText>
+    <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI>Використати стандартний промпт OpenAI</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI>
+    <Ustas.RimAI.Communication.Settings.TTS.GenerateRules>Згенерувати правила зі списку голосів</Ustas.RimAI.Communication.Settings.TTS.GenerateRules>
+    <Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip>Замінює правила згенерованим набором за статтю та віком, розподіляє наявні голоси між пішаками й перемикає голос за замовчуванням на режим «На основі правил».</Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip>
+    <Ustas.RimAI.Communication.Settings.TTS.RulesGenerated>Згенеровано правил: {0}</Ustas.RimAI.Communication.Settings.TTS.RulesGenerated>
+    <Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed>Спершу додайте голосові моделі</Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed>
 </LanguageData>

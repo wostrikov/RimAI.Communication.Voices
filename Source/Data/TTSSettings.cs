@@ -23,8 +23,15 @@ namespace Ustas.RimAI.Communication.Voices.Data
             AzureTTS,
             EdgeTTS,
             GeminiTTS,
-            TTSWebUI
+            TTSWebUI,
+            OpenAI
         }
+
+        // Suppliers that expose Fish Audio style sampling knobs
+        public static bool SupportsSampling(TTSSupplier supplier) =>
+            supplier == TTSSupplier.FishAudio
+            || supplier == TTSSupplier.CosyVoice
+            || supplier == TTSSupplier.IndexTTS;
 
         // Default constants (use these instead of deprecated legacy fields)
         public const float DEFAULT_SUPPLIER_VOLUME = 0.8f;
@@ -91,6 +98,10 @@ namespace Ustas.RimAI.Communication.Voices.Data
         public System.Collections.Generic.Dictionary<string, string> SupplierDefaultVoiceModelId = new System.Collections.Generic.Dictionary<string, string>();
         // Per-supplier region (for Azure TTS)
         public System.Collections.Generic.Dictionary<string, string> SupplierRegion = new System.Collections.Generic.Dictionary<string, string>();
+        // Per-supplier style instructions (OpenAI gpt-4o-mini-tts "instructions")
+        public System.Collections.Generic.Dictionary<string, string> SupplierInstructions = new System.Collections.Generic.Dictionary<string, string>();
+        // Per-supplier audio container requested from the provider
+        public System.Collections.Generic.Dictionary<string, string> SupplierResponseFormat = new System.Collections.Generic.Dictionary<string, string>();
 
         // Advanced mode for default voice assignment
         public System.Collections.Generic.Dictionary<string, bool> SupplierAdvancedMode = new System.Collections.Generic.Dictionary<string, bool>();
@@ -126,6 +137,8 @@ namespace Ustas.RimAI.Communication.Voices.Data
             Scribe_Collections.Look(ref SupplierSpeed, "supplierSpeed", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref SupplierDefaultVoiceModelId, "supplierDefaultVoiceModelId", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref SupplierRegion, "supplierRegion", LookMode.Value, LookMode.Value);
+            Scribe_Collections.Look(ref SupplierInstructions, "supplierInstructions", LookMode.Value, LookMode.Value);
+            Scribe_Collections.Look(ref SupplierResponseFormat, "supplierResponseFormat", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref SupplierAdvancedMode, "supplierAdvancedMode", LookMode.Value, LookMode.Value);
             Scribe_Collections.Look(ref SupplierVoiceRules, "supplierVoiceRules", LookMode.Value, LookMode.Deep);
             Scribe_Values.Look(ref PlayerReferenceVoiceModelId, "playerReferenceVoiceModelId", VoiceModel.NONE_MODEL_ID);
@@ -199,6 +212,9 @@ namespace Ustas.RimAI.Communication.Voices.Data
                 SupplierRegion = new System.Collections.Generic.Dictionary<string, string>();
                 SupplierRegion[TTSSupplier.AzureTTS.ToString()] = "eastus";
             }
+
+            SupplierInstructions ??= new System.Collections.Generic.Dictionary<string, string>();
+            SupplierResponseFormat ??= new System.Collections.Generic.Dictionary<string, string>();
 
             if (SupplierAdvancedMode == null)
             {
@@ -368,6 +384,10 @@ namespace Ustas.RimAI.Communication.Voices.Data
                     presets.Add(new VoiceModel("Leda", "Leda (Youthful)"));
                     presets.Add(new VoiceModel("Callirrhoe", "Callirrhoe (Easy-going)"));
                     break;
+                case TTSSupplier.OpenAI:
+                    foreach (var persona in VoicePersonaCatalog.OpenAI)
+                        presets.Add(new VoiceModel(persona.VoiceId, persona.DisplayName));
+                    break;
                 case TTSSupplier.TTSWebUI:
                     // TTS-WebUI: Common voices from various supported models
                     // Users should configure based on their installed TTS-WebUI extensions
@@ -406,6 +426,37 @@ namespace Ustas.RimAI.Communication.Voices.Data
         public void SetSupplierRegion(TTSSupplier supplier, string region)
         {
             SupplierRegion[supplier.ToString()] = region ?? "eastus";
+        }
+
+        public string GetSupplierInstructions(TTSSupplier supplier)
+        {
+            return SupplierInstructions != null && SupplierInstructions.TryGetValue(supplier.ToString(), out var value)
+                ? value
+                : string.Empty;
+        }
+
+        public void SetSupplierInstructions(TTSSupplier supplier, string instructions)
+        {
+            SupplierInstructions ??= new System.Collections.Generic.Dictionary<string, string>();
+            SupplierInstructions[supplier.ToString()] = instructions ?? string.Empty;
+        }
+
+        public string GetSupplierResponseFormat(TTSSupplier supplier)
+        {
+            if (SupplierResponseFormat != null
+                && SupplierResponseFormat.TryGetValue(supplier.ToString(), out var value)
+                && !string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+
+            return "mp3";
+        }
+
+        public void SetSupplierResponseFormat(TTSSupplier supplier, string format)
+        {
+            SupplierResponseFormat ??= new System.Collections.Generic.Dictionary<string, string>();
+            SupplierResponseFormat[supplier.ToString()] = string.IsNullOrWhiteSpace(format) ? "mp3" : format;
         }
 
         public bool GetSupplierAdvancedMode(TTSSupplier supplier)
