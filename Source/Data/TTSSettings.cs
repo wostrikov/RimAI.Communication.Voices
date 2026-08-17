@@ -58,6 +58,14 @@ namespace Ustas.RimAI.Communication.Voices.Data
 
         // TTS Configuration
         public bool EnableTTS = false;
+
+        /// <summary>
+        /// Canonical path: every pawn gets a generated, persisted voice identity and no
+        /// manual voice rows are required. Turning this off falls back to the legacy
+        /// per-supplier default voice and the advanced rule list.
+        /// </summary>
+        public bool AutomaticPawnVoices = true;
+
         public string FishAudioApiKey = "";//Deprecated
         public float TTSVolume = 0.8f;//Deprecated
         public List<VoiceModel> VoiceModels = new();//Deprecated
@@ -113,6 +121,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
             base.ExposeData();
             
             Scribe_Values.Look(ref EnableTTS, "enableTTS", false);
+            Scribe_Values.Look(ref AutomaticPawnVoices, "automaticPawnVoices", true);
             Scribe_Values.Look(ref FishAudioApiKey, "fishAudioApiKey", "");
             Scribe_Values.Look(ref TTSVolume, "ttsVolume", 0.8f);
             Scribe_Collections.Look(ref VoiceModels, "voiceModels", LookMode.Deep);
@@ -364,14 +373,8 @@ namespace Ustas.RimAI.Communication.Voices.Data
                     break;
                 case TTSSupplier.AzureTTS:
                 case TTSSupplier.EdgeTTS:
-                    presets.Add(new VoiceModel("en-US-JennyNeural", "Jenny (US, Female)"));
-                    presets.Add(new VoiceModel("en-US-GuyNeural", "Guy (US, Male)"));
-                    presets.Add(new VoiceModel("en-US-AriaNeural", "Aria (US, Female)"));
-                    presets.Add(new VoiceModel("en-US-DavisNeural", "Davis (US, Male)"));
-                    presets.Add(new VoiceModel("en-GB-SoniaNeural", "Sonia (UK, Female)"));
-                    presets.Add(new VoiceModel("en-GB-RyanNeural", "Ryan (UK, Male)"));
-                    presets.Add(new VoiceModel("zh-CN-XiaoxiaoNeural", "Xiaoxiao (CN, Female)"));
-                    presets.Add(new VoiceModel("zh-CN-YunxiNeural", "Yunxi (CN, Male)"));
+                    foreach (var entry in Ustas.RimAI.Core.Voices.EdgeVoiceCatalog.All)
+                        presets.Add(new VoiceModel(entry.Name, EdgeVoiceLabel(entry)));
                     break;
                 case TTSSupplier.GeminiTTS:
                     // Gemini TTS: 8 common voices (selected from 30 available)
@@ -385,8 +388,8 @@ namespace Ustas.RimAI.Communication.Voices.Data
                     presets.Add(new VoiceModel("Callirrhoe", "Callirrhoe (Easy-going)"));
                     break;
                 case TTSSupplier.OpenAI:
-                    foreach (var persona in VoicePersonaCatalog.OpenAI)
-                        presets.Add(new VoiceModel(persona.VoiceId, persona.DisplayName));
+                    foreach (var entry in Ustas.RimAI.Core.Voices.OpenAiVoiceCatalog.All)
+                        presets.Add(new VoiceModel(entry.Id, OpenAiVoiceLabel(entry)));
                     break;
                 case TTSSupplier.TTSWebUI:
                     // TTS-WebUI: Common voices from various supported models
@@ -406,6 +409,19 @@ namespace Ustas.RimAI.Communication.Voices.Data
             }
 
             return presets;
+        }
+
+        static string OpenAiVoiceLabel(Ustas.RimAI.Core.Voices.VoiceCatalogEntry entry)
+        {
+            string name = char.ToUpperInvariant(entry.Id[0]) + entry.Id.Substring(1);
+            string sex = entry.SexClass == Ustas.RimAI.Core.Voices.VoiceSexClass.Feminine ? "Female" : "Male";
+            return name + " (" + sex + ")";
+        }
+
+        static string EdgeVoiceLabel(Ustas.RimAI.Core.Voices.EdgeVoiceEntry entry)
+        {
+            string sex = entry.SexClass == Ustas.RimAI.Core.Voices.VoiceSexClass.Feminine ? "Female" : "Male";
+            return entry.Name + " (" + entry.Locale + ", " + sex + ")";
         }
 
         public float GetSupplierSpeed(TTSSupplier supplier)

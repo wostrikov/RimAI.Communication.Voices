@@ -108,6 +108,10 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
             listing.Gap();
 
+            DrawAutomaticVoicesToggle(listing, settings);
+
+            listing.Gap();
+
             DrawApiConfigSection(listing, settings);
 
             listing.Gap();
@@ -367,18 +371,43 @@ namespace Ustas.RimAI.Communication.Voices.UI
                     listing.Gap();
                 }
 
-                // Speed slider (0.25 - 4.0)
-                float currentSpeed = settings.GetSupplierSpeed(settings.Supplier);
-                listing.Label("Ustas.RimAI.Communication.Settings.TTS.SpeedLabel".Translate(currentSpeed.ToString("F2")));
-                float newSpeed = listing.Slider(currentSpeed, 0.25f, 4.0f);
-                if (newSpeed != currentSpeed)
-                    settings.SetSupplierSpeed(settings.Supplier, newSpeed);
+                bool automaticActive = IsAutomaticActive(settings);
 
-                listing.Gap();
+                // In automatic mode pace comes from each pawn's identity, so a global
+                // speed slider would silently fight the generator.
+                if (!automaticActive)
+                {
+                    float currentSpeed = settings.GetSupplierSpeed(settings.Supplier);
+                    listing.Label("Ustas.RimAI.Communication.Settings.TTS.SpeedLabel".Translate(currentSpeed.ToString("F2")));
+                    float newSpeed = listing.Slider(currentSpeed, 0.25f, 4.0f);
+                    if (newSpeed != currentSpeed)
+                        settings.SetSupplierSpeed(settings.Supplier, newSpeed);
+
+                    listing.Gap();
+                }
 
                 // Voice Models Section (per-supplier when a supplier is selected).
                 System.Collections.Generic.List<VoiceModel> currentVoiceModels = settings.GetSupplierVoiceModels(settings.Supplier);
-                DrawVoiceModelsSection(listing, settings, viewRect.width, currentVoiceModels);
+
+                if (automaticActive)
+                {
+                    if (listing.ButtonText(showManualVoiceSection
+                            ? "Ustas.RimAI.Communication.Settings.TTS.Manual.Hide".Translate()
+                            : "Ustas.RimAI.Communication.Settings.TTS.Manual.Show".Translate()))
+                    {
+                        showManualVoiceSection = !showManualVoiceSection;
+                    }
+
+                    if (showManualVoiceSection)
+                    {
+                        listing.Gap(6f);
+                        DrawVoiceModelsSection(listing, settings, viewRect.width, currentVoiceModels);
+                    }
+                }
+                else
+                {
+                    DrawVoiceModelsSection(listing, settings, viewRect.width, currentVoiceModels);
+                }
             }
 
             listing.End();
@@ -387,6 +416,27 @@ namespace Ustas.RimAI.Communication.Voices.UI
 
         private static System.Collections.Generic.List<string> openAiModelChoices = new System.Collections.Generic.List<string>();
         private static bool openAiModelsLoading = false;
+        private static bool showManualVoiceSection = false;
+
+        /// <summary>True when generated pawn identities are driving the current supplier.</summary>
+        private static bool IsAutomaticActive(TTSSettings settings) =>
+            settings.AutomaticPawnVoices && Voice.PawnVoiceRenderer.SupportsAutomaticVoices(settings.Supplier);
+
+        private static void DrawAutomaticVoicesToggle(Listing_Standard listing, TTSSettings settings)
+        {
+            listing.CheckboxLabeled(
+                "Ustas.RimAI.Communication.Settings.TTS.AutomaticVoices".Translate(),
+                ref settings.AutomaticPawnVoices,
+                "Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesTooltip".Translate());
+
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            listing.Label(IsAutomaticActive(settings)
+                ? "Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesActive".Translate()
+                : "Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesUnsupported".Translate(SupplierString(settings.Supplier)));
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+        }
 
         private static void SelectSupplier(TTSSettings settings, TTSSettings.TTSSupplier supplier)
         {
@@ -395,7 +445,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
             if (supplier == TTSSettings.TTSSupplier.OpenAI)
             {
                 EnsureOpenAiDefaults(settings);
-                SeedVoiceRulesIfEmpty(settings, supplier);
             }
 
             TTSService.SetProvider(settings.Supplier, settings);
@@ -425,30 +474,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
                     TTSSettings.TTSSupplier.OpenAI,
                     TTSSettings.GetDefaultVoiceModels(TTSSettings.TTSSupplier.OpenAI));
             }
-        }
-
-        /// <summary>
-        /// First-run convenience: a supplier that has no rules and no chosen default voice
-        /// gets the generated spread, so pawns do not all share one voice out of the box.
-        /// Existing user configuration is never overwritten.
-        /// </summary>
-        private static void SeedVoiceRulesIfEmpty(TTSSettings settings, TTSSettings.TTSSupplier supplier)
-        {
-            var existingRules = settings.GetSupplierVoiceRules(supplier);
-            if (existingRules != null && existingRules.Count > 0)
-                return;
-
-            string defaultVoice = settings.GetSupplierDefaultVoiceModelId(supplier);
-            bool defaultIsUnset = string.IsNullOrWhiteSpace(defaultVoice) || defaultVoice == VoiceModel.NONE_MODEL_ID;
-            if (!defaultIsUnset)
-                return;
-
-            var generated = VoiceRulePresets.Generate(supplier, settings.GetSupplierVoiceModels(supplier));
-            if (generated.Count == 0)
-                return;
-
-            settings.SetSupplierVoiceRules(supplier, generated);
-            settings.SetSupplierDefaultVoiceModelId(supplier, VoiceModel.RULE_BASED_MODEL_ID);
         }
 
         private static void DrawOpenAiCredential(Listing_Standard listing)
@@ -540,6 +565,18 @@ namespace Ustas.RimAI.Communication.Voices.UI
             }
 
             listing.Gap(6f);
+
+            // In automatic mode the renderer owns instructions, so a manual field here
+            // would be written and then ignored.
+            if (IsAutomaticActive(settings))
+            {
+                Text.Font = GameFont.Tiny;
+                GUI.color = Color.gray;
+                listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsAutomatic".Translate());
+                GUI.color = Color.white;
+                Text.Font = GameFont.Small;
+                return;
+            }
 
             // Delivery instructions (style steering)
             listing.Label("Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsLabel".Translate());
@@ -946,43 +983,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 }
             }
 
-            listing.Gap(6f);
-
-            Rect generateRect = listing.GetRect(30f);
-            if (Widgets.ButtonText(generateRect, "Ustas.RimAI.Communication.Settings.TTS.GenerateRules".Translate()))
-            {
-                GenerateVoiceRules(settings, voiceModels);
-            }
-
-            TooltipHandler.TipRegion(generateRect, "Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip".Translate());
-
             listing.Gap();
-        }
-
-        /// <summary>
-        /// Replace the rule list with a generated gender and age spread over the configured
-        /// voices, and switch the default voice to rule-based so pawns actually differ.
-        /// </summary>
-        private static void GenerateVoiceRules(TTSSettings settings, System.Collections.Generic.List<VoiceModel> voiceModels)
-        {
-            var generated = VoiceRulePresets.Generate(settings.Supplier, voiceModels);
-            if (generated.Count == 0)
-            {
-                Messages.Message(
-                    "Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed".Translate(),
-                    MessageTypeDefOf.RejectInput,
-                    false);
-                return;
-            }
-
-            settings.SetSupplierVoiceRules(settings.Supplier, generated);
-            settings.SetSupplierDefaultVoiceModelId(settings.Supplier, VoiceModel.RULE_BASED_MODEL_ID);
-            selectedRuleIndex = -1;
-
-            Messages.Message(
-                "Ustas.RimAI.Communication.Settings.TTS.RulesGenerated".Translate(generated.Count),
-                MessageTypeDefOf.TaskCompletion,
-                false);
         }
 
         private static void DrawPlayerVoiceSelector(Listing_Standard listing, TTSSettings settings)

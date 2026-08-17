@@ -42,7 +42,9 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                         text: request.Input,
                         voice: voiceName,
                         rate: rateStr,
-                        volume: volumeStr
+                        volume: volumeStr,
+                        pitch: request.Pitch,
+                        locale: request.Locale
                     );
 
                     if (audioData == null || audioData.Length == 0)

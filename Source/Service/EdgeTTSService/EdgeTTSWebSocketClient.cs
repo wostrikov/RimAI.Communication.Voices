@@ -123,9 +123,11 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
         /// <param name="voice">语音名称，如 "zh-CN-XiaoxiaoNeural"</param>
         /// <param name="rate">语速，如 "+0%", "+50%", "-25%"</param>
         /// <param name="volume">音量，如 "+0%"</param>
+        /// <param name="pitch">音高，如 "+0Hz", "+12Hz", "-8Hz"</param>
+        /// <param name="locale">SSML 语言，如 "uk-UA"</param>
         /// <returns>MP3 音频数据</returns>
         public async Task<byte[]> SynthesizeAsync(string text, string voice = "zh-CN-XiaoxiaoNeural", 
-            string rate = "+0%", string volume = "+0%")
+            string rate = "+0%", string volume = "+0%", string pitch = null, string locale = null)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -138,7 +140,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 try
                 {
                     string wssUrl = BuildWebSocketUrl();
-                    byte[] result = await TrySynthesizeAsync(wssUrl, text, voice, rate, volume);
+                    byte[] result = await TrySynthesizeAsync(wssUrl, text, voice, rate, volume, pitch, locale);
                     if (result != null && result.Length > 0)
                     {
                         return result;
@@ -174,7 +176,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             return null;
         }
         
-        private async Task<byte[]> TrySynthesizeAsync(string wssUrl, string text, string voice, string rate, string volume)
+        private async Task<byte[]> TrySynthesizeAsync(string wssUrl, string text, string voice, string rate, string volume, string pitch, string locale)
         {
             try
             {
@@ -215,7 +217,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 await SendConfigMessageAsync();
                 
                 // 发送 SSML 消息
-                string ssml = BuildSSML(text, voice, rate, volume);
+                string ssml = BuildSSML(text, voice, rate, volume, pitch, locale);
                 await SendSSMLMessageAsync(ssml);
                 
                 // 接收音频数据
@@ -408,18 +410,36 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
         /// <summary>
         /// 构建 SSML (来自 edge-tts 7.2.7)
         /// </summary>
-        private string BuildSSML(string text, string voice, string rate, string volume)
+        private string BuildSSML(string text, string voice, string rate, string volume, string pitch, string locale)
         {
             // 转义 XML 特殊字符
             text = System.Security.SecurityElement.Escape(text);
-            
-            return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-US'>" +
+
+            // The document language must follow the selected voice, otherwise a
+            // Ukrainian voice is asked to read Ukrainian text as en-US.
+            string language = string.IsNullOrWhiteSpace(locale) ? LocaleFromVoice(voice) : locale.Trim();
+            string prosodyPitch = string.IsNullOrWhiteSpace(pitch) ? "+0Hz" : pitch.Trim();
+
+            return $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{language}'>" +
                    $"<voice name='{voice}'>" +
-                   $"<prosody pitch='+0Hz' rate='{rate}' volume='{volume}'>" +
+                   $"<prosody pitch='{prosodyPitch}' rate='{rate}' volume='{volume}'>" +
                    text +
                    "</prosody>" +
                    "</voice>" +
                    "</speak>";
+        }
+
+        /// <summary>Neural voice names carry their locale as a prefix, e.g. uk-UA-OstapNeural.</summary>
+        private static string LocaleFromVoice(string voice)
+        {
+            if (!string.IsNullOrWhiteSpace(voice))
+            {
+                string[] parts = voice.Split('-');
+                if (parts.Length >= 3 && parts[0].Length == 2 && parts[1].Length == 2)
+                    return parts[0].ToLowerInvariant() + "-" + parts[1].ToUpperInvariant();
+            }
+
+            return "en-US";
         }
         
         /// <summary>

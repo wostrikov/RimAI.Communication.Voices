@@ -76,7 +76,9 @@ public static class TalkLifecycleBridge
                 return;
             if (speaker is not Pawn pawn || talkResponse is not TalkResponse item)
                 return;
-            if (PawnVoiceManager.GetVoiceModel(pawn) == VoiceModel.NONE_MODEL_ID)
+            // Only a deliberately muted pawn is skipped here; the automatic path is
+            // allowed to generate an identity later in the pipeline.
+            if (PawnVoiceManager.GetRawVoiceModel(pawn) == VoiceModel.NONE_MODEL_ID)
                 return;
             RimTalkPatches.RequestBlock(item.Id);
             TTSModule.Instance.OnDialogueGenerated(item.Text, pawn, item.Id);

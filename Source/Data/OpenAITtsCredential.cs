@@ -1,30 +1,19 @@
-using System;
+using CoreVoices = Ustas.RimAI.Core.Voices;
 
 namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
-    /// Voicing credential domain. Kept separate from the gameplay text credential
-    /// (OPENAI_RIMAI) and from translation tooling (OPENAI_RIMTRANS): there is no
-    /// fallback between the domains.
+    /// RimWorld-facing wrapper over the Core credential resolver. The domain rules
+    /// (no fallback to the gameplay or translation credentials) live in Core.
     /// </summary>
     public static class OpenAITtsCredential
     {
-        public const string Variable = "OPENAI_RIMAI_TTS";
+        public const string Variable = CoreVoices.TtsCredentialResolver.Canonical;
 
-        public static string Resolve()
-        {
-            try
-            {
-                return (Environment.GetEnvironmentVariable(Variable) ?? string.Empty).Trim();
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
+        public static string Resolve() => CoreVoices.TtsCredentialResolver.Resolve().Value ?? string.Empty;
 
-        public static bool Present => Resolve().Length > 0;
+        public static bool Present => CoreVoices.TtsCredentialResolver.Resolve().Present;
 
-        public static string Display => Present ? Variable + " ✓" : Variable + " ✗";
+        public static string Display => CoreVoices.TtsCredentialResolver.Resolve().Display;
     }
 }

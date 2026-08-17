@@ -200,6 +200,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
             _pawnVoiceMap.Remove(pawn.thingIDNumber);
             _pawnResolvedVoiceMap.Remove(pawn.thingIDNumber);
             _pawnLanguageMap.Remove(pawn.thingIDNumber);
+            Voice.PawnVoiceIdentityStore.Remove(pawn);
         }
         
         /// <summary>
@@ -252,6 +253,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
             _pawnVoiceMap.Clear();
             _pawnResolvedVoiceMap.Clear();
             _pawnLanguageMap.Clear();
+            Voice.PawnVoiceIdentityStore.Clear();
         }
         
         /// <summary>

@@ -3,7 +3,8 @@ using Verse;
 namespace Ustas.RimAI.Communication.Voices.Data
 {
     /// <summary>
-    /// GameComponent to hook PawnVoiceManager.ExposeData into the save/load cycle per game.
+    /// Hooks per-save voice state into the save/load cycle: generated pawn voice
+    /// identities plus the legacy manual assignments.
     /// </summary>
     public class PawnVoiceGameComponent : GameComponent
     {
@@ -14,6 +15,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
         public override void ExposeData()
         {
             PawnVoiceManager.ExposeData();
+            Voice.PawnVoiceIdentityStore.ExposeData();
         }
     }
 }

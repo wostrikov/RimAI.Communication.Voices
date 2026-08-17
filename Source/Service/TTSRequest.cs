@@ -23,6 +23,13 @@ namespace Ustas.RimAI.Communication.Voices.Service
         // optional synthesis parameters
         public float Speed { get; set; } = 1.0f;
         public float Volume { get; set; } = 1.0f;
+
+        // SSML prosody pitch such as +8Hz. Null leaves the base voice untouched.
+        public string Pitch { get; set; }
+
+        // Locale of the selected voice, e.g. uk-UA. Used for SSML instead of a fixed language.
+        public string Locale { get; set; }
+
         public float Temperature { get; set; } = 0f;
         public float TopP { get; set; } = 0f;
 

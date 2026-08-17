@@ -56,6 +56,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             try
             {
                 StopAll(false);
+                TtsAudioCache.Clear();
                 _lastGenerateTimeStampMilisecond = 0;
                 lock (_waitingRequestLock)
                 {
@@ -118,8 +119,20 @@ namespace Ustas.RimAI.Communication.Voices.Service
         /// </summary>
         public static void ProcessDialogue(string text, Pawn pawn, Guid dialogueId, TTSSettings settings)
         {
+            // The voice is resolved here, on the caller's thread, because it inspects the
+            // pawn. Everything after this point works from plain values.
+            Voice.ResolvedPawnVoice voice = null;
+            try
+            {
+                voice = Voice.PawnVoiceRenderer.Resolve(pawn, settings);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[RimAI.Voices] Failed to resolve voice for '{pawn?.LabelShort}': {ex.Message}");
+            }
+
             // Perform early validation checks
-            if (!ValidateDialogueRequest(text, pawn, dialogueId, settings, out string reason))
+            if (!ValidateDialogueRequest(text, voice, dialogueId, settings, out string reason))
             {
                 Log.Message($"[RimAI.Voices] Rejected - {reason}");
                 CleanupAndRelease(dialogueId);
@@ -129,14 +142,14 @@ namespace Ustas.RimAI.Communication.Voices.Service
             // Start async generation
             Task.Run(async () => 
             {
-                await ProcessDialogueAsync(text, pawn, dialogueId, settings);
+                await ProcessDialogueAsync(text, pawn, dialogueId, settings, voice);
             });
         }
 
         /// <summary>
         /// Validate if a dialogue request should be processed
         /// </summary>
-        private static bool ValidateDialogueRequest(string text, Pawn pawn, Guid dialogueId, TTSSettings settings, out string reason)
+        private static bool ValidateDialogueRequest(string text, Voice.ResolvedPawnVoice voice, Guid dialogueId, TTSSettings settings, out string reason)
         {
             // Early exit: shutting down
             if (_isShuttingDown)
@@ -164,11 +177,10 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 return false;
             }
 
-            // Early exit: pawn has "NONE" voice model (skip TTS entirely)
-            string voiceModelId = GetVoiceModelId(pawn, settings);
-            if (voiceModelId == VoiceModel.NONE_MODEL_ID)
+            // Early exit: the pawn is muted or no voice could be rendered
+            if (voice == null || voice.Silent || string.IsNullOrEmpty(voice.VoiceId))
             {
-                reason = $"Pawn '{pawn?.LabelShort}' has NONE voice model";
+                reason = "No voice assigned for this speaker";
                 return false;
             }
 
@@ -214,13 +226,10 @@ namespace Ustas.RimAI.Communication.Voices.Service
         /// <summary>
         /// Async TTS generation pipeline
         /// </summary>
-        private static async Task ProcessDialogueAsync(string text, Pawn pawn, Guid dialogueId, TTSSettings settings)
+        private static async Task ProcessDialogueAsync(string text, Pawn pawn, Guid dialogueId, TTSSettings settings, Voice.ResolvedPawnVoice voice)
         {
             try
             {
-                // Get voice model
-                string voiceModelId = GetVoiceModelId(pawn, settings);
-
                 // Process and translate text (using pawn-specific language if set)
                 string finalInputText = await ProcessTextAsync(text, pawn, dialogueId, settings);
                 if (finalInputText == null)
@@ -239,11 +248,20 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     return;
                 }
 
+                // A repeated line from the same rendered voice does not need a new request.
+                string cacheKey = Ustas.RimAI.Core.Voices.VoiceCacheKey.Compute(voice.Signature, finalInputText);
+                if (TtsAudioCache.TryGet(cacheKey, out byte[] cachedAudio))
+                {
+                    HandleGenerationResult(dialogueId, cachedAudio, settings);
+                    return;
+                }
+
                 // Apply cooldown
                 await ApplyCooldownAsync(settings);
                 
                 // Generate speech
-                byte[] audioData = await GenerateSpeechAsync(voiceModelId, finalInputText, finalInstructText, settings);
+                byte[] audioData = await GenerateSpeechAsync(voice, finalInputText, finalInstructText, settings);
+                TtsAudioCache.Store(cacheKey, audioData);
 
                 // Final validation and playback setup
                 HandleGenerationResult(dialogueId, audioData, settings);
@@ -307,18 +325,20 @@ namespace Ustas.RimAI.Communication.Voices.Service
         /// <summary>
         /// Generate speech using configured provider
         /// </summary>
-        private static async Task<byte[]> GenerateSpeechAsync(string voiceModelId, string inputText, string instructText, TTSSettings settings)
+        private static async Task<byte[]> GenerateSpeechAsync(Voice.ResolvedPawnVoice voice, string inputText, string instructText, TTSSettings settings)
         {
             var ttsRequest = new Service.TTSRequest
             {
                 ApiKey = GetApiKeyForSupplier(settings.Supplier, settings),
-                Model = settings.GetSupplierModel(settings.Supplier),
+                Model = voice.Model,
                 Input = inputText,
                 InstructText = instructText,
-                Instructions = settings.GetSupplierInstructions(settings.Supplier),
+                Instructions = voice.Instructions,
                 ResponseFormat = settings.GetSupplierResponseFormat(settings.Supplier),
-                Voice = voiceModelId,
-                Speed = settings.GetSupplierSpeed(settings.Supplier),
+                Voice = voice.VoiceId,
+                Speed = voice.Speed,
+                Pitch = voice.Pitch,
+                Locale = voice.Locale,
                 Volume = settings.GetSupplierVolume(settings.Supplier),
                 Temperature = settings.GetSupplierTemperature(settings.Supplier),
                 TopP = settings.GetSupplierTopP(settings.Supplier)
@@ -378,22 +398,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
         private static bool IsModuleActiveAndEnabled(TTSSettings settings)
         {
             return TTSConfig.IsEnabled && settings != null && settings.isOnButton;
-        }
-
-        private static string GetVoiceModelId(Pawn pawn, TTSSettings settings)
-        {
-            // Get pawn-specific voice model directly from PawnVoiceManager
-            if (pawn != null)
-            {
-                string voiceModel = Data.PawnVoiceManager.GetVoiceModel(pawn);
-                if (!string.IsNullOrEmpty(voiceModel) && settings.GetSupplierVoiceModels(settings.Supplier).Any(vm => vm.ModelId == voiceModel))
-                {
-                    return voiceModel;
-                }
-            }
-
-            // Fallback to default voice model
-            return settings.GetSupplierDefaultVoiceModelId(settings.Supplier);
         }
 
         /// <summary>

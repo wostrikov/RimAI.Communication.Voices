@@ -518,9 +518,12 @@
     <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint>Діють для gpt-4o-mini-tts. Моделі tts-1 це поле ігнорують.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsHint>
     <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample>Вставити приклад</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExample>
     <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText>Говори як бувалий колоніст на краю світу: спокійно, трохи втомлено, без поспіху, з короткими природними паузами.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsExampleText>
+    <Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsAutomatic>Вказівки щодо подачі формуються з голосової індивідуальності кожного пішака.</Ustas.RimAI.Communication.Settings.TTS.OpenAI.InstructionsAutomatic>
     <Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI>Використати стандартний промпт OpenAI</Ustas.RimAI.Communication.Settings.TTS.ResetPrompt.OpenAI>
-    <Ustas.RimAI.Communication.Settings.TTS.GenerateRules>Згенерувати правила зі списку голосів</Ustas.RimAI.Communication.Settings.TTS.GenerateRules>
-    <Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip>Замінює правила згенерованим набором за статтю та віком, розподіляє наявні голоси між пішаками й перемикає голос за замовчуванням на режим «На основі правил».</Ustas.RimAI.Communication.Settings.TTS.GenerateRulesTooltip>
-    <Ustas.RimAI.Communication.Settings.TTS.RulesGenerated>Згенеровано правил: {0}</Ustas.RimAI.Communication.Settings.TTS.RulesGenerated>
-    <Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed>Спершу додайте голосові моделі</Ustas.RimAI.Communication.Settings.TTS.RulesGenerateFailed>
+    <Ustas.RimAI.Communication.Settings.TTS.AutomaticVoices>Автоматичні унікальні голоси пішаків</Ustas.RimAI.Communication.Settings.TTS.AutomaticVoices>
+    <Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesTooltip>Кожен пішак отримує власний голос, згенерований один раз зі статі, віку, рис, генів і стабільного випадкового зерна, і зберігає його назавжди. Правила та таблиці голосів не потрібні.</Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesTooltip>
+    <Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesActive>Голоси пішаків створюються та зберігаються автоматично. Налаштування нижче — необов'язкові.</Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesActive>
+    <Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesUnsupported>{0} поки не підтримує автоматичні голоси; використовується ручний список голосів.</Ustas.RimAI.Communication.Settings.TTS.AutomaticVoicesUnsupported>
+    <Ustas.RimAI.Communication.Settings.TTS.Manual.Show>Додатково: ручні голоси та перевизначення</Ustas.RimAI.Communication.Settings.TTS.Manual.Show>
+    <Ustas.RimAI.Communication.Settings.TTS.Manual.Hide>Сховати додаткові налаштування голосів</Ustas.RimAI.Communication.Settings.TTS.Manual.Hide>
 </LanguageData>
