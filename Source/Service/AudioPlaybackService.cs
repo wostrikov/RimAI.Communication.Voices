@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ustas.RimAI.Communication.Voices.Patch;
+using Ustas.RimAI.Core.Handshake;
 using UnityEngine;
 using Verse;
 
@@ -29,6 +30,11 @@ public static class AudioPlaybackService
     /// </summary>
     static AudioPlaybackService()
     {
+        if (!RimAiHandshake.IsApproved(RimAiModuleIds.Voices))
+        {
+            return;
+        }
+
         _audioPlayerObject = new GameObject("RimTalkAudioPlayer");
         UnityEngine.Object.DontDestroyOnLoad(_audioPlayerObject);
         _audioSource = _audioPlayerObject.AddComponent<AudioSource>();
@@ -82,6 +88,7 @@ public static class AudioPlaybackService
     public static async void PlayAudio(Guid dialogueId, Pawn pawn, float volume = 1.0f)
     {
         if (dialogueId == Guid.Empty) return;
+        if (_audioSource == null) return;
 
         try
         {
@@ -454,6 +461,7 @@ public static class AudioPlaybackService
     public static void SetVolume(float volume)
     {
         Initialize();
+        if (_audioSource == null) return;
         _audioSource.volume = Mathf.Clamp01(volume);
     }
 
