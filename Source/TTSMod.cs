@@ -13,22 +13,12 @@ namespace Ustas.RimAI.Communication.Voices
         {
             GetSettings<Data.TTSSettings>();
             AppStopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var handshake = RimAiHandshake.Register(RimAiHandshakeDescriptor.Current(
-                RimAiModuleIds.Voices,
-                HandshakeModuleVersion,
-                isOptional: true));
-            if (!handshake.IsCompatible)
-            {
-                return;
-            }
-
-            RimAIModuleRegistry.Current.Register(
-                new RimAIModuleDescriptor(
-                    "voices",
-                    "RimAI.Communication.Voices",
-                    "RimAI.Communication.Voices",
-                    "Communication",
-                    "RimAI.Communication"));
+            RimAiHandshake.TryActivate(
+                RimAiHandshakeDescriptor.Current(
+                    RimAiModuleIds.Voices,
+                    HandshakeModuleVersion,
+                    isOptional: true),
+                VoicesComposition.Current.Start);
         }
 
         public override string SettingsCategory()
