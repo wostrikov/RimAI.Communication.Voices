@@ -17,59 +17,20 @@ namespace Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 /// </summary>
 public static class FishAudioTTSClient
 {
-    private static readonly string PythonScriptPath = GetPythonScriptPath();
-    private static string _pythonExecutablePath;
+    internal static readonly string PythonScriptPath = GetPythonScriptPath();
+    internal static string _pythonExecutablePath;
     
     private static string GetPythonScriptPath()
     {
-        try
-        {
-            // Method 1: Try Assembly.Location
-            string assemblyLocation = typeof(FishAudioTTSClient).Assembly.Location;
-            if (!string.IsNullOrEmpty(assemblyLocation))
-            {
-                string assemblyDir = Path.GetDirectoryName(assemblyLocation);
-                if (!string.IsNullOrEmpty(assemblyDir))
-                {
-                    string scriptPath = Path.Combine(assemblyDir, "..", "..", "Source", "Service", "FishAudioService", "fish_audio_tts.py");
-                    if (File.Exists(scriptPath))
-                    {
-                        return scriptPath;
-                    }
-                }
-            }
-            
-            // Method 2: Try from RimWorld Mods directory structure
-            // Assembly is in: Mods/rimtalk/1.6/Assemblies/Ustas.RimAI.Communication.dll
-            // Script is in:   Mods/rimtalk/Source/Service/fish_audio_tts.py
-            var loadedMods = Verse.LoadedModManager.RunningMods;
-            foreach (var mod in loadedMods)
-            {
-                if (mod.Name.Contains("Ustas.RimAI.Communication") || mod.PackageId.Contains("rimtalk"))
-                {
-                    string scriptPath = Path.Combine(mod.RootDir.ToString(), "Source", "Service", "FishAudioService", "fish_audio_tts.py");
-                    if (File.Exists(scriptPath))
-                    {
-                        return scriptPath;
-                    }
-                }
-            }
-            
-            Log.Error("FishAudio TTS: Could not locate fish_audio_tts.py");
-            return "";
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"FishAudio TTS: Failed to get Python script path - {ex.Message}");
-            return "";
-        }
+        return FishAudioTtsServerBootstrap.GetPythonScriptPath();
     }
+
     
-    private static Process _serverProcess;
-    private static HttpClient _httpClient;
-    private static readonly object _lock = new object();
-    private static bool _serverStarting = false;
-    private const int ServerPort = 5678;
+    internal static Process _serverProcess;
+    internal static HttpClient _httpClient;
+    internal static readonly object _lock = new object();
+    internal static bool _serverStarting = false;
+    internal const int ServerPort = 5678;
     private static readonly string ServerUrl = $"http://127.0.0.1:{ServerPort}";
 
     /// <summary>
@@ -77,380 +38,27 @@ public static class FishAudioTTSClient
     /// </summary>
     private static string ResolvePythonExecutablePath()
     {
-        lock (_lock)
-        {
-            if (!string.IsNullOrEmpty(_pythonExecutablePath))
-            {
-                return _pythonExecutablePath;
-            }
-        }
-
-        var candidates = new List<string>();
-
-        // Environment override
-        var envPython = Environment.GetEnvironmentVariable("RIMTALK_TTS_PYTHON");
-        if (!string.IsNullOrWhiteSpace(envPython))
-        {
-            candidates.Add(envPython.Trim());
-        }
-
-        // Bundled python environment alongside the mod (e.g., Mods/RimTalkTTS/python_env/python.exe)
-        try
-        {
-            if (!string.IsNullOrEmpty(PythonScriptPath))
-            {
-                string scriptDir = Path.GetDirectoryName(PythonScriptPath);
-                string modRoot = Directory.GetParent(scriptDir)?.Parent?.FullName; // Service -> Source -> ModRoot
-
-                if (!string.IsNullOrEmpty(modRoot))
-                {
-                    candidates.Add(Path.Combine(modRoot, "python_env", "python.exe"));
-                    candidates.Add(Path.Combine(modRoot, "python_env", "Scripts", "python.exe"));
-                    candidates.Add(Path.Combine(modRoot, "python", "python.exe"));
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning($"FishAudio TTS: Failed to probe bundled python path - {ex.Message}");
-        }
-
-        // Fallback to system python on PATH
-        candidates.Add("python");
-        candidates.Add("python.exe");
-
-        foreach (var candidate in candidates)
-        {
-            if (string.IsNullOrWhiteSpace(candidate))
-            {
-                continue;
-            }
-
-            // If candidate is a full path, ensure it exists
-            if (candidate.Contains(Path.DirectorySeparatorChar) || candidate.Contains("/"))
-            {
-                if (File.Exists(candidate))
-                {
-                    lock (_lock)
-                    {
-                        _pythonExecutablePath = candidate;
-                    }
-                    Log.Message($"FishAudio TTS: Using bundled Python at '{candidate}'");
-                    return candidate;
-                }
-            }
-            else
-            {
-                // Assume it's available via PATH
-                lock (_lock)
-                {
-                    _pythonExecutablePath = candidate;
-                }
-                Log.Message($"FishAudio TTS: Using system Python executable '{candidate}'");
-                return candidate;
-            }
-        }
-
-        Log.Error("FishAudio TTS: No valid Python executable found. Set RIMTALK_TTS_PYTHON to a valid path or place a python_env next to the mod.");
-        return "";
+        return FishAudioTtsServerBootstrap.ResolvePythonExecutablePath();
     }
+
     
     /// <summary>
     /// Check if required Python dependencies are installed
     /// </summary>
     private static async Task<bool> CheckPythonDependenciesAsync(string pythonExe)
     {
-        try
-        {
-            string checkScript = Path.Combine(Path.GetDirectoryName(PythonScriptPath), "check_dependencies.py");
-            
-            // If check script doesn't exist, skip the check (backward compatibility)
-            if (!File.Exists(checkScript))
-            {
-                Log.Warning("FishAudio TTS: Dependency check script not found, skipping validation");
-                return true;
-            }
-            
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = pythonExe,
-                Arguments = $"\"{checkScript}\"",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
-            };
-            
-            using (var process = new Process { StartInfo = processInfo })
-            {
-                process.Start();
-                string output = await process.StandardOutput.ReadToEndAsync();
-                string error = await process.StandardError.ReadToEndAsync();
-                
-                bool exited = process.WaitForExit(5000); // 5 second timeout
-                
-                if (!exited)
-                {
-                    Log.Warning("FishAudio TTS: Dependency check timed out");
-                    process.Kill();
-                    return true; // Don't block if check fails
-                }
-                
-                if (process.ExitCode != 0)
-                {
-                    Log.Error($"FishAudio TTS: Dependency check failed:\n{output}\n{error}");
-                    return false;
-                }
-                
-                Log.Message($"FishAudio TTS: Dependencies verified:\n{output}");
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning($"FishAudio TTS: Failed to check dependencies - {ex.Message}");
-            return true; // Don't block on check failure
-        }
+        return await FishAudioTtsServerBootstrap.CheckPythonDependenciesAsync(pythonExe);
     }
+
     
     /// <summary>
     /// Start the Python TTS server if not already running
     /// </summary>
     private static async Task<bool> EnsureServerRunningAsync()
     {
-        // Check if server is already running
-        lock (_lock)
-        {
-            if (_serverProcess != null && !_serverProcess.HasExited)
-            {
-                return true;
-            }
-        }
-        
-        // Check if another thread is starting the server
-        bool shouldWait = false;
-        lock (_lock)
-        {
-            if (_serverStarting)
-            {
-                shouldWait = true;
-            }
-            else
-            {
-                _serverStarting = true;
-            }
-        }
-        
-        // If another thread is starting, wait for it to complete
-        if (shouldWait)
-        {
-            int waitCount = 0;
-            while (waitCount < 100) // Wait up to 10 seconds
-            {
-                await Task.Delay(100);
-                waitCount++;
-                
-                lock (_lock)
-                {
-                    // Check if server is now running
-                    if (_serverProcess != null && !_serverProcess.HasExited)
-                    {
-                        return true;
-                    }
-                    
-                    // Check if startup failed (flag cleared but no process)
-                    if (!_serverStarting)
-                    {
-                        Log.Warning("FishAudio TTS: Server startup failed while waiting");
-                        return false;
-                    }
-                }
-            }
-            
-            Log.Warning("FishAudio TTS: Server startup timeout while waiting");
-            return false;
-        }
-        
-        try
-        {
-            // Validate Python script path
-            if (string.IsNullOrEmpty(PythonScriptPath))
-            {
-                Log.Error("FishAudio TTS: Python script path is not initialized");
-                return false;
-            }
-            
-            if (!File.Exists(PythonScriptPath))
-            {
-                Log.Error($"FishAudio TTS: Python script not found at: {PythonScriptPath}");
-                return false;
-            }
-
-            // Resolve Python executable (bundled env or system python)
-            string pythonExe = ResolvePythonExecutablePath();
-            if (string.IsNullOrEmpty(pythonExe))
-            {
-                return false;
-            }
-            
-            // Check Python dependencies before starting server
-            if (!await CheckPythonDependenciesAsync(pythonExe))
-            {
-                Log.Error("FishAudio TTS: Python dependencies check failed. Please install: pip install fish-audio-sdk");
-                return false;
-            }
-            
-            Log.Message("FishAudio TTS: Starting Python server...");
-            
-            // Get current process ID to pass to Python server
-            int currentProcessId = Process.GetCurrentProcess().Id;
-            
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = pythonExe,
-                Arguments = $"\"{PythonScriptPath}\" {ServerPort} {currentProcessId}",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
-            };
-
-            var process = new Process { StartInfo = processInfo };
-            
-            bool started = false;
-            bool hasFatalError = false;
-            StringBuilder errorOutput = new StringBuilder();
-            
-            process.OutputDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    Log.Message($"FishAudio TTS Server: {e.Data}");
-                    if (e.Data.Contains("\"status\": \"ready\""))
-                    {
-                        started = true;
-                    }
-                }
-            };
-            
-            process.ErrorDataReceived += (sender, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    // Collect error output for diagnosis
-                    errorOutput.AppendLine(e.Data);
-                    
-                    // Check for fatal errors that indicate missing dependencies
-                    if (e.Data.Contains("ModuleNotFoundError") || e.Data.Contains("No module named"))
-                    {
-                        hasFatalError = true;
-                        Log.Error($"FishAudio TTS: Python dependency missing - {e.Data}");
-                        Log.Error("FishAudio TTS: Please install fishaudio package: pip install fish-audio-sdk");
-                    }
-                    else if (e.Data.Contains("ImportError"))
-                    {
-                        hasFatalError = true;
-                        Log.Error($"FishAudio TTS: Python import error - {e.Data}");
-                    }
-                    // Python server logs HTTP requests to stderr - treat as debug, not error
-                    else if (e.Data.Contains("[TTS Server]") || e.Data.Contains("POST /") || e.Data.Contains("GET /"))
-                    {
-                        Log.Message($"FishAudio TTS Server: {e.Data}");
-                    }
-                    else
-                    {
-                        Log.Warning($"FishAudio TTS Server stderr: {e.Data}");
-                    }
-                }
-            };
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            
-            // Wait for server to be ready (max 15 seconds - increased for slow systems)
-            int waitCount = 0;
-            while (!started && waitCount < 150)
-            {
-                await Task.Delay(100);
-                waitCount++;
-                
-                // Check if process crashed during startup
-                if (process.HasExited)
-                {
-                    Log.Error($"FishAudio TTS: Python process exited during startup with code {process.ExitCode}");
-                    return false;
-                }
-            }
-            
-            if (!started || hasFatalError)
-            {
-                if (hasFatalError)
-                {
-                    Log.Error("FishAudio TTS: Server startup failed due to fatal error (see above)");
-                    Log.Error("FishAudio TTS: Complete error output:");
-                    Log.Error(errorOutput.ToString());
-                }
-                else
-                {
-                    Log.Error("FishAudio TTS: Server failed to start within 15 seconds timeout");
-                    if (errorOutput.Length > 0)
-                    {
-                        Log.Error("FishAudio TTS: Error output:");
-                        Log.Error(errorOutput.ToString());
-                    }
-                }
-                
-                try
-                {
-                    if (!process.HasExited)
-                    {
-                        process.Kill();
-                    }
-                }
-                catch (Exception killEx)
-                {
-                    Log.Warning($"FishAudio TTS: Failed to kill non-responsive process - {killEx.Message}");
-                }
-                return false;
-            }
-            
-            lock (_lock)
-            {
-                _serverProcess = process;
-                // Use InfiniteTimeSpan - timeout is controlled per-request via CancellationToken
-                // Create HttpClient with cookies disabled to avoid Mono/Win32 cookie/container codepaths
-                try
-                {
-                    var handler = new HttpClientHandler { UseCookies = false };
-                    _httpClient = new HttpClient(handler) { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
-                }
-                catch (Exception ex)
-                {
-                    // Fallback to default HttpClient if handler creation fails for any reason
-                    Log.Warning($"FishAudio TTS: Failed to create cookie-less HttpClient handler - {ex.Message}. Falling back to default HttpClient.");
-                    _httpClient = new HttpClient { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
-                }
-            }
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"FishAudio TTS: Failed to start server - {ex.Message}");
-            return false;
-        }
-        finally
-        {
-            lock (_lock)
-            {
-                _serverStarting = false;
-            }
-        }
+        return await FishAudioTtsServerBootstrap.EnsureServerRunningAsync();
     }
+
     
     /// <summary>
     /// Generate speech from text using Fish Audio TTS API via Python SDK
