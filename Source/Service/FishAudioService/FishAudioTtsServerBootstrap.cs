@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 using Verse;
 using Ustas.RimAI.Communication.Util;
+using Ustas.RimAI.Core.Storage;
 
 namespace Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 
@@ -26,7 +27,7 @@ internal static class FishAudioTtsServerBootstrap
                 if (!string.IsNullOrEmpty(assemblyDir))
                 {
                     string scriptPath = Path.Combine(assemblyDir, "..", "..", "Source", "Service", "FishAudioService", "fish_audio_tts.py");
-                    if (File.Exists(scriptPath))
+                    if (LocalStorage.Current.FileExists(scriptPath))
                     {
                         return scriptPath;
                     }
@@ -42,7 +43,7 @@ internal static class FishAudioTtsServerBootstrap
                 if (mod.Name.Contains("Ustas.RimAI.Communication") || mod.PackageId.Contains("rimtalk"))
                 {
                     string scriptPath = Path.Combine(mod.RootDir.ToString(), "Source", "Service", "FishAudioService", "fish_audio_tts.py");
-                    if (File.Exists(scriptPath))
+                    if (LocalStorage.Current.FileExists(scriptPath))
                     {
                         return scriptPath;
                     }
@@ -116,7 +117,7 @@ internal static class FishAudioTtsServerBootstrap
             // If candidate is a full path, ensure it exists
             if (candidate.Contains(Path.DirectorySeparatorChar) || candidate.Contains("/"))
             {
-                if (File.Exists(candidate))
+                if (LocalStorage.Current.FileExists(candidate))
                 {
                     lock (FishAudioTTSClient._lock)
                     {
@@ -152,7 +153,7 @@ internal static class FishAudioTtsServerBootstrap
             string checkScript = Path.Combine(Path.GetDirectoryName(FishAudioTTSClient.PythonScriptPath), "check_dependencies.py");
             
             // If check script doesn't exist, skip the check (backward compatibility)
-            if (!File.Exists(checkScript))
+            if (!LocalStorage.Current.FileExists(checkScript))
             {
                 Log.Warning("FishAudio TTS: Dependency check script not found, skipping validation");
                 return true;
@@ -269,7 +270,7 @@ internal static class FishAudioTtsServerBootstrap
                 return false;
             }
             
-            if (!File.Exists(FishAudioTTSClient.PythonScriptPath))
+            if (!LocalStorage.Current.FileExists(FishAudioTTSClient.PythonScriptPath))
             {
                 Log.Error($"FishAudio TTS: Python script not found at: {FishAudioTTSClient.PythonScriptPath}");
                 return false;

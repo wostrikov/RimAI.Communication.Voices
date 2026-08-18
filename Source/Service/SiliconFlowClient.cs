@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Verse;
+using Ustas.RimAI.Core.Storage;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
@@ -29,7 +30,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
         {
             if (string.IsNullOrWhiteSpace(apiKey)) throw new ArgumentException("ApiKey required for SiliconFlowClient");
             if (string.IsNullOrWhiteSpace(model)) throw new ArgumentException("model required");
-            if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath)) throw new ArgumentException("file not found");
+            if (string.IsNullOrWhiteSpace(filePath) || !LocalStorage.Current.FileExists(filePath)) throw new ArgumentException("file not found");
 
             var url = DefaultBaseUrl + "/uploads/audio/voice";
 

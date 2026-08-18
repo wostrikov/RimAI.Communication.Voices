@@ -5,6 +5,7 @@ using RimWorld;
 using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Communication.Voices.Patch;
+using Ustas.RimAI.Core.Storage;
 
 namespace Ustas.RimAI.Communication.Voices.UI
 {
@@ -13,7 +14,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
     public static class SettingsUI
     {
         internal static bool LocalUploadFileExists(string path) =>
-            !string.IsNullOrWhiteSpace(path) && System.IO.File.Exists(path);
+            !string.IsNullOrWhiteSpace(path) && LocalStorage.Current.FileExists(path);
 
         public static void DrawTTSSettings(Rect inRect, TTSSettings settings)
         {

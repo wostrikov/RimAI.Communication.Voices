@@ -5,6 +5,7 @@ using Ustas.RimAI.Communication.Voices.Patch;
 using Ustas.RimAI.Core.Handshake;
 using UnityEngine;
 using Verse;
+using Ustas.RimAI.Core.Storage;
 
 namespace Ustas.RimAI.Communication.Voices.Service;
 
@@ -287,9 +288,9 @@ public static class AudioPlaybackService
             // Clean up temp file
             try
             {
-                if (tempFile != null && System.IO.File.Exists(tempFile))
+                if (tempFile != null && LocalStorage.Current.FileExists(tempFile))
                 {
-                    System.IO.File.Delete(tempFile);
+                    LocalStorage.Current.DeleteFile(tempFile);
                 }
             }
             catch { /* Ignore cleanup errors */ }
