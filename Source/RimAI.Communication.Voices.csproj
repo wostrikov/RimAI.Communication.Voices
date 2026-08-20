@@ -39,7 +39,7 @@
 
     <!-- Reference to RimTalk mod assembly for compilation (provided by game/mod at runtime) -->
     <ItemGroup>
-        <ProjectReference Include="..\..\RimAI.Communication\RimAI.Communication.csproj">
+        <ProjectReference Include="..\..\RimAI.Communication\Source\RimAI.Communication.csproj">
             <Private>false</Private>
         </ProjectReference>
         <ProjectReference Include="..\..\RimAI.Core\src\RimAI.Core\RimAI.Core.csproj">
@@ -48,3 +48,4 @@
     </ItemGroup>
 
 </Project>
+
