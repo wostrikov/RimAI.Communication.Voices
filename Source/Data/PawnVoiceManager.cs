@@ -3,10 +3,6 @@ using Verse;
 
 namespace Ustas.RimAI.Communication.Voices.Data
 {
-    /// <summary>
-    /// Manages pawn-specific voice model assignments and language settings
-    /// Stores mappings independently since main RimTalk's Hediff_Persona doesn't have VoiceModelId field
-    /// </summary>
     public static class PawnVoiceManager
     {
         // Dictionary: PawnId -> User selected voice (DEFAULT_MODEL_ID, RULE_BASED_MODEL_ID, or specific ID)

@@ -44,7 +44,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
         {
             var voices = new List<VoiceEntry>();
 
-            // 中文语音
             voices.Add(new VoiceEntry { Name = "zh-CN-XiaoxiaoNeural", Gender = "女", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "温暖", Category = "新闻, 小说" });
             voices.Add(new VoiceEntry { Name = "zh-CN-XiaoyiNeural", Gender = "女", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "活泼", Category = "卡通, 小说" });
             voices.Add(new VoiceEntry { Name = "zh-CN-YunjianNeural", Gender = "男", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "激情", Category = "体育, 小说" });
@@ -60,7 +59,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
             voices.Add(new VoiceEntry { Name = "zh-TW-HsiaoYuNeural", Gender = "女", Language = "zh-TW", LanguageDisplay = "中文(台灣)", Personality = "友善、積極", Category = "通用" });
             voices.Add(new VoiceEntry { Name = "zh-TW-YunJheNeural", Gender = "男", Language = "zh-TW", LanguageDisplay = "中文(台灣)", Personality = "友善、積極", Category = "通用" });
 
-            // 英语语音 - 美国
             voices.Add(new VoiceEntry { Name = "en-US-JennyNeural", Gender = "Female", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Friendly, Considerate", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-US-AriaNeural", Gender = "Female", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Positive, Confident", Category = "News, Novel" });
             voices.Add(new VoiceEntry { Name = "en-US-GuyNeural", Gender = "Male", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Passion", Category = "News, Novel" });
@@ -75,45 +73,37 @@ namespace Ustas.RimAI.Communication.Voices.UI
             voices.Add(new VoiceEntry { Name = "en-US-RogerNeural", Gender = "Male", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Lively", Category = "News, Novel" });
             voices.Add(new VoiceEntry { Name = "en-US-SteffanNeural", Gender = "Male", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Rational", Category = "News, Novel" });
 
-            // 英语语音 - 英国
             voices.Add(new VoiceEntry { Name = "en-GB-LibbyNeural", Gender = "Female", Language = "en-GB", LanguageDisplay = "English (UK)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-GB-MaisieNeural", Gender = "Female", Language = "en-GB", LanguageDisplay = "English (UK)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-GB-RyanNeural", Gender = "Male", Language = "en-GB", LanguageDisplay = "English (UK)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-GB-SoniaNeural", Gender = "Female", Language = "en-GB", LanguageDisplay = "English (UK)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-GB-ThomasNeural", Gender = "Male", Language = "en-GB", LanguageDisplay = "English (UK)", Personality = "Friendly, Positive", Category = "General" });
 
-            // 英语语音 - 澳大利亚
             voices.Add(new VoiceEntry { Name = "en-AU-NatashaNeural", Gender = "Female", Language = "en-AU", LanguageDisplay = "English (Australia)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-AU-WilliamMultilingualNeural", Gender = "Male", Language = "en-AU", LanguageDisplay = "English (Australia)", Personality = "Friendly, Positive", Category = "General" });
 
-            // 英语语音 - 其他地区
             voices.Add(new VoiceEntry { Name = "en-CA-ClaraNeural", Gender = "Female", Language = "en-CA", LanguageDisplay = "English (Canada)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-CA-LiamNeural", Gender = "Male", Language = "en-CA", LanguageDisplay = "English (Canada)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-IN-NeerjaNeural", Gender = "Female", Language = "en-IN", LanguageDisplay = "English (India)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-IN-PrabhatNeural", Gender = "Male", Language = "en-IN", LanguageDisplay = "English (India)", Personality = "Friendly, Positive", Category = "General" });
 
-            // 日语
             voices.Add(new VoiceEntry { Name = "ja-JP-NanamiNeural", Gender = "女性", Language = "ja-JP", LanguageDisplay = "日本語", Personality = "フレンドリー, ポジティブ", Category = "一般" });
             voices.Add(new VoiceEntry { Name = "ja-JP-KeitaNeural", Gender = "男性", Language = "ja-JP", LanguageDisplay = "日本語", Personality = "フレンドリー, ポジティブ", Category = "一般" });
 
-            // 韩语
             voices.Add(new VoiceEntry { Name = "ko-KR-SunHiNeural", Gender = "여성", Language = "ko-KR", LanguageDisplay = "한국어", Personality = "친근함, 긍정적", Category = "일반" });
             voices.Add(new VoiceEntry { Name = "ko-KR-InJoonNeural", Gender = "남성", Language = "ko-KR", LanguageDisplay = "한국어", Personality = "친근함, 긍정적", Category = "일반" });
             voices.Add(new VoiceEntry { Name = "ko-KR-HyunsuMultilingualNeural", Gender = "남성", Language = "ko-KR", LanguageDisplay = "한국어", Personality = "친근함, 긍정적", Category = "일반" });
 
-            // 法语
             voices.Add(new VoiceEntry { Name = "fr-FR-DeniseNeural", Gender = "Femme", Language = "fr-FR", LanguageDisplay = "Français (France)", Personality = "Amical, Positif", Category = "Général" });
             voices.Add(new VoiceEntry { Name = "fr-FR-HenriNeural", Gender = "Homme", Language = "fr-FR", LanguageDisplay = "Français (France)", Personality = "Amical, Positif", Category = "Général" });
             voices.Add(new VoiceEntry { Name = "fr-CA-SylvieNeural", Gender = "Femme", Language = "fr-CA", LanguageDisplay = "Français (Canada)", Personality = "Amical, Positif", Category = "Général" });
             voices.Add(new VoiceEntry { Name = "fr-CA-JeanNeural", Gender = "Homme", Language = "fr-CA", LanguageDisplay = "Français (Canada)", Personality = "Amical, Positif", Category = "Général" });
 
-            // 德语
             voices.Add(new VoiceEntry { Name = "de-DE-KatjaNeural", Gender = "Weiblich", Language = "de-DE", LanguageDisplay = "Deutsch (Deutschland)", Personality = "Freundlich, Positiv", Category = "Allgemein" });
             voices.Add(new VoiceEntry { Name = "de-DE-ConradNeural", Gender = "Männlich", Language = "de-DE", LanguageDisplay = "Deutsch (Deutschland)", Personality = "Freundlich, Positiv", Category = "Allgemein" });
             voices.Add(new VoiceEntry { Name = "de-AT-IngridNeural", Gender = "Weiblich", Language = "de-AT", LanguageDisplay = "Deutsch (Österreich)", Personality = "Freundlich, Positiv", Category = "Allgemein" });
             voices.Add(new VoiceEntry { Name = "de-AT-JonasNeural", Gender = "Männlich", Language = "de-AT", LanguageDisplay = "Deutsch (Österreich)", Personality = "Freundlich, Positiv", Category = "Allgemein" });
 
-            // 西班牙语
             voices.Add(new VoiceEntry { Name = "es-ES-ElviraNeural", Gender = "Mujer", Language = "es-ES", LanguageDisplay = "Español (España)", Personality = "Amigable, Positivo", Category = "General" });
             voices.Add(new VoiceEntry { Name = "es-ES-AlvaroNeural", Gender = "Hombre", Language = "es-ES", LanguageDisplay = "Español (España)", Personality = "Amigable, Positivo", Category = "General" });
             voices.Add(new VoiceEntry { Name = "es-MX-DaliaNeural", Gender = "Mujer", Language = "es-MX", LanguageDisplay = "Español (México)", Personality = "Amigable, Positivo", Category = "General" });
@@ -121,67 +111,52 @@ namespace Ustas.RimAI.Communication.Voices.UI
             voices.Add(new VoiceEntry { Name = "es-US-PalomaNeural", Gender = "Mujer", Language = "es-US", LanguageDisplay = "Español (US)", Personality = "Amigable, Positivo", Category = "General" });
             voices.Add(new VoiceEntry { Name = "es-US-AlonsoNeural", Gender = "Hombre", Language = "es-US", LanguageDisplay = "Español (US)", Personality = "Amigable, Positivo", Category = "General" });
 
-            // 俄语
             voices.Add(new VoiceEntry { Name = "ru-RU-SvetlanaNeural", Gender = "Женский", Language = "ru-RU", LanguageDisplay = "Русский", Personality = "Дружелюбный, Позитивный", Category = "Общий" });
             voices.Add(new VoiceEntry { Name = "ru-RU-DmitryNeural", Gender = "Мужской", Language = "ru-RU", LanguageDisplay = "Русский", Personality = "Дружелюбный, Позитивный", Category = "Общий" });
 
-            // 意大利语
             voices.Add(new VoiceEntry { Name = "it-IT-IsabellaNeural", Gender = "Donna", Language = "it-IT", LanguageDisplay = "Italiano", Personality = "Amichevole, Positivo", Category = "Generale" });
             voices.Add(new VoiceEntry { Name = "it-IT-DiegoNeural", Gender = "Uomo", Language = "it-IT", LanguageDisplay = "Italiano", Personality = "Amichevole, Positivo", Category = "Generale" });
 
-            // 葡萄牙语
             voices.Add(new VoiceEntry { Name = "pt-BR-FranciscaNeural", Gender = "Mulher", Language = "pt-BR", LanguageDisplay = "Português (Brasil)", Personality = "Amigável, Positivo", Category = "Geral" });
             voices.Add(new VoiceEntry { Name = "pt-BR-AntonioNeural", Gender = "Homem", Language = "pt-BR", LanguageDisplay = "Português (Brasil)", Personality = "Amigável, Positivo", Category = "Geral" });
             voices.Add(new VoiceEntry { Name = "pt-PT-RaquelNeural", Gender = "Mulher", Language = "pt-PT", LanguageDisplay = "Português (Portugal)", Personality = "Amigável, Positivo", Category = "Geral" });
             voices.Add(new VoiceEntry { Name = "pt-PT-DuarteNeural", Gender = "Homem", Language = "pt-PT", LanguageDisplay = "Português (Portugal)", Personality = "Amigável, Positivo", Category = "Geral" });
 
-            // 阿拉伯语
             voices.Add(new VoiceEntry { Name = "ar-SA-ZariyahNeural", Gender = "أنثى", Language = "ar-SA", LanguageDisplay = "العربية (السعودية)", Personality = "ودود، إيجابي", Category = "عام" });
             voices.Add(new VoiceEntry { Name = "ar-SA-HamedNeural", Gender = "ذكر", Language = "ar-SA", LanguageDisplay = "العربية (السعودية)", Personality = "ودود، إيجابي", Category = "عام" });
             voices.Add(new VoiceEntry { Name = "ar-EG-SalmaNeural", Gender = "أنثى", Language = "ar-EG", LanguageDisplay = "العربية (مصر)", Personality = "ودود، إيجابي", Category = "عام" });
             voices.Add(new VoiceEntry { Name = "ar-EG-ShakirNeural", Gender = "ذكر", Language = "ar-EG", LanguageDisplay = "العربية (مصر)", Personality = "ودود، إيجابي", Category = "عام" });
 
-            // 印地语
             voices.Add(new VoiceEntry { Name = "hi-IN-SwaraNeural", Gender = "महिला", Language = "hi-IN", LanguageDisplay = "हिन्दी", Personality = "मित्रवत, सकारात्मक", Category = "सामान्य" });
             voices.Add(new VoiceEntry { Name = "hi-IN-MadhurNeural", Gender = "पुरुष", Language = "hi-IN", LanguageDisplay = "हिन्दी", Personality = "मित्रवत, सकारात्मक", Category = "सामान्य" });
 
-            // 泰语
             voices.Add(new VoiceEntry { Name = "th-TH-PremwadeeNeural", Gender = "หญิง", Language = "th-TH", LanguageDisplay = "ไทย", Personality = "เป็นมิตร, เชิงบวก", Category = "ทั่วไป" });
             voices.Add(new VoiceEntry { Name = "th-TH-NiwatNeural", Gender = "ชาย", Language = "th-TH", LanguageDisplay = "ไทย", Personality = "เป็นมิตร, เชิงบวก", Category = "ทั่วไป" });
 
-            // 越南语
             voices.Add(new VoiceEntry { Name = "vi-VN-HoaiMyNeural", Gender = "Nữ", Language = "vi-VN", LanguageDisplay = "Tiếng Việt", Personality = "Thân thiện, Tích cực", Category = "Tổng quát" });
             voices.Add(new VoiceEntry { Name = "vi-VN-NamMinhNeural", Gender = "Nam", Language = "vi-VN", LanguageDisplay = "Tiếng Việt", Personality = "Thân thiện, Tích cực", Category = "Tổng quát" });
 
-            // 印尼语
             voices.Add(new VoiceEntry { Name = "id-ID-GadisNeural", Gender = "Perempuan", Language = "id-ID", LanguageDisplay = "Bahasa Indonesia", Personality = "Ramah, Positif", Category = "Umum" });
             voices.Add(new VoiceEntry { Name = "id-ID-ArdiNeural", Gender = "Laki-laki", Language = "id-ID", LanguageDisplay = "Bahasa Indonesia", Personality = "Ramah, Positif", Category = "Umum" });
 
-            // 土耳其语
             voices.Add(new VoiceEntry { Name = "tr-TR-EmelNeural", Gender = "Kadın", Language = "tr-TR", LanguageDisplay = "Türkçe", Personality = "Arkadaş canlısı, Olumlu", Category = "Genel" });
             voices.Add(new VoiceEntry { Name = "tr-TR-AhmetNeural", Gender = "Erkek", Language = "tr-TR", LanguageDisplay = "Türkçe", Personality = "Arkadaş canlısı, Olumlu", Category = "Genel" });
 
-            // 波兰语
             voices.Add(new VoiceEntry { Name = "pl-PL-ZofiaNeural", Gender = "Kobieta", Language = "pl-PL", LanguageDisplay = "Polski", Personality = "Przyjazny, Pozytywny", Category = "Ogólny" });
             voices.Add(new VoiceEntry { Name = "pl-PL-MarekNeural", Gender = "Mężczyzna", Language = "pl-PL", LanguageDisplay = "Polski", Personality = "Przyjazny, Pozytywny", Category = "Ogólny" });
 
-            // 荷兰语
             voices.Add(new VoiceEntry { Name = "nl-NL-ColetteNeural", Gender = "Vrouw", Language = "nl-NL", LanguageDisplay = "Nederlands", Personality = "Vriendelijk, Positief", Category = "Algemeen" });
             voices.Add(new VoiceEntry { Name = "nl-NL-MaartenNeural", Gender = "Man", Language = "nl-NL", LanguageDisplay = "Nederlands", Personality = "Vriendelijk, Positief", Category = "Algemeen" });
 
-            // 瑞典语
             voices.Add(new VoiceEntry { Name = "sv-SE-SofieNeural", Gender = "Kvinna", Language = "sv-SE", LanguageDisplay = "Svenska", Personality = "Vänlig, Positiv", Category = "Allmän" });
             voices.Add(new VoiceEntry { Name = "sv-SE-MattiasNeural", Gender = "Man", Language = "sv-SE", LanguageDisplay = "Svenska", Personality = "Vänlig, Positiv", Category = "Allmän" });
 
-            // 丹麦语
             voices.Add(new VoiceEntry { Name = "da-DK-ChristelNeural", Gender = "Kvinde", Language = "da-DK", LanguageDisplay = "Dansk", Personality = "Venlig, Positiv", Category = "Generel" });
             voices.Add(new VoiceEntry { Name = "da-DK-JeppeNeural", Gender = "Mand", Language = "da-DK", LanguageDisplay = "Dansk", Personality = "Venlig, Positiv", Category = "Generel" });
 
-            // 挪威语
             voices.Add(new VoiceEntry { Name = "nb-NO-PernilleNeural", Gender = "Kvinne", Language = "nb-NO", LanguageDisplay = "Norsk", Personality = "Vennlig, Positiv", Category = "Generell" });
             voices.Add(new VoiceEntry { Name = "nb-NO-FinnNeural", Gender = "Mann", Language = "nb-NO", LanguageDisplay = "Norsk", Personality = "Vennlig, Positiv", Category = "Generell" });
 
-            // 芬兰语
             voices.Add(new VoiceEntry { Name = "fi-FI-NooraNeural", Gender = "Nainen", Language = "fi-FI", LanguageDisplay = "Suomi", Personality = "Ystävällinen, Positiivinen", Category = "Yleinen" });
             voices.Add(new VoiceEntry { Name = "fi-FI-HarriNeural", Gender = "Mies", Language = "fi-FI", LanguageDisplay = "Suomi", Personality = "Ystävällinen, Positiivinen", Category = "Yleinen" });
 

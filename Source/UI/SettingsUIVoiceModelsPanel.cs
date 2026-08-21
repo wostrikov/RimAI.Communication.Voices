@@ -46,7 +46,6 @@ namespace Ustas.RimAI.Communication.Voices.UI
     }
     internal static void DrawVoiceModelsList(Listing_Standard listing, TTSSettings settings, float width, System.Collections.Generic.List<VoiceModel> voiceModels)
     {
-        // Header with add/remove buttons (similar to RimTalk API configs)
         Rect headerRect = listing.GetRect(24f);
         Rect addButtonRect = new Rect(headerRect.x + headerRect.width - 65f, headerRect.y, 30f, 24f);
         Rect removeButtonRect = new Rect(headerRect.x + headerRect.width - 30f, headerRect.y, 30f, 24f);

@@ -6,9 +6,6 @@ using Verse;
 
 namespace Ustas.RimAI.Communication.Voices.Data
 {
-    /// <summary>
-    /// TTS module settings - independent from main RimTalk settings
-    /// </summary>
     public class TTSSettings : ModSettings
     {
         // Player reference voice model id (null/empty = use supplier default, VoiceModel.NONE_MODEL_ID = none)
@@ -77,7 +74,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
         // Remove bracketed content during preprocessing
         public bool RemoveBracketsInPreProcess = false;
         
-        public string TTSModel = "s1"; // fishaudio-1 (v1.6) or s1 (default)//Deprecated
+        public string TTSModel = "s1";
         public float TTSTemperature = 0.9f; // TTS generation temperature (0.7-1.0)//Deprecated
         public float TTSTopP = 0.9f; // TTS generation top_p (0.7-1.0)//Deprecated
         public float TTSSpeed = 1.0f; // TTS playback speed (0.25-4.0)//Deprecated

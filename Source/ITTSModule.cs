@@ -3,10 +3,6 @@ using Verse;
 
 namespace Ustas.RimAI.Communication.Voices
 {
-    /// <summary>
-    /// Public interface for TTS module lifecycle and coordination.
-    /// Main RimTalk mod uses reflection to discover and call these methods.
-    /// </summary>
     public interface ITTSModule
     {
         /// <summary>

@@ -159,9 +159,6 @@ public static class AudioPlaybackService
                 {
                     _audioSource.clip = clip;
                     _audioSource.volume = UnityEngine.Mathf.Clamp01(volume);
-                    // var follower = _audioPlayerObject.GetComponent<FollowPawnBehaviour>() ?? _audioPlayerObject.AddComponent<FollowPawnBehaviour>();
-                    // follower.pawn = pawn;
-                    // follower.verticalOffset = 0.5f;
                     _audioSource.Play();
                     // follower.pawn = null;
 
@@ -492,7 +489,6 @@ public static class AudioPlaybackService
                 return;
             }
 
-            // 使用 DrawPos 以获得平滑的位置（会随 pawn 移动）
             transform.position = pawn.DrawPos + Vector3.up * verticalOffset;
         }
     }

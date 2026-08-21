@@ -29,14 +29,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     return null;
                 }
 
-                // 选择模型（默认使用 Flash，更快更便宜）
                 string model = FlashModel;
-                string voiceName = request.Voice ?? "Kore"; // 默认语音
+                string voiceName = request.Voice ?? "Kore";
 
-                // 构建请求 URL
                 string url = $"{BaseUrl}{model}:generateContent?key={apiKey}";
 
-                // 构建请求体
                 var requestBody = BuildRequestBody(request.Input, voiceName);
                 string jsonRequest = JsonUtil.SerializeToJson(requestBody);
 
@@ -53,7 +50,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 string responseText = await response.Content.ReadAsStringAsync();
                 var responseData = JsonUtil.DeserializeFromJson<Dictionary<string, object>>(responseText);
 
-                // 提取音频数据
                 string audioData = ExtractAudioData(responseData);
                 
                 if (string.IsNullOrEmpty(audioData))
@@ -62,10 +58,8 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     return null;
                 }
 
-                // Base64 解码
                 byte[] audioBytes = Convert.FromBase64String(audioData);
                 
-                // Gemini返回的是PCM格式，需要转换为WAV
                 byte[] wavData = ConvertPcmToWav(audioBytes);
                 
                 return wavData;
@@ -79,7 +73,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
 
         private static object BuildRequestBody(string text, string voiceName)
         {
-            // 构建 Gemini TTS 请求体
             var requestBody = new
             {
                 contents = new[]
@@ -111,7 +104,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
             return requestBody;
         }
 
-        // 从响应中提取音频数据
         private static string ExtractAudioData(Dictionary<string, object> response)
         {
             try
@@ -145,10 +137,8 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
         }
 
-        // 将 PCM 转换为 WAV 格式
         private static byte[] ConvertPcmToWav(byte[] pcmData)
         {
-            // Gemini TTS 输出参数：24kHz, 16-bit, Mono
             int sampleRate = 24000;
             int channels = 1;
             int bitsPerSample = 16;
@@ -183,7 +173,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
         }
 
-        // 支持的语音选项（30种）
         public static readonly string[] AvailableVoices = new[]
         {
             "Zephyr", "Puck", "Charon",

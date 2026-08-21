@@ -34,9 +34,6 @@ internal static class FishAudioTtsServerBootstrap
                 }
             }
             
-            // Method 2: Try from RimWorld Mods directory structure
-            // Assembly is in: Mods/rimtalk/1.6/Assemblies/Ustas.RimAI.Communication.dll
-            // Script is in:   Mods/rimtalk/Source/Service/fish_audio_tts.py
             var loadedMods = Verse.LoadedModManager.RunningMods;
             foreach (var mod in loadedMods)
             {

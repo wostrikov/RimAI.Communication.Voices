@@ -10,10 +10,6 @@ using Verse;
 
 namespace Ustas.RimAI.Communication.Voices.Patch
 {
-    /// <summary>
-    /// Adds Voice Model selection button to character bio tab
-    /// This creates a separate button next to the RimTalk Persona button
-    /// </summary>
     [StaticConstructorOnStartup]
     public static class BioTabVoicePatch
     {
@@ -75,8 +71,6 @@ namespace Ustas.RimAI.Communication.Voices.Patch
         {
             if (pawn == null) return false;
             
-            // Use RimTalk's own eligibility check by verifying if the pawn has a PawnState
-            // This ensures we only show voice UI for pawns that RimTalk considers eligible for talking
             try
             {
                 var pawnState = global::Ustas.RimAI.Communication.Data.Cache.Get(pawn);
@@ -89,10 +83,6 @@ namespace Ustas.RimAI.Communication.Voices.Patch
             }
         }
 
-        /// <summary>
-        /// Transpiler to inject voice element after persona element
-        /// Hooks into the same location as RimTalk's persona patch
-        /// </summary>
         [HarmonyPatch(typeof(CharacterCardUtility), "DoTopStack")]
         public static class DoTopStack_Patch
         {

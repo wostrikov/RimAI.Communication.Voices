@@ -65,7 +65,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
 
                 using var req = new HttpRequestMessage(HttpMethod.Post, url);
                 
-                // Set required headers
                 req.Headers.Add("Ocp-Apim-Subscription-Key", request.ApiKey);
                 req.Headers.Add("User-Agent", "RimTalkTTS");
                 
@@ -86,7 +85,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     return null;
                 }
 
-                // Return audio data
                 return await resp.Content.ReadAsByteArrayAsync();
             }
             catch (Exception ex)
