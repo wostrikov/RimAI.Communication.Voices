@@ -43,6 +43,7 @@ public sealed class VoicesComposition : IRimAiModuleComposition
             var harmony = new Harmony("ustas.rimai.communication.voices");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             TalkLifecycleBridge.Register();
+            VoicesPipelineProbe.Register();
             TTSModule.Instance.Initialize();
 
             if (!_quitHooked)

@@ -7,6 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Source\Policy\TtsProviderPolicy.cs" Link="Policy\TtsProviderPolicy.cs" />
+    <Compile Include="..\Source\Policy\DialogueAudioSyncPolicy.cs" Link="Policy\DialogueAudioSyncPolicy.cs" />
     <None Include="..\Source\Service\TTSService.cs" Link="TTSService.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\Integration\TalkLifecycleBridge.cs" Link="TalkLifecycleBridge.cs.src" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

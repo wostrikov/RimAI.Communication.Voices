@@ -3,6 +3,7 @@ using Ustas.RimAI.Communication.Data;
 using Ustas.RimAI.Communication.UI;
 using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Patch;
+using Ustas.RimAI.Communication.Voices.Policy;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Core.Communication;
 using Verse;
@@ -32,17 +33,19 @@ public static class TalkLifecycleBridge
     {
         try
         {
-            if (!RimTalkPatches.TTSModuleIsActive())
-                return true;
             if (speaker is not Pawn pawn || talkResponse is not TalkResponse talk)
                 return true;
-            if (AudioPlaybackService.IsCurrentlyPlaying())
+            bool ttsActive = RimTalkPatches.TTSModuleIsActive();
+            bool playing = AudioPlaybackService.IsCurrentlyPlaying();
+            bool blocked = RimTalkPatches.IsBlocked(talk.Id);
+            if (!DialogueAudioSyncPolicy.AllowDisplay(ttsActive, playing, blocked))
                 return false;
-            if (RimTalkPatches.IsBlocked(talk.Id))
-                return false;
-            var settings = TTSConfig.Settings;
-            float volume = settings?.GetSupplierVolume(settings.Supplier) ?? 1.0f;
-            AudioPlaybackService.PlayAudio(talk.Id, pawn, volume);
+            if (DialogueAudioSyncPolicy.ShouldStartPlayback(ttsActive, playing, blocked))
+            {
+                var settings = TTSConfig.Settings;
+                float volume = settings?.GetSupplierVolume(settings.Supplier) ?? 1.0f;
+                AudioPlaybackService.PlayAudio(talk.Id, pawn, volume);
+            }
             return true;
         }
         catch (Exception ex)
