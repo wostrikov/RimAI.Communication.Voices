@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Policy;
 using RimTalkPatches = Ustas.RimAI.Communication.Voices.Patch.RimTalkPatches;
 using Verse;
 
@@ -158,16 +159,25 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 return false;
             }
 
-            // Validate API key for selected supplier
-            // EdgeTTS doesn't need API key - skip validation
-            if (settings.Supplier != TTSSettings.TTSSupplier.EdgeTTS)
+            TtsProviderKind preferred = MapSupplier(settings.Supplier);
+            bool preferredKey = !string.IsNullOrWhiteSpace(GetApiKeyForSupplier(settings.Supplier, settings));
+            var chain = TtsProviderChain.Build(preferred, preferredKey);
+            bool anyUsable = false;
+            for (int i = 0; i < chain.Count; i++)
             {
-                string apiKey = GetApiKeyForSupplier(settings.Supplier, settings);
-                if (!_provider.IsApiKeyValid(apiKey))
+                var slot = chain[i];
+                if (slot.Kind == TtsProviderKind.None)
+                    continue;
+                if (!slot.RequiresCredential || slot.CredentialPresent)
                 {
-                    reason = $"API key not configured or invalid for supplier {settings.Supplier}";
-                    return false;
+                    anyUsable = true;
+                    break;
                 }
+            }
+            if (!anyUsable)
+            {
+                reason = $"No usable TTS provider in chain for {settings.Supplier}";
+                return false;
             }
 
             // Early exit: empty text
@@ -327,24 +337,94 @@ namespace Ustas.RimAI.Communication.Voices.Service
         /// </summary>
         private static async Task<byte[]> GenerateSpeechAsync(Voice.ResolvedPawnVoice voice, string inputText, string instructText, TTSSettings settings)
         {
+            TtsProviderKind preferred = MapSupplier(settings.Supplier);
+            bool preferredKey = !string.IsNullOrWhiteSpace(GetApiKeyForSupplier(settings.Supplier, settings));
+            var chain = TtsProviderChain.Build(preferred, preferredKey);
+            TtsProviderOutcome outcome = await TtsProviderOrchestrator.ExecuteAsync(
+                chain,
+                slot => AttemptSlotAsync(slot, voice, inputText, instructText, settings));
+            if (outcome.Class != TtsFailureClass.Success)
+                return null;
+            return outcome.Audio;
+        }
+
+        static async Task<TtsSlotResult> AttemptSlotAsync(
+            TtsProviderSlot slot,
+            Voice.ResolvedPawnVoice voice,
+            string inputText,
+            string instructText,
+            TTSSettings settings)
+        {
+            TTSSettings.TTSSupplier supplier = UnmapSupplier(slot.Kind);
+            var provider = CreateProvider(supplier, settings);
             var ttsRequest = new Service.TTSRequest
             {
-                ApiKey = GetApiKeyForSupplier(settings.Supplier, settings),
+                ApiKey = GetApiKeyForSupplier(supplier, settings),
                 Model = voice.Model,
                 Input = inputText,
                 InstructText = instructText,
                 Instructions = voice.Instructions,
-                ResponseFormat = settings.GetSupplierResponseFormat(settings.Supplier),
+                ResponseFormat = settings.GetSupplierResponseFormat(supplier),
                 Voice = voice.VoiceId,
                 Speed = voice.Speed,
                 Pitch = voice.Pitch,
                 Locale = voice.Locale,
-                Volume = settings.GetSupplierVolume(settings.Supplier),
-                Temperature = settings.GetSupplierTemperature(settings.Supplier),
-                TopP = settings.GetSupplierTopP(settings.Supplier)
+                Volume = settings.GetSupplierVolume(supplier),
+                Temperature = settings.GetSupplierTemperature(supplier),
+                TopP = settings.GetSupplierTopP(supplier)
             };
 
-            return await _provider.GenerateSpeechAsync(ttsRequest);
+            try
+            {
+                byte[] audio = await provider.GenerateSpeechAsync(ttsRequest).ConfigureAwait(false);
+                if (audio == null || audio.Length == 0)
+                    return new TtsSlotResult { Class = TtsFailureClass.Transient };
+                return new TtsSlotResult { Class = TtsFailureClass.Success, Audio = audio };
+            }
+            catch (OperationCanceledException)
+            {
+                return new TtsSlotResult { Class = TtsFailureClass.Cancelled };
+            }
+            catch (TimeoutException)
+            {
+                return new TtsSlotResult { Class = TtsFailureClass.Transient };
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                return new TtsSlotResult { Class = TtsFailureClass.Transient };
+            }
+        }
+
+        public static TtsProviderKind MapSupplier(TTSSettings.TTSSupplier supplier)
+        {
+            switch (supplier)
+            {
+                case TTSSettings.TTSSupplier.EdgeTTS: return TtsProviderKind.EdgeTts;
+                case TTSSettings.TTSSupplier.OpenAI: return TtsProviderKind.OpenAi;
+                case TTSSettings.TTSSupplier.AzureTTS: return TtsProviderKind.Azure;
+                case TTSSettings.TTSSupplier.GeminiTTS: return TtsProviderKind.Gemini;
+                case TTSSettings.TTSSupplier.FishAudio: return TtsProviderKind.FishAudio;
+                case TTSSettings.TTSSupplier.CosyVoice: return TtsProviderKind.CosyVoice;
+                case TTSSettings.TTSSupplier.IndexTTS: return TtsProviderKind.IndexTts;
+                case TTSSettings.TTSSupplier.TTSWebUI: return TtsProviderKind.TtsWebUi;
+                default: return TtsProviderKind.None;
+            }
+        }
+
+        static TTSSettings.TTSSupplier UnmapSupplier(TtsProviderKind kind)
+        {
+            switch (kind)
+            {
+                case TtsProviderKind.EdgeTts: return TTSSettings.TTSSupplier.EdgeTTS;
+                case TtsProviderKind.OpenAi: return TTSSettings.TTSSupplier.OpenAI;
+                case TtsProviderKind.Azure: return TTSSettings.TTSSupplier.AzureTTS;
+                case TtsProviderKind.Gemini: return TTSSettings.TTSSupplier.GeminiTTS;
+                case TtsProviderKind.FishAudio: return TTSSettings.TTSSupplier.FishAudio;
+                case TtsProviderKind.CosyVoice: return TTSSettings.TTSSupplier.CosyVoice;
+                case TtsProviderKind.IndexTts: return TTSSettings.TTSSupplier.IndexTTS;
+                case TtsProviderKind.TtsWebUi: return TTSSettings.TTSSupplier.TTSWebUI;
+                default: return TTSSettings.TTSSupplier.None;
+            }
         }
 
         /// <summary>
