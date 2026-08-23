@@ -21,11 +21,11 @@ This module captures RimAI.Communication dialogue and converts it to speech. Fea
 [*]Translation support for multilingual speech
 [*]Automatic dialogue blocking until speech is ready
 [*]Turn on and off anytime
-[*]Synchronized cancellation when RimTalk ignores dialogue
+[*]Synchronized cancellation when RimAI.Communication ignores dialogue
 [*]Configurable voice parameters (temperature, top_p) (Available only for fish audio)
 [*]Volume control
-[*]Button to ignore all existing Rimtalk dialogues
-[*]Button to generate a round of new Rimtalk dialogue
+[*]Button to ignore all existing RimAI.Communication dialogues
+[*]Button to generate a round of new RimAI.Communication dialogue
 [/list]
 
 [h2]Requirements[/h2]
@@ -67,8 +67,8 @@ This module captures RimAI.Communication dialogue and converts it to speech. Fea
 [*]Assign voice models to your colonists
 [/olist]
 
-[h2]ATTENTION[/h2]: When using Alt+F4 to close the game, RimTalk TTS may not shutdown the server.
-This mod operates non-invasively through Harmony patches and does not modify RimTalk's core code.
+[h2]ATTENTION[/h2]: When using Alt+F4 to close the game, Voices TTS may not shut down the server.
+This module patches Harmony surfaces owned by RimAI.Communication. It does not replace Communication.
 
 [h2]Default prompts are tested to be working fine.[/h2]
 	</description>
