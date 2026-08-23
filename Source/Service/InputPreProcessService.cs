@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Policy;
 using Verse;
 
 namespace Ustas.RimAI.Communication.Voices.Service
@@ -23,16 +24,16 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 string language = string.IsNullOrWhiteSpace(targetLanguage)
                     ? VoiceSharedAiText.Language
                     : targetLanguage;
-                string prompt = VoiceSharedAiText.SubstitutePrompt(promptTemplate, text)
-                    .Replace("{language}", language)
-                    .Replace("{text}", text ?? string.Empty);
+                string prompt = VoiceTextPreprocessPolicy.BuildPrompt(promptTemplate, language, text);
 
                 var (response, success) = await InputPreProcessClient.QueryAsync(prompt, text, settings);
                 if (response == null)
                     return null;
-                response.Text = CleanText(response.Text);
+                response.Text = VoiceTextPreprocessPolicy.CleanForTts(
+                    response.Text,
+                    TTSConfig.CurrentSupplier == TTSSettings.TTSSupplier.FishAudio);
 
-                if (success && !string.IsNullOrEmpty(response.Text))
+                if (VoiceTextPreprocessPolicy.TryAccept(response.Text, success))
                     return response;
 
                 Log.Warning("[RimAI.Voices] Empty response from preprocess API");
@@ -43,25 +44,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 Log.Error($"[RimAI.Voices] preprocess failed - {ex.Message}");
                 return null;
             }
-        }
-
-        private static string CleanText(string text)
-        {
-            if (string.IsNullOrEmpty(text)) return text;
-
-            text = System.Text.RegularExpressions.Regex.Replace(
-                        System.Text.RegularExpressions.Regex.Replace(
-                            text.Normalize(System.Text.NormalizationForm.FormKC), @"\([^)]*\)", ""
-                        )
-                        , @"\s+", " "
-                    ).Trim();
-
-            if (TTSConfig.CurrentSupplier == TTSSettings.TTSSupplier.FishAudio)
-            {
-                text = text.Replace("[","(").Replace("]",")");
-            }
-
-            return text;
         }
     }
 }

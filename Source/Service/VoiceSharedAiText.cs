@@ -1,3 +1,4 @@
+using Ustas.RimAI.Communication.Voices.Policy;
 using Ustas.RimAI.Core.Configuration;
 
 namespace Ustas.RimAI.Communication.Voices.Service
@@ -18,11 +19,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
         public static string EffectiveModel =>
             Snapshot.HasActive ? Snapshot.EffectiveModel : string.Empty;
 
-        public static string SubstitutePrompt(string template, string text)
-        {
-            return (template ?? string.Empty)
-                .Replace("{language}", Language)
-                .Replace("{text}", text ?? string.Empty);
-        }
+        public static string SubstitutePrompt(string template, string text) =>
+            VoiceTextPreprocessPolicy.BuildPrompt(template, Language, text);
     }
 }

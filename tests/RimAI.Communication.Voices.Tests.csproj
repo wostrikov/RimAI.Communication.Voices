@@ -8,7 +8,13 @@
   <ItemGroup>
     <Compile Include="..\Source\Policy\TtsProviderPolicy.cs" Link="Policy\TtsProviderPolicy.cs" />
     <Compile Include="..\Source\Policy\DialogueAudioSyncPolicy.cs" Link="Policy\DialogueAudioSyncPolicy.cs" />
+    <Compile Include="..\Source\Policy\VoiceTextPreprocessPolicy.cs" Link="Policy\VoiceTextPreprocessPolicy.cs" />
+    <Compile Include="..\Source\Policy\VoiceShutdownPolicy.cs" Link="Policy\VoiceShutdownPolicy.cs" />
     <None Include="..\Source\Service\TTSService.cs" Link="TTSService.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\Integration\TalkLifecycleBridge.cs" Link="TalkLifecycleBridge.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\Service\InputPreProcessService.cs" Link="InputPreProcessService.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\Service\InputPreProcessClient.cs" Link="InputPreProcessClient.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\TTSModule.cs" Link="TTSModule.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\VoicesComposition.cs" Link="VoicesComposition.cs.src" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

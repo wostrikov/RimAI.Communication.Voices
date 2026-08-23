@@ -1,5 +1,6 @@
 using System;
 using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Policy;
 using Verse;
 
 namespace Ustas.RimAI.Communication.Voices
@@ -86,15 +87,21 @@ namespace Ustas.RimAI.Communication.Voices
             if (!IsActive) return;
             
             Log.Message("[RimAI.Voices] Game loaded, resetting TTS state");
-            Service.TTSService.StopAll(permanentShutdown: false);
+            ApplyShutdown(VoiceShutdownPolicy.ForLoad());
         }
 
         public void OnGameExit()
         {
             Log.Message("[RimAI.Voices] Game exiting, full shutdown");
-            
-            Service.TTSService.StopAll(permanentShutdown: true);
-            Service.AudioPlaybackService.FullReset(); // Then reset state
+            ApplyShutdown(VoiceShutdownPolicy.ForExit());
+        }
+
+        static void ApplyShutdown(VoiceShutdownPlan plan)
+        {
+            if (plan.StopAll)
+                Service.TTSService.StopAll(plan.PermanentShutdown);
+            if (plan.FullResetPlayback)
+                Service.AudioPlaybackService.FullReset();
         }
 
         public bool IsActive => _settings?.EnableTTS ?? false;

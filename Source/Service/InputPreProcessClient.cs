@@ -1,8 +1,7 @@
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Policy;
 using Ustas.RimAI.Communication.Client;
 using Ustas.RimAI.Communication.Data;
 using Ustas.RimAI.Communication.Util;
@@ -49,7 +48,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
         private static async Task<(PreProcessResult response, bool success)> QueryViaSharedConfigAsync(
             string prompt, string text, TTSSettings settings)
         {
-            if (settings.RemoveBracketsInPreProcess) text = RemoveBrackets(text);
+            text = VoiceTextPreprocessPolicy.PrepareUserText(text, settings.RemoveBracketsInPreProcess);
 
             IAIClient client = await AIClientFactory.GetAIClientAsync();
             if (client == null)
@@ -81,23 +80,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 Log.Error($"[RimAI.Voices] Failed to parse structured preprocessing response: {ex.Message}");
                 return (null, false);
             }
-        }
-
-        private static string RemoveBrackets(string text)
-        {
-            if (string.IsNullOrEmpty(text)) return text;
-
-            text = Regex.Replace(text, @"\([^()]*\)", "...");
-            text = Regex.Replace(text, @"\uff08[^\uff08\uff09]*\uff09", "...");
-            text = Regex.Replace(text, @"\[[^\[\]]*\]", "...");
-            text = Regex.Replace(text, @"\u3010[^\u3010\u3011]*\u3011", "...");
-            text = Regex.Replace(text, @"\*[^*]*\*", "...");
-            text = Regex.Replace(text, @"<[^<>]*>", "...");
-            text = Regex.Replace(text, @"/[^/]*/", "...");
-            text = Regex.Replace(text, @"\\[^\\]*\\", "...");
-            text = Regex.Replace(text, @"#[^#]*#", "...");
-
-            return text;
         }
     }
 }
