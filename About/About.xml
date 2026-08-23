@@ -3,74 +3,11 @@
 	<packageId>ustas.rimai.communication.voices</packageId>
 	<name>RimAI.Communication.Voices</name>
 	<author>Nitori_Tachyon</author>
-	<description>RimAI.Communication.Voices — text-to-speech for RimAI dialogue.
+	<description>RimAI.Communication.Voices speaks RimAI.Communication dialogue aloud.
 
-[url=https://github.com/whatismyname0/RimTalkTTSModule]Github[/url]
-[url=https://tieba.baidu.com/p/10278651916]Install tutorial (Baidu Tieba in Chinese)[/url]
-[url=https://www.bilibili.com/video/BV1PB2fBsEtQ]Preview video (Bilibili)[/url]
+Assign a voice per colonist, start or stop speech at any time, and keep TTS in sync when Communication skips a line. Voice providers and keys are configured in this module's settings.
 
-This module captures RimAI.Communication dialogue and converts it to speech. Features include:
-
-[h2]Feature[/h2]
-
-[list]
-[*]Real-time speech synthesis for RimAI.Communication dialogues
-[*]Per-pawn voice model configuration
-[*]Customize voice models
-[*]Support Fish Audio, CosyVoice2(SiliconFlow), IndexTTS2(SiliconFlow) &amp; EdgeTTS(free!)
-[*]Translation support for multilingual speech
-[*]Automatic dialogue blocking until speech is ready
-[*]Turn on and off anytime
-[*]Synchronized cancellation when RimAI.Communication ignores dialogue
-[*]Configurable voice parameters (temperature, top_p) (Available only for fish audio)
-[*]Volume control
-[*]Button to ignore all existing RimAI.Communication dialogues
-[*]Button to generate a round of new RimAI.Communication dialogue
-[/list]
-
-[h2]Requirements[/h2]
-
-[list]
-[*]RimAI.Communication must be installed and enabled
-[*]It is recommended to disable simultaneous conversations in Communication settings
-[/list]
-
-[h3]Fish Audio Requirements[/h3]
-
-[list]
-[*]Python 3.9+ with fish-audio-sdk package installed
-[*][url=https://fish.audio/]Fish Audio[/url] API key
-[*]Voice reference ID (can be found on fish audio website by clicking "share" button of the voice model you want to add, then delete "https://fish.audio/m/") for speech generation
-[/list]
-
-[h3]EdgeTTS Requirements[/h3]
-
-[list]
-[*]No python environment needed
-[*]No API key needed
-[*]Completely free!
-[/list]
-
-[h3]CosyVoice2 &amp; IndexTTS2 Requirements[/h3]
-
-[list]
-[*][url=https://www.siliconflow.cn/]SiliconFlow[/url] API key
-[*](Optional)Voice references for CosyVoice2 and IndexTTS2(Add them through in-game mod option menu)
-[*](Optional)Verify your real world indentity to use custom voices
-[/list]
-
-[h2]Setup[/h2]
-
-[olist]
-[*]Enable RimAI.Communication and RimAI.Communication.Voices
-[*]Configure TTS in this module; gameplay text AI uses shared RimAI configuration
-[*]Assign voice models to your colonists
-[/olist]
-
-[h2]ATTENTION[/h2]: When using Alt+F4 to close the game, Voices TTS may not shut down the server.
-This module patches Harmony surfaces owned by RimAI.Communication. It does not replace Communication.
-
-[h2]Default prompts are tested to be working fine.[/h2]
+Requires Harmony and RimAI.Communication. Gameplay text AI stays in shared RimAI settings.
 	</description>
 	<supportedVersions>
 		<li>1.6</li>
@@ -85,8 +22,6 @@ This module patches Harmony surfaces owned by RimAI.Communication. It does not r
 		<li>
 			<packageId>ustas.rimai.communication</packageId>
 			<displayName>RimAI.Communication</displayName>
-			<steamWorkshopUrl>steam://url/CommunityFilePage/3551203752</steamWorkshopUrl>
-			<downloadUrl>https://github.com/jlibrary/RimTalk/</downloadUrl>
 		</li>
 	</modDependencies>
 	<loadAfter>
