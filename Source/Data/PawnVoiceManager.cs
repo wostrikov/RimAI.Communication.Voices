@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Ustas.RimAI.Communication.Voices.Policy;
 using Verse;
 
 namespace Ustas.RimAI.Communication.Voices.Data
@@ -87,18 +88,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
         public static string GetRawVoiceModel(Pawn pawn)
         {
             if (pawn == null) return VoiceModel.DEFAULT_MODEL_ID;
-            
-            if (_pawnVoiceMap.TryGetValue(pawn.thingIDNumber, out string voiceId))
-            {
-                // If empty or null, return DEFAULT_MODEL_ID
-                if (string.IsNullOrEmpty(voiceId))
-                {
-                    return VoiceModel.DEFAULT_MODEL_ID;
-                }
-                return voiceId;
-            }
-            
-            return VoiceModel.DEFAULT_MODEL_ID; // No entry means "use default"
+            return PawnVoiceBindingPolicy.RawOrDefault(_pawnVoiceMap, pawn.thingIDNumber);
         }
 
         /// <summary>
@@ -172,17 +162,7 @@ namespace Ustas.RimAI.Communication.Voices.Data
         public static void SetVoiceModel(Pawn pawn, string voiceModelId)
         {
             if (pawn == null) return;
-            
-            if (string.IsNullOrEmpty(voiceModelId))
-            {
-                _pawnVoiceMap[pawn.thingIDNumber] = VoiceModel.DEFAULT_MODEL_ID;
-            }
-            else
-            {
-                _pawnVoiceMap[pawn.thingIDNumber] = voiceModelId;
-            }
-            
-            // Clear cached resolved voice when user changes selection
+            PawnVoiceBindingPolicy.Assign(_pawnVoiceMap, pawn.thingIDNumber, voiceModelId);
             _pawnResolvedVoiceMap.Remove(pawn.thingIDNumber);
         }
 

@@ -1,5 +1,6 @@
 using System;
 using Ustas.RimAI.Communication.Voices.Data;
+using Ustas.RimAI.Communication.Voices.Policy;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Core.Voices;
 using Verse;
@@ -63,21 +64,23 @@ namespace Ustas.RimAI.Communication.Voices.Voice
             if (settings == null)
                 return ResolvedPawnVoice.SilentVoice();
 
-            string manualChoice = ManualChoiceFor(pawn);
-            if (manualChoice == VoiceModel.NONE_MODEL_ID)
+            string raw = pawn == null ? null : PawnVoiceManager.GetRawVoiceModel(pawn);
+            bool automaticEnabled = settings.AutomaticPawnVoices
+                                    && SupportsAutomaticVoices(settings.Supplier);
+            var decision = PawnVoiceBindingPolicy.ForDialogue(raw, automaticEnabled);
+            if (decision.Silent)
                 return ResolvedPawnVoice.SilentVoice();
 
-            bool automatic = settings.AutomaticPawnVoices
-                             && SupportsAutomaticVoices(settings.Supplier)
-                             && manualChoice == null;
-
-            if (automatic)
+            if (decision.UseAutomatic)
             {
                 var identity = PawnVoiceIdentityStore.GetOrCreate(pawn);
                 if (identity != null)
                     return RenderIdentity(identity, settings);
             }
 
+            string manualChoice = string.IsNullOrEmpty(decision.ExplicitVoiceId)
+                ? null
+                : decision.ExplicitVoiceId;
             return RenderConfigured(pawn, settings, manualChoice);
         }
 
@@ -152,24 +155,6 @@ namespace Ustas.RimAI.Communication.Voices.Voice
                     Language = locale ?? LanguageOf()
                 }
             };
-        }
-
-        /// <summary>
-        /// A concrete voice the player picked for this pawn, NONE when muted, or null
-        /// when the pawn is on the default automatic path.
-        /// </summary>
-        static string ManualChoiceFor(Pawn pawn)
-        {
-            if (pawn == null)
-                return null;
-
-            string raw = PawnVoiceManager.GetRawVoiceModel(pawn);
-            if (string.IsNullOrEmpty(raw)
-                || raw == VoiceModel.DEFAULT_MODEL_ID
-                || raw == VoiceModel.RULE_BASED_MODEL_ID)
-                return null;
-
-            return raw;
         }
 
         static string LanguageOf()

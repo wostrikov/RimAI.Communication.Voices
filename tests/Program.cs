@@ -6,7 +6,8 @@ internal static class Program
     {
         int n = TtsProviderOrchestrationTests.Run()
             + DialogueAudioSyncPolicyTests.Run()
-            + VoiceTextPreprocessAndShutdownTests.Run();
+            + VoiceTextPreprocessAndShutdownTests.Run()
+            + PawnVoiceBindingTests.Run();
         Console.WriteLine("VOICES_FOCUSED_TESTS_OK passed=" + n);
         Console.WriteLine("TESTS total=" + n + " failed=0");
         return 0;

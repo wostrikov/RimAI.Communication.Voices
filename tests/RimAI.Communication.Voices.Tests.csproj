@@ -10,7 +10,10 @@
     <Compile Include="..\Source\Policy\DialogueAudioSyncPolicy.cs" Link="Policy\DialogueAudioSyncPolicy.cs" />
     <Compile Include="..\Source\Policy\VoiceTextPreprocessPolicy.cs" Link="Policy\VoiceTextPreprocessPolicy.cs" />
     <Compile Include="..\Source\Policy\VoiceShutdownPolicy.cs" Link="Policy\VoiceShutdownPolicy.cs" />
+    <Compile Include="..\Source\Policy\PawnVoiceBindingPolicy.cs" Link="Policy\PawnVoiceBindingPolicy.cs" />
     <None Include="..\Source\Service\TTSService.cs" Link="TTSService.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\Data\PawnVoiceManager.cs" Link="PawnVoiceManager.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\Voice\PawnVoiceRenderer.cs" Link="PawnVoiceRenderer.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\Integration\TalkLifecycleBridge.cs" Link="TalkLifecycleBridge.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\Service\InputPreProcessService.cs" Link="InputPreProcessService.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\Service\InputPreProcessClient.cs" Link="InputPreProcessClient.cs.src" CopyToOutputDirectory="PreserveNewest" />
