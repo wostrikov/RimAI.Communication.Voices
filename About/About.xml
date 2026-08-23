@@ -3,11 +3,14 @@
 	<packageId>ustas.rimai.communication.voices</packageId>
 	<name>RimAI.Communication.Voices</name>
 	<author>Nitori_Tachyon</author>
-	<description>RimAI.Communication.Voices speaks RimAI.Communication dialogue aloud.
+	<description>RimAI.Communication.Voices озвучує репліки RimAI.Communication.
 
-Assign a voice per colonist, start or stop speech at any time, and keep TTS in sync when Communication skips a line. Voice providers and keys are configured in this module's settings.
+Основні можливості:
+• окремий голос для кожного колоніста
+• можна вмикати й вимикати озвучку будь-коли
+• озвучка зупиняється, якщо Communication пропускає репліку
 
-Requires Harmony and RimAI.Communication. Gameplay text AI stays in shared RimAI settings.
+Потрібні Harmony та RimAI.Communication. Голоси й ключі TTS налаштовуються в цьому модулі. Ігровий текстовий ШІ лишається в спільних параметрах RimAI.
 	</description>
 	<supportedVersions>
 		<li>1.6</li>
