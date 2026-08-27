@@ -44,6 +44,10 @@ namespace Ustas.RimAI.Communication.Voices.UI
             Widgets.BeginScrollView(inRect, ref mainScrollPosition, viewRect);
 
             var listing = new Listing_Standard();
+            // Verse wraps a Listing into a second column, off the visible view, as soon as
+            // content passes the rect height, and CurHeight then reports that new column.
+            // A scrolling settings page never wants that; see validate_scrollable_listings.
+            listing.maxOneColumn = true;
             listing.Begin(viewRect);
 
             listing.CheckboxLabeled("Ustas.RimAI.Communication.Settings.TTS.Enable".Translate(), ref settings.EnableTTS, "Ustas.RimAI.Communication.Settings.TTS.EnableTooltip".Translate());
