@@ -99,7 +99,9 @@ namespace Ustas.RimAI.Communication.Voices
         static void ApplyShutdown(VoiceShutdownPlan plan)
         {
             if (plan.StopAll)
-                Service.TTSService.StopAll(plan.PermanentShutdown);
+                Service.TTSService.StopAll(
+                    plan.PermanentShutdown,
+                    touchUnityAudio: !plan.FullResetPlayback);
             if (plan.FullResetPlayback)
                 Service.AudioPlaybackService.FullReset();
         }

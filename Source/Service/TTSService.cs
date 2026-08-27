@@ -499,7 +499,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             return settings.GetSupplierApiKey(supplier);
         }
 
-        public static void StopAll(bool permanentShutdown = false)
+        public static void StopAll(bool permanentShutdown = false, bool touchUnityAudio = true)
         {
             if (permanentShutdown)
             {
@@ -528,7 +528,15 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 RimTalkPatches.blockedDialogues.Clear();
             }
             
-            AudioPlaybackService.StopAndClear();
+            // Application.quitting runs after Unity has started native teardown.
+            // Reading AudioSource.isPlaying there can access an already released
+            // native object and crash outside the managed exception boundary.
+            // Save/load cleanup still stops the live AudioSource normally; exit
+            // cleanup is managed-only and lets process teardown own native audio.
+            if (touchUnityAudio)
+            {
+                AudioPlaybackService.StopAndClear();
+            }
         }
 
         public static void CancelDialogue(Guid dialogueId)

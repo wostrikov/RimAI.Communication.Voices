@@ -51,6 +51,11 @@ internal static class VoiceTextPreprocessAndShutdownTests
         string module = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TTSModule.cs.src"));
         T(module.Contains("VoiceShutdownPolicy.ForLoad()"), "module-load-plan");
         T(module.Contains("VoiceShutdownPolicy.ForExit()"), "module-exit-plan");
+        T(module.Contains("touchUnityAudio: !plan.FullResetPlayback"), "exit-avoids-native-audio");
+
+        string ttsService = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TTSService.cs.src"));
+        T(ttsService.Contains("bool touchUnityAudio = true"), "stop-all-native-audio-policy");
+        T(ttsService.Contains("if (touchUnityAudio)"), "stop-all-gates-native-audio");
 
         string composition = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "VoicesComposition.cs.src"));
         T(composition.Contains("TTSModule.Instance.OnGameExit()"), "composition-quit-calls-exit");
