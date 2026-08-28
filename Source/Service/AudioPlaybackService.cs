@@ -17,8 +17,8 @@ namespace Ustas.RimAI.Communication.Voices.Service;
 [StaticConstructorOnStartup]
 public static class AudioPlaybackService
 {
-    private static readonly GameObject _audioPlayerObject;
-    private static readonly AudioSource _audioSource;
+    private static GameObject _audioPlayerObject;
+    private static AudioSource _audioSource;
     
     // === Audio State Tracking ===
     // Single source of truth: dialogue -> audio bytes (null means generation failed)
@@ -29,13 +29,38 @@ public static class AudioPlaybackService
     private static readonly object _lock = new object();
 
     /// <summary>
-    /// Static constructor - initializes Unity AudioSource on game startup (main thread)
+    /// Static constructor - builds the player at startup when the module is
+    /// already approved, which is the ordinary case.
     /// </summary>
     static AudioPlaybackService()
     {
+        EnsurePlayer();
+    }
+
+    /// <summary>
+    /// Build the audio player if it is not there yet.
+    ///
+    /// This used to happen once, in the static constructor, and only when the
+    /// handshake had already approved the module. Approval that arrived later -
+    /// which is what happens when speech is switched on during a session -
+    /// could never be acted on, because the fields were readonly and the
+    /// constructor had already run. The symptom was silence with nothing in the
+    /// log: PlayAudio returns the moment it sees a null source.
+    ///
+    /// Unity objects belong to the main thread, and every caller of this is on
+    /// it: the static constructor runs under StaticConstructorOnStartup and
+    /// PlayAudio is reached from the dialogue UI.
+    /// </summary>
+    private static bool EnsurePlayer()
+    {
+        if (_audioSource != null)
+        {
+            return true;
+        }
+
         if (!RimAiHandshake.IsApproved(RimAiModuleIds.Voices))
         {
-            return;
+            return false;
         }
 
         _audioPlayerObject = new GameObject("RimTalkAudioPlayer");
@@ -43,10 +68,8 @@ public static class AudioPlaybackService
         _audioSource = _audioPlayerObject.AddComponent<AudioSource>();
         _audioSource.playOnAwake = false;
         _audioSource.spatialBlend = 0f; // 2D sound
-        // _audioSource.minDistance = 100f;
-        // _audioSource.maxDistance = 10f;
-        // _audioSource.rolloffMode = AudioRolloffMode.Logarithmic;
         _audioSource.dopplerLevel = 0f;
+        return true;
     }
     
     /// <summary>
@@ -88,10 +111,19 @@ public static class AudioPlaybackService
     /// <summary>
     /// Play audio for a dialogue. Waits for previous playback and TTS generation.
     /// </summary>
-    public static async void PlayAudio(Guid dialogueId, Pawn pawn, float volume = 1.0f)
+    public static void PlayAudio(Guid dialogueId, Pawn pawn, float volume = 1.0f)
+    {
+        // Fire-and-forget by contract, but not invisible: routed through the
+        // gate so quitting waits for it. As an async void it was neither
+        // awaitable nor counted, which is how a crash on Alt+F4 during speech
+        // could happen while the drain reported nothing in flight (K034).
+        RimAiBackground.Run(() => PlayAudioAsync(dialogueId, pawn, volume));
+    }
+
+    private static async Task PlayAudioAsync(Guid dialogueId, Pawn pawn, float volume)
     {
         if (dialogueId == Guid.Empty) return;
-        if (_audioSource == null) return;
+        if (!EnsurePlayer()) return;
 
         try
         {
@@ -167,6 +199,15 @@ public static class AudioPlaybackService
                     // Wait for playback to complete based on clip length
                     int playbackDelayMs = (int)(clip.length * 1000f);
                     await Task.Delay(playbackDelayMs);
+
+                    // The resume point is seconds later, which is long enough
+                    // for the player to have quit meanwhile. Touching a Unity
+                    // object while the runtime is being torn down is the whole
+                    // of K034, so stop here instead.
+                    if (RimAiBackground.IsShuttingDown)
+                    {
+                        return;
+                    }
                 }
                 else
                 {
