@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Verse;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
@@ -123,7 +124,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             catch (TaskCanceledException)
             {
-                Log.Message("[RimAI.Voices] OpenAITTSClient: request cancelled");
+                ModuleLog.Message("[RimAI.Voices] OpenAITTSClient: request cancelled");
                 return null;
             }
             catch (HttpRequestException ex)

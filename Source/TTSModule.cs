@@ -2,6 +2,7 @@ using System;
 using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Policy;
 using Verse;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices
 {
@@ -55,13 +56,13 @@ namespace Ustas.RimAI.Communication.Voices
             }
             catch { }
 
-            Log.Message("[RimAI.Voices] ========== Shared RimAI text-AI ==========");
-            Log.Message($"[RimAI.Voices] Provider: {Service.VoiceSharedAiText.Provider}");
-            Log.Message($"[RimAI.Voices] Model: {(string.IsNullOrWhiteSpace(Service.VoiceSharedAiText.EffectiveModel) ? "(not set)" : Service.VoiceSharedAiText.EffectiveModel)}");
-            Log.Message($"[RimAI.Voices] Language: {Service.VoiceSharedAiText.Language}");
-            Log.Message("[RimAI.Voices] ==========================================");
+            ModuleLog.Message("[RimAI.Voices] ========== Shared RimAI text-AI ==========");
+            ModuleLog.Message($"[RimAI.Voices] Provider: {Service.VoiceSharedAiText.Provider}");
+            ModuleLog.Message($"[RimAI.Voices] Model: {(string.IsNullOrWhiteSpace(Service.VoiceSharedAiText.EffectiveModel) ? "(not set)" : Service.VoiceSharedAiText.EffectiveModel)}");
+            ModuleLog.Message($"[RimAI.Voices] Language: {Service.VoiceSharedAiText.Language}");
+            ModuleLog.Message("[RimAI.Voices] ==========================================");
 
-            Log.Message("[RimAI.Voices] TTS Module initialized");
+            ModuleLog.Message("[RimAI.Voices] TTS Module initialized");
         }
 
         public void OnDialogueGenerated(string text, Pawn pawn, Guid dialogueId)
@@ -86,13 +87,13 @@ namespace Ustas.RimAI.Communication.Voices
         {
             if (!IsActive) return;
             
-            Log.Message("[RimAI.Voices] Game loaded, resetting TTS state");
+            ModuleLog.Message("[RimAI.Voices] Game loaded, resetting TTS state");
             ApplyShutdown(VoiceShutdownPolicy.ForLoad());
         }
 
         public void OnGameExit()
         {
-            Log.Message("[RimAI.Voices] Game exiting, full shutdown");
+            ModuleLog.Message("[RimAI.Voices] Game exiting, full shutdown");
             ApplyShutdown(VoiceShutdownPolicy.ForExit());
         }
 

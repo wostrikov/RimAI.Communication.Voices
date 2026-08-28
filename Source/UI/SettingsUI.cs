@@ -6,6 +6,7 @@ using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Communication.Voices.Patch;
 using Ustas.RimAI.Core.Storage;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.UI
 {
@@ -57,7 +58,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 if (!settings.EnableTTS)
                 {
                     AudioPlaybackService.StopAndClear();
-                    Log.Message("[RimAI.Voices] TTS disabled via settings");
+                    ModuleLog.Message("[RimAI.Voices] TTS disabled via settings");
                     listing.End();
                     Widgets.EndScrollView();
                     return;
@@ -67,7 +68,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                     if (Find.CurrentMap != null)
                     {
                         TTSService.ReloadMap(Find.CurrentMap);
-                        Log.Message("[RimAI.Voices] TTS enabled via settings, reloading map pawns");
+                        ModuleLog.Message("[RimAI.Voices] TTS enabled via settings, reloading map pawns");
                     }
                 }
             }

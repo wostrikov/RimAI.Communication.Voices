@@ -7,6 +7,7 @@ using UnityEngine;
 using Verse;
 using Ustas.RimAI.Core.Storage;
 using RimAI.Core.Runtime;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service;
 
@@ -138,7 +139,7 @@ public static class AudioPlaybackService
             {
                 if (!_dialogueAudio.TryGetValue(dialogueId, out wavData))
                 {
-                    Log.Message($"[RimAI.Voices] No audio found for dialogue {dialogueId}, skipping playback");
+                    ModuleLog.Message($"[RimAI.Voices] No audio found for dialogue {dialogueId}, skipping playback");
                     _isPlaying = false;
                     return;
                 }
@@ -146,7 +147,7 @@ public static class AudioPlaybackService
                 if (wavData == null || wavData.Length == 0)
                 {
                     _dialogueAudio.Remove(dialogueId);
-                    Log.Message($"[RimAI.Voices] Audio is null or empty for dialogue {dialogueId}, skipping playback");
+                    ModuleLog.Message($"[RimAI.Voices] Audio is null or empty for dialogue {dialogueId}, skipping playback");
                     _isPlaying = false;
                     return;
                 }

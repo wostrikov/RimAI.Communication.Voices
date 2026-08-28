@@ -7,6 +7,7 @@ using Ustas.RimAI.Communication.Voices.Policy;
 using RimTalkPatches = Ustas.RimAI.Communication.Voices.Patch.RimTalkPatches;
 using Verse;
 using RimAI.Core.Runtime;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
@@ -37,7 +38,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 // Create new provider
                 _provider = CreateProvider(supplier, settings);
                 
-                Log.Message($"[RimAI.Voices] TTS provider set to {supplier}");
+                ModuleLog.Message($"[RimAI.Voices] TTS provider set to {supplier}");
             }
         }
 
@@ -136,7 +137,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             // Perform early validation checks
             if (!ValidateDialogueRequest(text, voice, dialogueId, settings, out string reason))
             {
-                Log.Message($"[RimAI.Voices] Rejected - {reason}");
+                ModuleLog.Message($"[RimAI.Voices] Rejected - {reason}");
                 CleanupAndRelease(dialogueId);
                 return;
             }
@@ -254,7 +255,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 // Check if should continue after preprocessing
                 if (!ShouldContinueProcessing(dialogueId, settings, out string reason))
                 {
-                    Log.Message($"[RimAI.Voices] {reason} (discarding audio)");
+                    ModuleLog.Message($"[RimAI.Voices] {reason} (discarding audio)");
                     CleanupAndRelease(dialogueId);
                     return;
                 }
@@ -279,7 +280,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             catch (OperationCanceledException)
             {
-                Log.Message($"[RimAI.Voices] Dialogue {dialogueId} generation cancelled");
+                ModuleLog.Message($"[RimAI.Voices] Dialogue {dialogueId} generation cancelled");
                 CleanupAndRelease(dialogueId);
             }
             catch (Exception ex)
@@ -436,7 +437,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             // Check if should continue
             if (!ShouldContinueProcessing(dialogueId, settings, out string reason))
             {
-                Log.Message($"[RimAI.Voices] {reason} (discarding audio)");
+                ModuleLog.Message($"[RimAI.Voices] {reason} (discarding audio)");
                 CleanupAndRelease(dialogueId);
                 return;
             }
@@ -445,7 +446,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             {
                 if (!RimTalkPatches.IsBlocked(dialogueId))
                 {
-                    Log.Message($"[RimAI.Voices] Dialogue {dialogueId} is no longer blocked after generation (discarding audio)");
+                    ModuleLog.Message($"[RimAI.Voices] Dialogue {dialogueId} is no longer blocked after generation (discarding audio)");
                     CleanupFailedDialogue(dialogueId);
                 }
                 else

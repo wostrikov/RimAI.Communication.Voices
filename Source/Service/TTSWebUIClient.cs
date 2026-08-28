@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Verse;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
@@ -126,7 +127,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             catch (TaskCanceledException)
             {
-                Log.Message("[RimAI.Voices] TTSWebUIClient: Request cancelled");
+                ModuleLog.Message("[RimAI.Voices] TTSWebUIClient: Request cancelled");
                 return null;
             }
             catch (Exception ex)
@@ -160,7 +161,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 if (!response.IsSuccessStatusCode)
                 {
                     // Some TTS-WebUI setups may not have this endpoint
-                    Log.Message($"[RimAI.Voices] TTSWebUIClient: Voices endpoint not available ({response.StatusCode})");
+                    ModuleLog.Message($"[RimAI.Voices] TTSWebUIClient: Voices endpoint not available ({response.StatusCode})");
                     return result;
                 }
                 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Verse;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
 {
@@ -108,7 +109,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                         clockSkewSeconds += 300;
                         if (Prefs.DevMode)
                         {
-                            Log.Message($"[EdgeTTS] Adjusting clock skew to {clockSkewSeconds} seconds");
+                            ModuleLog.Message($"[EdgeTTS] Adjusting clock skew to {clockSkewSeconds} seconds");
                         }
                     }
                     
@@ -142,7 +143,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 
                 if (Prefs.DevMode)
                 {
-                    Log.Message($"[EdgeTTS] Connecting to: {wssUrl.Substring(0, Math.Min(100, wssUrl.Length))}...");
+                    ModuleLog.Message($"[EdgeTTS] Connecting to: {wssUrl.Substring(0, Math.Min(100, wssUrl.Length))}...");
                 }
                 
                 await webSocket.ConnectAsync(new Uri(wssUrl), cts.Token);
@@ -154,7 +155,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 
                 if (Prefs.DevMode)
                 {
-                    Log.Message("[EdgeTTS] WebSocket connected successfully");
+                    ModuleLog.Message("[EdgeTTS] WebSocket connected successfully");
                 }
                 
                 await SendConfigMessageAsync();
@@ -195,7 +196,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             
             if (Prefs.DevMode)
             {
-                Log.Message("[EdgeTTS] Config message sent");
+                ModuleLog.Message("[EdgeTTS] Config message sent");
             }
         }
         
@@ -217,7 +218,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             
             if (Prefs.DevMode)
             {
-                Log.Message($"[EdgeTTS] SSML message sent, RequestId: {requestId}");
+                ModuleLog.Message($"[EdgeTTS] SSML message sent, RequestId: {requestId}");
             }
         }
         
@@ -237,7 +238,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                     {
                         if (Prefs.DevMode)
                         {
-                            Log.Message($"[EdgeTTS] WebSocket closed: {result.CloseStatus} - {result.CloseStatusDescription}");
+                            ModuleLog.Message($"[EdgeTTS] WebSocket closed: {result.CloseStatus} - {result.CloseStatusDescription}");
                         }
                         break;
                     }
@@ -276,7 +277,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                         {
                             if (Prefs.DevMode)
                             {
-                                Log.Message("[EdgeTTS] Received turn.end");
+                                ModuleLog.Message("[EdgeTTS] Received turn.end");
                             }
                             break;
                         }
@@ -322,7 +323,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             
             if (Prefs.DevMode)
             {
-                Log.Message($"[EdgeTTS] Received {audioChunks.Count} audio chunks, total {totalLength} bytes");
+                ModuleLog.Message($"[EdgeTTS] Received {audioChunks.Count} audio chunks, total {totalLength} bytes");
             }
             
             return audioData;

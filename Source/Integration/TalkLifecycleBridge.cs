@@ -7,6 +7,7 @@ using Ustas.RimAI.Communication.Voices.Policy;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Core.Communication;
 using Verse;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Integration;
 
@@ -95,7 +96,7 @@ public static class TalkLifecycleBridge
     static void OnGameSessionReset(string _)
     {
         TTSModule.Instance.OnGameLoaded();
-        Log.Message("[RimAI.Voices] Game session reset, TTS state cleared");
+        ModuleLog.Message("[RimAI.Voices] Game session reset, TTS state cleared");
     }
 
     static void OnPlayerPawnInitialized(object pawn)

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Verse;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
 {
@@ -55,7 +56,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
 
                     if (Prefs.DevMode)
                     {
-                        Log.Message($"[RimAI.Voices] EdgeTTSClient: Generated {audioData.Length} bytes of audio");
+                        ModuleLog.Message($"[RimAI.Voices] EdgeTTSClient: Generated {audioData.Length} bytes of audio");
                     }
 
                     return audioData;

@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 using Verse;
 using Ustas.RimAI.Communication.Util;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 
@@ -279,13 +280,13 @@ public static class FishAudioTTSClient
         {
             if (_serverProcess == null || _serverProcess.HasExited)
             {
-                Log.Message("FishAudio TTS: Server already stopped");
+                ModuleLog.Message("FishAudio TTS: Server already stopped");
                 return;
             }
             
             try
             {
-                Log.Message("FishAudio TTS: Sending shutdown command to server...");
+                ModuleLog.Message("FishAudio TTS: Sending shutdown command to server...");
                 
                 // Try to send shutdown command via HTTP
                 var shutdownRequest = new Dictionary<string, string>
@@ -307,7 +308,7 @@ public static class FishAudioTTSClient
 
                         if (task.IsCompleted && task.Result.IsSuccessStatusCode)
                         {
-                            Log.Message("FishAudio TTS: Server shutdown command sent successfully");
+                            ModuleLog.Message("FishAudio TTS: Server shutdown command sent successfully");
                         }
                     }
                 }
@@ -331,7 +332,7 @@ public static class FishAudioTTSClient
                 }
                 else
                 {
-                    Log.Message("FishAudio TTS: Server exited gracefully");
+                    ModuleLog.Message("FishAudio TTS: Server exited gracefully");
                 }
             }
             catch (Exception ex)

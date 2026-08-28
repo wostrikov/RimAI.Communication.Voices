@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Verse;
 using Ustas.RimAI.Communication.Util;
 using Ustas.RimAI.Core.Storage;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 
@@ -120,7 +121,7 @@ internal static class FishAudioTtsServerBootstrap
                     {
                         FishAudioTTSClient._pythonExecutablePath = candidate;
                     }
-                    Log.Message($"FishAudio TTS: Using bundled Python at '{candidate}'");
+                    ModuleLog.Message($"FishAudio TTS: Using bundled Python at '{candidate}'");
                     return candidate;
                 }
             }
@@ -131,7 +132,7 @@ internal static class FishAudioTtsServerBootstrap
                 {
                     FishAudioTTSClient._pythonExecutablePath = candidate;
                 }
-                Log.Message($"FishAudio TTS: Using system Python executable '{candidate}'");
+                ModuleLog.Message($"FishAudio TTS: Using system Python executable '{candidate}'");
                 return candidate;
             }
         }
@@ -189,7 +190,7 @@ internal static class FishAudioTtsServerBootstrap
                     return false;
                 }
                 
-                Log.Message($"FishAudio TTS: Dependencies verified:\n{output}");
+                ModuleLog.Message($"FishAudio TTS: Dependencies verified:\n{output}");
                 return true;
             }
         }
@@ -287,7 +288,7 @@ internal static class FishAudioTtsServerBootstrap
                 return false;
             }
             
-            Log.Message("FishAudio TTS: Starting Python server...");
+            ModuleLog.Message("FishAudio TTS: Starting Python server...");
             
             // Get current process ID to pass to Python server
             int currentProcessId = Process.GetCurrentProcess().Id;
@@ -314,7 +315,7 @@ internal static class FishAudioTtsServerBootstrap
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    Log.Message($"FishAudio TTS Server: {e.Data}");
+                    ModuleLog.Message($"FishAudio TTS Server: {e.Data}");
                     if (e.Data.Contains("\"status\": \"ready\""))
                     {
                         started = true;
@@ -344,7 +345,7 @@ internal static class FishAudioTtsServerBootstrap
                     // Python server logs HTTP requests to stderr - treat as debug, not error
                     else if (e.Data.Contains("[TTS Server]") || e.Data.Contains("POST /") || e.Data.Contains("GET /"))
                     {
-                        Log.Message($"FishAudio TTS Server: {e.Data}");
+                        ModuleLog.Message($"FishAudio TTS Server: {e.Data}");
                     }
                     else
                     {
