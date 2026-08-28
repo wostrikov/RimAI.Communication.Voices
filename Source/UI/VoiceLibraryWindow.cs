@@ -44,20 +44,20 @@ namespace Ustas.RimAI.Communication.Voices.UI
         {
             var voices = new List<VoiceEntry>();
 
-            voices.Add(new VoiceEntry { Name = "zh-CN-XiaoxiaoNeural", Gender = "女", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "温暖", Category = "新闻, 小说" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-XiaoyiNeural", Gender = "女", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "活泼", Category = "卡通, 小说" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-YunjianNeural", Gender = "男", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "激情", Category = "体育, 小说" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-YunxiNeural", Gender = "男", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "活泼, 阳光", Category = "小说" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-YunxiaNeural", Gender = "男", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "可爱", Category = "卡通, 小说" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-YunyangNeural", Gender = "男", Language = "zh-CN", LanguageDisplay = "中文(普通话)", Personality = "专业, 可靠", Category = "新闻" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-liaoning-XiaobeiNeural", Gender = "女", Language = "zh-CN", LanguageDisplay = "中文(辽宁方言)", Personality = "幽默", Category = "方言" });
-            voices.Add(new VoiceEntry { Name = "zh-CN-shaanxi-XiaoniNeural", Gender = "女", Language = "zh-CN", LanguageDisplay = "中文(陕西方言)", Personality = "明亮", Category = "方言" });
-            voices.Add(new VoiceEntry { Name = "zh-HK-HiuGaaiNeural", Gender = "女", Language = "zh-HK", LanguageDisplay = "中文(粵語)", Personality = "友善、積極", Category = "通用" });
-            voices.Add(new VoiceEntry { Name = "zh-HK-HiuMaanNeural", Gender = "女", Language = "zh-HK", LanguageDisplay = "中文(粵語)", Personality = "友善、積極", Category = "通用" });
-            voices.Add(new VoiceEntry { Name = "zh-HK-WanLungNeural", Gender = "男", Language = "zh-HK", LanguageDisplay = "中文(粵語)", Personality = "友善、積極", Category = "通用" });
-            voices.Add(new VoiceEntry { Name = "zh-TW-HsiaoChenNeural", Gender = "女", Language = "zh-TW", LanguageDisplay = "中文(台灣)", Personality = "友善、積極", Category = "通用" });
-            voices.Add(new VoiceEntry { Name = "zh-TW-HsiaoYuNeural", Gender = "女", Language = "zh-TW", LanguageDisplay = "中文(台灣)", Personality = "友善、積極", Category = "通用" });
-            voices.Add(new VoiceEntry { Name = "zh-TW-YunJheNeural", Gender = "男", Language = "zh-TW", LanguageDisplay = "中文(台灣)", Personality = "友善、積極", Category = "通用" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-XiaoxiaoNeural", Gender = "жінка", Language = "zh-CN", LanguageDisplay = "Китайська (путунхуа)", Personality = "теплий", Category = "новини, проза" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-XiaoyiNeural", Gender = "жінка", Language = "zh-CN", LanguageDisplay = "Китайська (путунхуа)", Personality = "жвавий", Category = "комікс, проза" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-YunjianNeural", Gender = "чоловік", Language = "zh-CN", LanguageDisplay = "Китайська (путунхуа)", Personality = "пристрасний", Category = "спорт, проза" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-YunxiNeural", Gender = "чоловік", Language = "zh-CN", LanguageDisplay = "Китайська (путунхуа)", Personality = "жвавий, сонячний", Category = "проза" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-YunxiaNeural", Gender = "чоловік", Language = "zh-CN", LanguageDisplay = "Китайська (путунхуа)", Personality = "милий", Category = "комікс, проза" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-YunyangNeural", Gender = "чоловік", Language = "zh-CN", LanguageDisplay = "Китайська (путунхуа)", Personality = "фаховий, надійний", Category = "новини" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-liaoning-XiaobeiNeural", Gender = "жінка", Language = "zh-CN", LanguageDisplay = "Китайська (ляонінський діалект)", Personality = "гумор", Category = "діалект" });
+            voices.Add(new VoiceEntry { Name = "zh-CN-shaanxi-XiaoniNeural", Gender = "жінка", Language = "zh-CN", LanguageDisplay = "Китайська (шеньсійський діалект)", Personality = "світлий", Category = "діалект" });
+            voices.Add(new VoiceEntry { Name = "zh-HK-HiuGaaiNeural", Gender = "жінка", Language = "zh-HK", LanguageDisplay = "Китайська (кантонська)", Personality = "привітний, доброзичливий", Category = "загальне" });
+            voices.Add(new VoiceEntry { Name = "zh-HK-HiuMaanNeural", Gender = "жінка", Language = "zh-HK", LanguageDisplay = "Китайська (кантонська)", Personality = "привітний, доброзичливий", Category = "загальне" });
+            voices.Add(new VoiceEntry { Name = "zh-HK-WanLungNeural", Gender = "чоловік", Language = "zh-HK", LanguageDisplay = "Китайська (кантонська)", Personality = "привітний, доброзичливий", Category = "загальне" });
+            voices.Add(new VoiceEntry { Name = "zh-TW-HsiaoChenNeural", Gender = "жінка", Language = "zh-TW", LanguageDisplay = "Китайська (Тайвань)", Personality = "привітний, доброзичливий", Category = "загальне" });
+            voices.Add(new VoiceEntry { Name = "zh-TW-HsiaoYuNeural", Gender = "жінка", Language = "zh-TW", LanguageDisplay = "Китайська (Тайвань)", Personality = "привітний, доброзичливий", Category = "загальне" });
+            voices.Add(new VoiceEntry { Name = "zh-TW-YunJheNeural", Gender = "чоловік", Language = "zh-TW", LanguageDisplay = "Китайська (Тайвань)", Personality = "привітний, доброзичливий", Category = "загальне" });
 
             voices.Add(new VoiceEntry { Name = "en-US-JennyNeural", Gender = "Female", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Friendly, Considerate", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-US-AriaNeural", Gender = "Female", Language = "en-US", LanguageDisplay = "English (US)", Personality = "Positive, Confident", Category = "News, Novel" });
@@ -87,8 +87,8 @@ namespace Ustas.RimAI.Communication.Voices.UI
             voices.Add(new VoiceEntry { Name = "en-IN-NeerjaNeural", Gender = "Female", Language = "en-IN", LanguageDisplay = "English (India)", Personality = "Friendly, Positive", Category = "General" });
             voices.Add(new VoiceEntry { Name = "en-IN-PrabhatNeural", Gender = "Male", Language = "en-IN", LanguageDisplay = "English (India)", Personality = "Friendly, Positive", Category = "General" });
 
-            voices.Add(new VoiceEntry { Name = "ja-JP-NanamiNeural", Gender = "女性", Language = "ja-JP", LanguageDisplay = "日本語", Personality = "フレンドリー, ポジティブ", Category = "一般" });
-            voices.Add(new VoiceEntry { Name = "ja-JP-KeitaNeural", Gender = "男性", Language = "ja-JP", LanguageDisplay = "日本語", Personality = "フレンドリー, ポジティブ", Category = "一般" });
+            voices.Add(new VoiceEntry { Name = "ja-JP-NanamiNeural", Gender = "жіночий", Language = "ja-JP", LanguageDisplay = "Японська", Personality = "フレンドリー, ポジティブ", Category = "звичайний" });
+            voices.Add(new VoiceEntry { Name = "ja-JP-KeitaNeural", Gender = "чоловічий", Language = "ja-JP", LanguageDisplay = "Японська", Personality = "フレンドリー, ポジティブ", Category = "звичайний" });
 
             voices.Add(new VoiceEntry { Name = "ko-KR-SunHiNeural", Gender = "여성", Language = "ko-KR", LanguageDisplay = "한국어", Personality = "친근함, 긍정적", Category = "일반" });
             voices.Add(new VoiceEntry { Name = "ko-KR-InJoonNeural", Gender = "남성", Language = "ko-KR", LanguageDisplay = "한국어", Personality = "친근함, 긍정적", Category = "일반" });
