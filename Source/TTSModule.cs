@@ -54,7 +54,12 @@ namespace Ustas.RimAI.Communication.Voices
             {
                 Service.TTSService.SetProvider(_settings.Supplier, _settings);
             }
-            catch { }
+            // RimAI.catch-boundary: ALLOWED_TOP_LEVEL_BOUNDARY - settings apply must not throw into the host, but the player has to learn their provider did not take
+            catch (System.Exception ex)
+            {
+                Log.Warning("[RimAI.Voices] Could not apply speech provider '"
+                    + _settings.Supplier + "': " + ex.Message);
+            }
 
             ModuleLog.Message("[RimAI.Voices] ========== Shared RimAI text-AI ==========");
             ModuleLog.Message($"[RimAI.Voices] Provider: {Service.VoiceSharedAiText.Provider}");

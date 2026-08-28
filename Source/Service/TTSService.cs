@@ -510,6 +510,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 {
                     _provider?.Shutdown();
                 }
+                // RimAI.catch-boundary: TEMPORARY_EXPLICIT_EXCEPTION - shutdown path; logging here would itself run managed code during teardown, which is what K034 is about
                 catch { }
             }
 

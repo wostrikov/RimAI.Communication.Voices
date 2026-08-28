@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Verse;
 using Ustas.RimAI.Core.Storage;
+using Ustas.RimAI.Communication.Voices.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
@@ -158,7 +159,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 var m = System.Text.RegularExpressions.Regex.Match(json ?? string.Empty, pattern);
                 if (m.Success && m.Groups.Count > 1) return m.Groups[1].Value;
             }
-            catch { }
+            // RimAI.catch-boundary: ALLOWED_TOP_LEVEL_BOUNDARY - a malformed payload is the caller's problem to handle, and the empty result already says so
+            catch (System.Exception ex)
+            {
+                ModuleLog.Message("[RimAI.Voices] SiliconFlow field extraction failed: " + ex.Message);
+            }
             return null;
         }
 
@@ -174,7 +179,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     if (m.Success && m.Groups.Count > 1) list.Add(m.Groups[1].Value);
                 }
             }
-            catch { }
+            // RimAI.catch-boundary: ALLOWED_TOP_LEVEL_BOUNDARY - a malformed payload is the caller's problem to handle, and the empty result already says so
+            catch (System.Exception ex)
+            {
+                ModuleLog.Message("[RimAI.Voices] SiliconFlow field extraction failed: " + ex.Message);
+            }
             return list;
         }
 

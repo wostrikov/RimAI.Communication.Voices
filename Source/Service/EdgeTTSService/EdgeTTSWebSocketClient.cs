@@ -369,6 +369,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                     webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Done", CancellationToken.None).Wait(1000);
                 }
             }
+            // RimAI.catch-boundary: TEMPORARY_EXPLICIT_EXCEPTION - shutdown path; logging here would itself run managed code during teardown, which is what K034 is about
             catch { }
             finally
             {
