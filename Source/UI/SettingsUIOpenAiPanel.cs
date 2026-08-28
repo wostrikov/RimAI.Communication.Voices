@@ -5,6 +5,7 @@ using RimWorld;
 using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Communication.Voices.Patch;
+using RimAI.Core.Runtime;
 
 namespace Ustas.RimAI.Communication.Voices.UI
 {
@@ -190,7 +191,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
         Service.OpenAITTSClient.SetBaseUrl(settings.GetSupplierRegion(TTSSettings.TTSSupplier.OpenAI));
         openAiModelsLoading = true;
 
-        System.Threading.Tasks.Task.Run(async () =>
+        RimAiBackground.Run(async () =>
         {
             var models = await Service.OpenAITTSClient.ListSpeechModelsAsync(apiKey);
             EnqueueMainThreadAction(() =>

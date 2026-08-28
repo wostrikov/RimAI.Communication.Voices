@@ -6,6 +6,7 @@ using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Policy;
 using RimTalkPatches = Ustas.RimAI.Communication.Voices.Patch.RimTalkPatches;
 using Verse;
+using RimAI.Core.Runtime;
 
 namespace Ustas.RimAI.Communication.Voices.Service
 {
@@ -141,7 +142,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             
             // Start async generation
-            Task.Run(async () => 
+            RimAiBackground.Run(async () => 
             {
                 await ProcessDialogueAsync(text, pawn, dialogueId, settings, voice);
             });

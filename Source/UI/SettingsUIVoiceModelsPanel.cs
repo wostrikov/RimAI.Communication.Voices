@@ -5,6 +5,7 @@ using RimWorld;
 using Ustas.RimAI.Communication.Voices.Data;
 using Ustas.RimAI.Communication.Voices.Service;
 using Ustas.RimAI.Communication.Voices.Patch;
+using RimAI.Core.Runtime;
 
 namespace Ustas.RimAI.Communication.Voices.UI
 {
@@ -82,7 +83,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                     // Kick off upload in background
                     var apiKey = settings.GetSupplierApiKey(settings.Supplier);
                     var model = settings.GetSupplierModel(settings.Supplier);
-                    System.Threading.Tasks.Task.Run(async () =>
+                    RimAiBackground.Run(async () =>
                     {
                         var uri = await Service.SiliconFlowClient.UploadUserVoiceAsync(apiKey, model, uploadPathBuffer, uploadNameBuffer, uploadTextBuffer);
                         if (!string.IsNullOrWhiteSpace(uri))
@@ -223,7 +224,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
         {
             var apiKey = settings.GetSupplierApiKey(settings.Supplier);
             var supplier = settings.Supplier;
-            System.Threading.Tasks.Task.Run(async () =>
+            RimAiBackground.Run(async () =>
             {
                 var list = await Service.SiliconFlowClient.ListUserVoicesAsync(apiKey);
                 if (list != null && list.Count > 0)
@@ -294,7 +295,7 @@ namespace Ustas.RimAI.Communication.Voices.UI
                 var apiKey = LoadedModManager.GetMod(typeof(TTSMod)) is TTSMod mod ? (mod.GetSettings<TTSSettings>()?.GetSupplierApiKey(mod.GetSettings<TTSSettings>().Supplier) ?? "") : "";
                 var supplier = LoadedModManager.GetMod(typeof(TTSMod)) is TTSMod _m2 ? _m2.GetSettings<TTSSettings>().Supplier : TTSSettings.TTSSupplier.None;
                 // Use background task to delete
-                System.Threading.Tasks.Task.Run(async () =>
+                RimAiBackground.Run(async () =>
                 {
                     bool ok = await Service.SiliconFlowClient.DeleteUserVoiceAsync(apiKey, toDeleteId);
                     if (ok)

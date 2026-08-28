@@ -6,6 +6,7 @@ using Ustas.RimAI.Core.Handshake;
 using UnityEngine;
 using Verse;
 using Ustas.RimAI.Core.Storage;
+using RimAI.Core.Runtime;
 
 namespace Ustas.RimAI.Communication.Voices.Service;
 
@@ -252,7 +253,7 @@ public static class AudioPlaybackService
 
             // Load using UnityWebRequestMultimedia on main thread
             AudioClip clip = null;
-            await Task.Run(async () =>
+            await RimAiBackground.Run(async () =>
             {
                 using (var www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip("file:///" + tempFile, UnityEngine.AudioType.MPEG))
                 {
