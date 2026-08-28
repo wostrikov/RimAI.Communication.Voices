@@ -17,7 +17,33 @@ namespace Ustas.RimAI.Communication.Voices.Service.FishAudioService;
 /// </summary>
 public static class FishAudioTTSClient
 {
-    internal static readonly string PythonScriptPath = GetPythonScriptPath();
+    static string _pythonScriptPath;
+    static bool _pythonScriptPathResolved;
+
+    /// <summary>
+    /// Resolved on first read, not at class load.
+    ///
+    /// This used to be a static readonly initialiser, which meant that merely
+    /// naming the type ran a filesystem search, read LoadedModManager, and could
+    /// call Log.Error. Application.quitting reached the type for the very first
+    /// time through ShutdownServer, so on any session where TTS was never used,
+    /// "shutting down" was actually the class initialising itself in the middle
+    /// of Unity's teardown. A racing second read just recomputes the same path,
+    /// which is cheaper than locking on a path that is read once in practice.
+    /// </summary>
+    internal static string PythonScriptPath
+    {
+        get
+        {
+            if (!_pythonScriptPathResolved)
+            {
+                _pythonScriptPathResolved = true;
+                _pythonScriptPath = GetPythonScriptPath();
+            }
+
+            return _pythonScriptPath;
+        }
+    }
     internal static string _pythonExecutablePath;
     
     private static string GetPythonScriptPath()
