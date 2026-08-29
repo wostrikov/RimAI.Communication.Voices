@@ -38,15 +38,26 @@ namespace Ustas.RimAI.Communication.Voices
 
         public void Initialize()
         {
-            // Load TTS settings
-            var modInstance = LoadedModManager.GetMod(typeof(TTSMod)) as TTSMod;
-            if (modInstance != null)
+            // TTSMod publishes the loaded instance from its own constructor,
+            // which is the only place it is reliably reachable: this method runs
+            // from inside that constructor by way of the handshake, and
+            // LoadedModManager does not know about the mod until the
+            // constructor returns. Asking it first was the defect - it returned
+            // null every time and the fallback below installed defaults with
+            // speech switched off.
+            _settings = TTSMod.LoadedSettings
+                ?? (LoadedModManager.GetMod(typeof(TTSMod)) as TTSMod)?.GetSettings<TTSSettings>();
+
+            if (_settings == null)
             {
-                _settings = modInstance.GetSettings<TTSSettings>();
-            }
-            else
-            {
+                // Not chatter. Running on defaults means every choice the player
+                // made is being ignored, and silence is exactly how that looked
+                // for as long as it went unreported.
                 _settings = new TTSSettings();
+                Ustas.RimAI.Core.Diagnostics.RimAiLog.Warning(
+                    Ustas.RimAI.Core.Diagnostics.RimAiLogCategory.Voices,
+                    "[RimAI.Voices] Could not reach the saved settings; running on defaults, "
+                        + "which means speech is off whatever the settings panel shows.");
             }
 
             // Apply configured provider implementation

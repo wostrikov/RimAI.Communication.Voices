@@ -9,9 +9,25 @@ namespace Ustas.RimAI.Communication.Voices
         public const string HandshakeModuleVersion = "1.0.0";
         public static System.Diagnostics.Stopwatch AppStopwatch = null;
 
+        /// <summary>
+        /// The settings instance RimWorld loaded from disk, published the moment
+        /// it exists.
+        ///
+        /// RimWorld registers a Mod with LoadedModManager only after its
+        /// constructor returns. Anything started from inside this constructor -
+        /// and the handshake below starts the whole module - therefore gets null
+        /// from LoadedModManager.GetMod and silently falls back to a fresh
+        /// TTSSettings, whose EnableTTS is false and whose Supplier is FishAudio
+        /// regardless of what the player chose. That is the whole of the "talk
+        /// queued but the TTS module is not active" report: speech switched on
+        /// in the settings panel, and a module holding a different object that
+        /// says it is off.
+        /// </summary>
+        internal static Data.TTSSettings LoadedSettings { get; private set; }
+
         public TTSMod(ModContentPack content) : base(content)
         {
-            GetSettings<Data.TTSSettings>();
+            LoadedSettings = GetSettings<Data.TTSSettings>();
             AppStopwatch = System.Diagnostics.Stopwatch.StartNew();
             RimAiHandshake.TryActivate(
                 RimAiHandshakeDescriptor.Current(

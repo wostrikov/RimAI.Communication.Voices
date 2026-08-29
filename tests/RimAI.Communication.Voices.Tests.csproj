@@ -19,5 +19,6 @@
     <None Include="..\Source\Service\InputPreProcessClient.cs" Link="InputPreProcessClient.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\TTSModule.cs" Link="TTSModule.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\VoicesComposition.cs" Link="VoicesComposition.cs.src" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\Source\TTSMod.cs" Link="TTSMod.cs.src" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
