@@ -76,14 +76,26 @@ public static class TalkLifecycleBridge
     {
         try
         {
+            // Once per generated line, so this is where the reason for silence
+            // is cheap to record. Both of these returns used to be mute, and a
+            // player with speech switched on had no way to tell them apart from
+            // a provider that produced nothing.
             if (!RimTalkPatches.TTSModuleIsActive())
+            {
+                ModuleLog.Message("[RimAI.Voices] talk queued but the TTS module is not active; no speech will be generated");
                 return;
+            }
             if (speaker is not Pawn pawn || talkResponse is not TalkResponse item)
                 return;
             // Only a deliberately muted pawn is skipped here; the automatic path is
             // allowed to generate an identity later in the pipeline.
             if (PawnVoiceManager.GetRawVoiceModel(pawn) == VoiceModel.NONE_MODEL_ID)
+            {
+                ModuleLog.Message($"[RimAI.Voices] {pawn.LabelShort} is muted (voice model NONE); no speech will be generated");
                 return;
+            }
+
+            ModuleLog.Message($"[RimAI.Voices] generating speech for {pawn.LabelShort}, dialogue {item.Id}");
             RimTalkPatches.RequestBlock(item.Id);
             TTSModule.Instance.OnDialogueGenerated(item.Text, pawn, item.Id);
         }

@@ -47,9 +47,10 @@ public static class AudioPlaybackService
     /// constructor had already run. The symptom was silence with nothing in the
     /// log: PlayAudio returns the moment it sees a null source.
     ///
-    /// Unity objects belong to the main thread, and every caller of this is on
-    /// it: the static constructor runs under StaticConstructorOnStartup and
-    /// PlayAudio is reached from the dialogue UI.
+    /// Unity objects belong to the main thread, and both callers are on it:
+    /// the static constructor runs under StaticConstructorOnStartup, and
+    /// PlayAudioAsync is started from the dialogue UI through
+    /// RimAiBackground.Track, which keeps it there.
     /// </summary>
     private static bool EnsurePlayer()
     {
@@ -113,17 +114,31 @@ public static class AudioPlaybackService
     /// </summary>
     public static void PlayAudio(Guid dialogueId, Pawn pawn, float volume = 1.0f)
     {
-        // Fire-and-forget by contract, but not invisible: routed through the
-        // gate so quitting waits for it. As an async void it was neither
-        // awaitable nor counted, which is how a crash on Alt+F4 during speech
-        // could happen while the drain reported nothing in flight (K034).
-        RimAiBackground.Run(() => PlayAudioAsync(dialogueId, pawn, volume));
+        // Fire-and-forget by contract, but not invisible: tracked so shutdown
+        // can see it. As an async void it was neither awaitable nor counted,
+        // which is how the drain could report nothing in flight while a clip
+        // was still playing (K034).
+        //
+        // Track, not Run. Run moves the delegate to the thread pool, and this
+        // method builds a GameObject, drives an AudioSource and loads a clip -
+        // all of which throw off the main thread. Routing it through Run was a
+        // regression that would have left the module permanently silent while
+        // looking like a fix for the crash.
+        RimAiBackground.Track(() => PlayAudioAsync(dialogueId, pawn, volume));
     }
 
     private static async Task PlayAudioAsync(Guid dialogueId, Pawn pawn, float volume)
     {
         if (dialogueId == Guid.Empty) return;
-        if (!EnsurePlayer()) return;
+        if (!EnsurePlayer())
+        {
+            // Silence with no explanation was the original complaint. Every
+            // way out of this method now says which one it took.
+            ModuleLog.Message($"[RimAI.Voices] playback skipped: no audio player (module approved={RimAiHandshake.IsApproved(RimAiModuleIds.Voices)}) for dialogue {dialogueId}");
+            return;
+        }
+
+        ModuleLog.Message($"[RimAI.Voices] playback requested for dialogue {dialogueId}, pawn {pawn?.LabelShort ?? "<none>"}, volume {volume:0.00}");
 
         try
         {
@@ -131,6 +146,7 @@ public static class AudioPlaybackService
             int playbackWaitCycles = 0;
             while (IsCurrentlyPlaying())
             {
+                if (RimAiBackground.IsShuttingDown) return;
                 await Task.Delay(1000);
                 playbackWaitCycles++;
             }
@@ -147,6 +163,12 @@ public static class AudioPlaybackService
             
             while (RimTalkPatches.IsBlocked(dialogueId) && ttsWaitCycles < maxTtsWaitCycles)
             {
+                if (RimAiBackground.IsShuttingDown)
+                {
+                    lock (_lock) { _isPlaying = false; }
+                    return;
+                }
+
                 await Task.Delay(1000);
                 ttsWaitCycles++;
             }
@@ -191,6 +213,7 @@ public static class AudioPlaybackService
                 AudioClip clip = await LoadAudioClipFromData(wavData, dialogueId.ToString());
                 if (clip != null && clip.length > 0)
                 {
+                    ModuleLog.Message($"[RimAI.Voices] playing {clip.length:0.00}s clip for dialogue {dialogueId}");
                     _audioSource.clip = clip;
                     _audioSource.volume = UnityEngine.Mathf.Clamp01(volume);
                     _audioSource.Play();
@@ -293,28 +316,32 @@ public static class AudioPlaybackService
             tempFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"rimtalk_audio_{dialogueId}.mp3");
             await System.IO.File.WriteAllBytesAsync(tempFile, mp3Data);
 
-            // Load using UnityWebRequestMultimedia on main thread
+            // UnityWebRequest is main-thread-only. This was wrapped in a
+            // Task.Run under a comment that said "on main thread", which is
+            // where SendWebRequest threw and every MP3 clip came back null -
+            // silence for any provider that returns MP3, which FishAudio does.
+            // Awaiting here keeps Unity's synchronization context, so the poll
+            // resumes on the main thread and the request advances per frame
+            // without blocking it.
             AudioClip clip = null;
-            await RimAiBackground.Run(async () =>
+            using (var www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip("file:///" + tempFile, UnityEngine.AudioType.MPEG))
             {
-                using (var www = UnityEngine.Networking.UnityWebRequestMultimedia.GetAudioClip("file:///" + tempFile, UnityEngine.AudioType.MPEG))
+                var operation = www.SendWebRequest();
+                while (!operation.isDone)
                 {
-                    var operation = www.SendWebRequest();
-                    while (!operation.isDone)
-                    {
-                        await Task.Delay(10);
-                    }
-
-                    if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
-                    {
-                        clip = UnityEngine.Networking.DownloadHandlerAudioClip.GetContent(www);
-                    }
-                    else
-                    {
-                        Log.Error($"[RimAI.Voices] Failed to load MP3: {www.error}");
-                    }
+                    if (RimAiBackground.IsShuttingDown) return null;
+                    await Task.Delay(10);
                 }
-            });
+
+                if (www.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
+                {
+                    clip = UnityEngine.Networking.DownloadHandlerAudioClip.GetContent(www);
+                }
+                else
+                {
+                    Log.Error($"[RimAI.Voices] Failed to load MP3: {www.error}");
+                }
+            }
 
             return clip;
         }
