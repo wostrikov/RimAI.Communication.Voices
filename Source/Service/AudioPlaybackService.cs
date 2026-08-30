@@ -211,30 +211,39 @@ public static class AudioPlaybackService
             try
             {
                 AudioClip clip = await LoadAudioClipFromData(wavData, dialogueId.ToString());
-                if (clip != null && clip.length > 0)
+                try
                 {
-                    ModuleLog.Message($"[RimAI.Voices] playing {clip.length:0.00}s clip for dialogue {dialogueId}");
-                    _audioSource.clip = clip;
-                    _audioSource.volume = UnityEngine.Mathf.Clamp01(volume);
-                    _audioSource.Play();
-                    // follower.pawn = null;
-
-                    // Wait for playback to complete based on clip length
-                    int playbackDelayMs = (int)(clip.length * 1000f);
-                    await Task.Delay(playbackDelayMs);
-
-                    // The resume point is seconds later, which is long enough
-                    // for the player to have quit meanwhile. Touching a Unity
-                    // object while the runtime is being torn down is the whole
-                    // of K034, so stop here instead.
-                    if (RimAiBackground.IsShuttingDown)
+                    if (clip != null && clip.length > 0)
                     {
-                        return;
+                        ModuleLog.Message($"[RimAI.Voices] playing {clip.length:0.00}s clip for dialogue {dialogueId}");
+                        _audioSource.clip = clip;
+                        _audioSource.volume = UnityEngine.Mathf.Clamp01(volume);
+                        _audioSource.Play();
+                        // follower.pawn = null;
+
+                        // Wait for playback to complete based on clip length
+                        int playbackDelayMs = (int)(clip.length * 1000f);
+                        await Task.Delay(playbackDelayMs);
+
+                        // The resume point is seconds later, which is long enough
+                        // for the player to have quit meanwhile. Touching a Unity
+                        // object while the runtime is being torn down is the whole
+                        // of K034, so stop here instead - and leave the clip to
+                        // teardown rather than destroying it ourselves.
+                        if (RimAiBackground.IsShuttingDown)
+                        {
+                            clip = null;
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Log.Error("[RimAI.Voices] Failed to create audio clip from audio data or clip length is 0");
                     }
                 }
-                else
+                finally
                 {
-                    Log.Error("[RimAI.Voices] Failed to create audio clip from audio data or clip length is 0");
+                    ReleaseClip(clip);
                 }
             }
             catch (Exception ex)
@@ -271,6 +280,35 @@ public static class AudioPlaybackService
             // Reset all counters and flags
             _isPlaying = false;
         }
+    }
+
+    /// <summary>
+    /// Destroy a clip once it has finished playing.
+    ///
+    /// One clip is built per spoken line and nothing released them, so a
+    /// talkative colony left a native-backed Unity object per utterance for the
+    /// collector. That is worth fixing on its own, and it bears on K034: the
+    /// crash is Harmony 2.4.1's own MonoMod.Core.Platforms.SimpleNativeDetour
+    /// finalizer running on the finalizer thread, so what decides whether it
+    /// runs at all is how often a collection happens. Speech was the reliable
+    /// way to cause one.
+    ///
+    /// This does not fix that finalizer, which is not ours. It stops feeding it.
+    /// </summary>
+    private static void ReleaseClip(AudioClip clip)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        if (_audioSource != null && _audioSource.clip == clip)
+        {
+            _audioSource.Stop();
+            _audioSource.clip = null;
+        }
+
+        UnityEngine.Object.Destroy(clip);
     }
 
     /// <summary>
