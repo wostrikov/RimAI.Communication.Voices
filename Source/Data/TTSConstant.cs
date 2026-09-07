@@ -157,14 +157,42 @@ namespace Ustas.RimAI.Communication.Voices.Data
             }
             """;
 
+        /// <summary>
+        /// The preprocessing prompt for a supplier, or the caller's own if they wrote one.
+        /// </summary>
+        /// <remarks>
+        /// Every supplier here has a prompt written for it, and until now none of them
+        /// were reachable except by pressing a button in the settings panel: this method
+        /// handed the generic prompt to everybody. That generic prompt is Fish Audio's -
+        /// its whole markup vocabulary is Fish Audio's, and it tells the model to open
+        /// each sentence with an emotion tag and to end it with [break]. OpenAI's TTS has
+        /// no markup at all; it reads what it is given. So pawns said their line and then
+        /// pronounced the word "break", and "worried", and "long break", out loud.
+        /// Nothing downstream removes them either - CleanForTts strips round brackets and
+        /// these are square, and RemoveBracketedSpans runs on the text going *into* the
+        /// preprocessing model rather than the text coming out.
+        /// </remarks>
         public static string GetTTSProcessingPrompt(TTSSettings settings)
         {
             if (settings == null)
                 return DefaultTTSProcessingPrompt;
 
-            return string.IsNullOrWhiteSpace(settings.CustomTTSProcessingPrompt)
-                ? DefaultTTSProcessingPrompt
-                : settings.CustomTTSProcessingPrompt;
+            if (!string.IsNullOrWhiteSpace(settings.CustomTTSProcessingPrompt))
+                return settings.CustomTTSProcessingPrompt;
+
+            switch (settings.Supplier)
+            {
+                case TTSSettings.TTSSupplier.OpenAI: return DefaultTTSProcessingPrompt_OpenAI;
+                case TTSSettings.TTSSupplier.CosyVoice: return DefaultTTSProcessingPrompt_CosyVoice;
+                case TTSSettings.TTSSupplier.IndexTTS: return DefaultTTSProcessingPrompt_IndexTTS;
+                case TTSSettings.TTSSupplier.AzureTTS: return DefaultTTSProcessingPrompt_AzureTTS;
+                case TTSSettings.TTSSupplier.EdgeTTS: return DefaultTTSProcessingPrompt_EdgeTTS;
+                case TTSSettings.TTSSupplier.GeminiTTS: return DefaultTTSProcessingPrompt_GeminiTTS;
+                case TTSSettings.TTSSupplier.TTSWebUI: return DefaultTTSProcessingPrompt_TTSWebUI;
+                // FishAudio, and None before a supplier is chosen: the generic prompt is
+                // Fish Audio's own, so it stays the fallback.
+                default: return DefaultTTSProcessingPrompt;
+            }
         }
     }
 }
