@@ -39,6 +39,12 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 Log.Warning("[RimAI.Voices] Empty response from preprocess API");
                 return null;
             }
+            catch (System.OperationCanceledException)
+            {
+                // A cancelled request - the session reset on load, or the dialogue was dropped -
+                // is not a failure. ProcessDialogueAsync already handles it quietly.
+                throw;
+            }
             catch (System.Exception ex)
             {
                 Log.Error($"[RimAI.Voices] preprocess failed - {ex.Message}");

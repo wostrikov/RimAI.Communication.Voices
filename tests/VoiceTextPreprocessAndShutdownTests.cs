@@ -43,6 +43,9 @@ internal static class VoiceTextPreprocessAndShutdownTests
         T(service.Contains("VoiceTextPreprocessPolicy.BuildPrompt"), "service-builds-prompt");
         T(service.Contains("VoiceTextPreprocessPolicy.CleanForTts"), "service-cleans");
         T(service.Contains("VoiceTextPreprocessPolicy.TryAccept"), "service-accepts");
+        int cancelCatch = service.IndexOf("catch (System.OperationCanceledException)", StringComparison.Ordinal);
+        int anyCatch = service.IndexOf("catch (System.Exception", StringComparison.Ordinal);
+        T(cancelCatch >= 0 && anyCatch > cancelCatch, "service-rethrows-cancellation-before-logging");
 
         string client = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "InputPreProcessClient.cs.src"));
         T(client.Contains("VoiceTextPreprocessPolicy.PrepareUserText"), "client-prepares-user-text");
