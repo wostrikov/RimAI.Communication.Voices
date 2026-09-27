@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Verse;
 using Ustas.RimAI.Communication.Voices.Diagnostics;
+using Ustas.RimAI.Core.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
 {
@@ -99,7 +100,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 }
                 catch (Exception ex)
                 {
-                    if (Prefs.DevMode)
+                    if (RimAiLog.Detailed)
                     {
                         Log.Warning($"[EdgeTTS] Attempt {retry + 1}/{MAX_RETRIES} failed: {ex.Message}");
                     }
@@ -107,7 +108,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                     if (ex.Message.Contains("403"))
                     {
                         clockSkewSeconds += 300;
-                        if (Prefs.DevMode)
+                        if (RimAiLog.Detailed)
                         {
                             ModuleLog.Message($"[EdgeTTS] Adjusting clock skew to {clockSkewSeconds} seconds");
                         }
@@ -141,7 +142,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 
                 webSocket.Options.SetRequestHeader("Cookie", $"muid={GenerateMuid()};");
                 
-                if (Prefs.DevMode)
+                if (RimAiLog.Detailed)
                 {
                     ModuleLog.Message($"[EdgeTTS] Connecting to: {wssUrl.Substring(0, Math.Min(100, wssUrl.Length))}...");
                 }
@@ -153,7 +154,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                     throw new Exception($"WebSocket connection failed, state: {webSocket.State}");
                 }
                 
-                if (Prefs.DevMode)
+                if (RimAiLog.Detailed)
                 {
                     ModuleLog.Message("[EdgeTTS] WebSocket connected successfully");
                 }
@@ -194,7 +195,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             byte[] buffer = Encoding.UTF8.GetBytes(configMessage);
             await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, cts.Token);
             
-            if (Prefs.DevMode)
+            if (RimAiLog.Detailed)
             {
                 ModuleLog.Message("[EdgeTTS] Config message sent");
             }
@@ -216,7 +217,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             byte[] buffer = Encoding.UTF8.GetBytes(ssmlMessage);
             await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, cts.Token);
             
-            if (Prefs.DevMode)
+            if (RimAiLog.Detailed)
             {
                 ModuleLog.Message($"[EdgeTTS] SSML message sent, RequestId: {requestId}");
             }
@@ -236,7 +237,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                     
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        if (Prefs.DevMode)
+                        if (RimAiLog.Detailed)
                         {
                             ModuleLog.Message($"[EdgeTTS] WebSocket closed: {result.CloseStatus} - {result.CloseStatusDescription}");
                         }
@@ -275,7 +276,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                         
                         if (message.Contains("Path:turn.end"))
                         {
-                            if (Prefs.DevMode)
+                            if (RimAiLog.Detailed)
                             {
                                 ModuleLog.Message("[EdgeTTS] Received turn.end");
                             }
@@ -321,7 +322,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 offset += chunk.Length;
             }
             
-            if (Prefs.DevMode)
+            if (RimAiLog.Detailed)
             {
                 ModuleLog.Message($"[EdgeTTS] Received {audioChunks.Count} audio chunks, total {totalLength} bytes");
             }

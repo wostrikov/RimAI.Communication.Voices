@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Ustas.RimAI.Core.Voices;
 using Verse;
 using Ustas.RimAI.Communication.Voices.Diagnostics;
+using Ustas.RimAI.Core.Diagnostics;
 
 namespace Ustas.RimAI.Communication.Voices.Voice
 {
@@ -93,7 +94,7 @@ namespace Ustas.RimAI.Communication.Voices.Voice
                 var identity = PawnVoiceIdentityGenerator.Generate(features, SnapshotLocked());
                 Store(key, identity);
 
-                if (Prefs.DevMode)
+                if (RimAiLog.Detailed)
                     ModuleLog.Message("[RimAI.Voices] Generated voice identity for " + key + ": " + identity);
 
                 return identity;
