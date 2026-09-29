@@ -121,7 +121,12 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                 }
             }
             
-            Log.Error("[EdgeTTS] All attempts failed");
+            // Say what was asked for. Three attempts that each end in turn.end with
+            // no audio are the service's answer to this text in this voice - a
+            // line with nothing to pronounce, or a voice that cannot read its
+            // language - and without both in the message there is no telling which.
+            string excerpt = text.Length > 80 ? text.Substring(0, 80) + "..." : text;
+            Log.Error($"[EdgeTTS] All attempts failed: voice {voice}, locale {locale ?? "-"}, {text.Length} chars: \"{excerpt}\"");
             return null;
         }
         
