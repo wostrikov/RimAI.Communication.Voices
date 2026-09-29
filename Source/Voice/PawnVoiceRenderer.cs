@@ -24,6 +24,13 @@ namespace Ustas.RimAI.Communication.Voices.Voice
 
         public VoiceRenderSignature Signature { get; set; } = new VoiceRenderSignature();
 
+        /// <summary>
+        /// The same pawn rendered for Edge TTS, which the provider chain falls back to
+        /// whenever another provider fails; null when Edge is already the provider.
+        /// Another provider's voice name means nothing to Edge.
+        /// </summary>
+        public ResolvedPawnVoice EdgeFallback { get; set; }
+
         public static ResolvedPawnVoice SilentVoice() => new ResolvedPawnVoice { Silent = true };
     }
 
@@ -71,31 +78,50 @@ namespace Ustas.RimAI.Communication.Voices.Voice
             if (decision.Silent)
                 return ResolvedPawnVoice.SilentVoice();
 
+            ResolvedPawnVoice voice = null;
             if (decision.UseAutomatic)
             {
                 var identity = PawnVoiceIdentityStore.GetOrCreate(pawn);
                 if (identity != null)
-                    return RenderIdentity(identity, settings);
+                    voice = RenderIdentity(identity, settings);
             }
 
-            string manualChoice = string.IsNullOrEmpty(decision.ExplicitVoiceId)
-                ? null
-                : decision.ExplicitVoiceId;
-            return RenderConfigured(pawn, settings, manualChoice);
+            if (voice == null)
+            {
+                string manualChoice = string.IsNullOrEmpty(decision.ExplicitVoiceId)
+                    ? null
+                    : decision.ExplicitVoiceId;
+                voice = RenderConfigured(pawn, settings, manualChoice);
+            }
+
+            if (!voice.Silent && KindOf(settings.Supplier) != VoiceProviderKind.EdgeTTS)
+            {
+                // The identity is provider-independent, so the fallback is the same person.
+                var identity = PawnVoiceIdentityStore.GetOrCreate(pawn);
+                if (identity != null)
+                    voice.EdgeFallback = RenderIdentity(identity, settings, VoiceProviderKind.EdgeTTS);
+            }
+
+            return voice;
         }
 
         /// <summary>Renders any identity, including one that is only being previewed.</summary>
         public static ResolvedPawnVoice RenderIdentity(PawnVoiceIdentity identity, TTSSettings settings)
         {
+            return RenderIdentity(identity, settings, KindOf(settings.Supplier));
+        }
+
+        static ResolvedPawnVoice RenderIdentity(PawnVoiceIdentity identity, TTSSettings settings, VoiceProviderKind target)
+        {
             string language = LanguageOf();
 
-            if (KindOf(settings.Supplier) == VoiceProviderKind.EdgeTTS)
+            if (target == VoiceProviderKind.EdgeTTS)
             {
                 var edge = EdgeVoiceRenderer.Render(identity, language);
                 return new ResolvedPawnVoice
                 {
                     VoiceId = edge.VoiceName,
-                    Model = settings.GetSupplierModel(settings.Supplier),
+                    Model = settings.GetSupplierModel(TTSSettings.TTSSupplier.EdgeTTS),
                     Speed = 1f + (edge.RatePercent / 100f),
                     Instructions = null,
                     Pitch = edge.Pitch,

@@ -272,8 +272,12 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 await ApplyCooldownAsync(settings);
                 
                 // Generate speech
-                byte[] audioData = await GenerateSpeechAsync(voice, finalInputText, finalInstructText, settings);
-                TtsAudioCache.Store(cacheKey, audioData);
+                TtsProviderOutcome outcome = await GenerateSpeechAsync(voice, finalInputText, finalInstructText, settings);
+                byte[] audioData = outcome.Class == TtsFailureClass.Success ? outcome.Audio : null;
+                // Audio from the fallback is that voice's audio, not the preferred one's.
+                string storedKey = Ustas.RimAI.Core.Voices.VoiceCacheKey.Compute(
+                    VoiceForSlot(outcome.UsedKind, voice).Signature, finalInputText);
+                TtsAudioCache.Store(storedKey, audioData);
 
                 // Final validation and playback setup
                 HandleGenerationResult(dialogueId, audioData, settings);
@@ -337,17 +341,20 @@ namespace Ustas.RimAI.Communication.Voices.Service
         /// <summary>
         /// Generate speech using configured provider
         /// </summary>
-        private static async Task<byte[]> GenerateSpeechAsync(Voice.ResolvedPawnVoice voice, string inputText, string instructText, TTSSettings settings)
+        private static Task<TtsProviderOutcome> GenerateSpeechAsync(Voice.ResolvedPawnVoice voice, string inputText, string instructText, TTSSettings settings)
         {
             TtsProviderKind preferred = MapSupplier(settings.Supplier);
             bool preferredKey = !string.IsNullOrWhiteSpace(GetApiKeyForSupplier(settings.Supplier, settings));
             var chain = TtsProviderChain.Build(preferred, preferredKey);
-            TtsProviderOutcome outcome = await TtsProviderOrchestrator.ExecuteAsync(
+            return TtsProviderOrchestrator.ExecuteAsync(
                 chain,
-                slot => AttemptSlotAsync(slot, voice, inputText, instructText, settings));
-            if (outcome.Class != TtsFailureClass.Success)
-                return null;
-            return outcome.Audio;
+                slot => AttemptSlotAsync(slot, VoiceForSlot(slot.Kind, voice), inputText, instructText, settings));
+        }
+
+        /// <summary>The voice rendered for the provider a slot calls, which for the Edge fallback is not the preferred provider's.</summary>
+        static Voice.ResolvedPawnVoice VoiceForSlot(TtsProviderKind kind, Voice.ResolvedPawnVoice voice)
+        {
+            return kind == TtsProviderKind.EdgeTts && voice.EdgeFallback != null ? voice.EdgeFallback : voice;
         }
 
         static async Task<TtsSlotResult> AttemptSlotAsync(

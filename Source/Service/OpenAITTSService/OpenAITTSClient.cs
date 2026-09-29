@@ -122,7 +122,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
 
                 return audioData;
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
             {
                 ModuleLog.Message("[RimAI.Voices] OpenAITTSClient: request cancelled");
                 return null;
@@ -134,9 +134,24 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             catch (Exception ex)
             {
-                Log.Error($"[RimAI.Voices] OpenAITTSClient: unexpected error - {ex.GetType().Name}: {ex.Message}");
+                Log.Error($"[RimAI.Voices] OpenAITTSClient: {Describe(ex)}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Nobody cancels these requests but the client's own timeout, and Mono reports
+        /// that either as a TaskCanceledException or as a WebException whose message
+        /// says the request was cancelled - which reads as if something had stopped it
+        /// on purpose, and used to be logged only with Detailed Logs on.
+        /// </summary>
+        static string Describe(Exception ex)
+        {
+            bool timedOut = ex is TaskCanceledException
+                            || (ex is System.Net.WebException web && web.Status == System.Net.WebExceptionStatus.RequestCanceled);
+            return timedOut
+                ? $"no response within {_http.Timeout.TotalSeconds:0}s from {_baseUrl}"
+                : $"unexpected error - {ex.GetType().Name}: {ex.Message}";
         }
 
         /// <summary>
