@@ -40,7 +40,9 @@ namespace Ustas.RimAI.Communication.Voices.Service
             "flac"
         };
 
-        static readonly HttpClient _http = new HttpClient();
+        // A spoken line is worth waiting for only so long: past this the Edge fallback
+        // speaks it instead. The default 100 seconds left a colonist silent that long.
+        static readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
         static string _baseUrl = DefaultBaseUrl;
 
         public static void SetBaseUrl(string baseUrl)
@@ -103,6 +105,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     Content = new StringContent(body.ToString(), Encoding.UTF8, "application/json")
                 };
                 httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", request.ApiKey);
+                // A fresh connection per line. Lines come minutes apart, and Mono will send the
+                // next one down a kept-alive connection the other end has long since dropped,
+                // then wait out the whole timeout for an answer that cannot come - which is
+                // what every failure seen so far looked like: nothing, after an idle spell.
+                httpRequest.Headers.ConnectionClose = true;
 
                 using var response = await _http.SendAsync(httpRequest, cancellationToken);
 
