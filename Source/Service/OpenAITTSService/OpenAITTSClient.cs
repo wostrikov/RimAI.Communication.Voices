@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -111,6 +112,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 // what every failure seen so far looked like: nothing, after an idle spell.
                 httpRequest.Headers.ConnectionClose = true;
 
+                RaiseConnectionLimit();
                 using var response = await _http.SendAsync(httpRequest, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
@@ -157,8 +159,29 @@ namespace Ustas.RimAI.Communication.Voices.Service
             bool timedOut = ex is TaskCanceledException
                             || (ex is System.Net.WebException web && web.Status == System.Net.WebExceptionStatus.RequestCanceled);
             return timedOut
-                ? $"no response within {_http.Timeout.TotalSeconds:0}s from {_baseUrl}"
+                ? $"no response within {_http.Timeout.TotalSeconds:0}s from {_baseUrl} ({ConnectionsInUse()})"
                 : $"unexpected error - {ex.GetType().Name}: {ex.Message}";
+        }
+
+        /// <summary>
+        /// Mono lets a process hold two connections to one host by default, and these
+        /// requests share api.openai.com with Memory's embeddings and anything else this
+        /// modset sends there through HttpClient. A spoken line queued behind them for a free
+        /// connection times out exactly as if OpenAI had never answered - which is what
+        /// every failure so far looked like. The limit is raised for this endpoint only.
+        /// </summary>
+        static void RaiseConnectionLimit()
+        {
+            ServicePoint point = ServicePointManager.FindServicePoint(new Uri(_baseUrl));
+            if (point.ConnectionLimit < 8)
+                point.ConnectionLimit = 8;
+        }
+
+        /// <summary>The endpoint's connections in use, so a timeout says whether it waited for one.</summary>
+        static string ConnectionsInUse()
+        {
+            ServicePoint point = ServicePointManager.FindServicePoint(new Uri(_baseUrl));
+            return $"{point.CurrentConnections} of {point.ConnectionLimit} connections in use";
         }
 
         /// <summary>
