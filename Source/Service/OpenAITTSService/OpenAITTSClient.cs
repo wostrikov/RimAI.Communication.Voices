@@ -41,9 +41,19 @@ namespace Ustas.RimAI.Communication.Voices.Service
             "flac"
         };
 
-        // A spoken line is worth waiting for only so long: past this the Edge fallback
-        // speaks it instead. The default 100 seconds left a colonist silent that long.
-        static readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+        // Two waits, not one. The server has HeaderTimeout to start answering - past that
+        // the Edge fallback speaks the line instead, and the default 100 seconds left a
+        // colonist silent that long. The audio then streams in about as fast as it is
+        // spoken, so a long line legitimately takes longer than any fixed timeout short
+        // enough for the first wait: a single 30-second cap on the whole exchange cut
+        // such lines off mid-download ("no response within 30s" with 1 of 8 connections
+        // in use, thrown from LoadIntoBufferAsync). The body is read as a stream and
+        // abandoned only when it stops arriving for BodyIdleTimeout, or runs past
+        // BodyTotalTimeout altogether.
+        static readonly TimeSpan HeaderTimeout = TimeSpan.FromSeconds(30);
+        static readonly TimeSpan BodyIdleTimeout = TimeSpan.FromSeconds(20);
+        static readonly TimeSpan BodyTotalTimeout = TimeSpan.FromMinutes(2);
+        static readonly HttpClient _http = new HttpClient { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
         static string _baseUrl = DefaultBaseUrl;
 
         public static void SetBaseUrl(string baseUrl)
@@ -113,8 +123,22 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 httpRequest.Headers.ConnectionClose = true;
 
                 RaiseConnectionLimit();
-                using var response = await _http.SendAsync(httpRequest, cancellationToken);
+                HttpResponseMessage sent;
+                using (var headerWait = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                {
+                    headerWait.CancelAfter(HeaderTimeout);
+                    try
+                    {
+                        sent = await _http.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, headerWait.Token);
+                    }
+                    catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                    {
+                        Log.Error($"[RimAI.Voices] OpenAITTSClient: no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl} ({ConnectionsInUse()})");
+                        return null;
+                    }
+                }
 
+                using var response = sent;
                 if (!response.IsSuccessStatusCode)
                 {
                     string error = response.Content != null ? await response.Content.ReadAsStringAsync() : string.Empty;
@@ -122,8 +146,13 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     return null;
                 }
 
-                byte[] audioData = await response.Content.ReadAsByteArrayAsync();
-                if (audioData == null || audioData.Length == 0)
+                byte[] audioData = await ReadBodyAsync(response, cancellationToken);
+                if (audioData == null)
+                {
+                    return null;
+                }
+
+                if (audioData.Length == 0)
                 {
                     Log.Warning("[RimAI.Voices] OpenAITTSClient: empty audio response");
                     return null;
@@ -149,6 +178,47 @@ namespace Ustas.RimAI.Communication.Voices.Service
         }
 
         /// <summary>
+        /// The audio as it streams in. Each read is raced against a delay rather than given
+        /// a token, because Mono's network streams do not reliably honour cancellation; a
+        /// read that loses the race is abandoned with the response, which closes it.
+        /// </summary>
+        static async Task<byte[]> ReadBodyAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+        {
+            using var stream = await response.Content.ReadAsStreamAsync();
+            using var audio = new System.IO.MemoryStream();
+            var buffer = new byte[16384];
+            DateTime deadline = DateTime.UtcNow + BodyTotalTimeout;
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                Task<int> read = stream.ReadAsync(buffer, 0, buffer.Length);
+                Task winner = await Task.WhenAny(read, Task.Delay(BodyIdleTimeout, cancellationToken));
+                if (winner != read)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    Log.Error($"[RimAI.Voices] OpenAITTSClient: audio from {_baseUrl} stopped arriving for "
+                              + $"{BodyIdleTimeout.TotalSeconds:0}s after {audio.Length} bytes");
+                    return null;
+                }
+
+                int count = await read;
+                if (count <= 0)
+                {
+                    return audio.ToArray();
+                }
+
+                audio.Write(buffer, 0, count);
+                if (DateTime.UtcNow > deadline)
+                {
+                    Log.Error($"[RimAI.Voices] OpenAITTSClient: audio from {_baseUrl} still streaming after "
+                              + $"{BodyTotalTimeout.TotalSeconds:0}s ({audio.Length} bytes); line dropped");
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Nobody cancels these requests but the client's own timeout, and Mono reports
         /// that either as a TaskCanceledException or as a WebException whose message
         /// says the request was cancelled - which reads as if something had stopped it
@@ -159,7 +229,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
             bool timedOut = ex is TaskCanceledException
                             || (ex is System.Net.WebException web && web.Status == System.Net.WebExceptionStatus.RequestCanceled);
             return timedOut
-                ? $"no response within {_http.Timeout.TotalSeconds:0}s from {_baseUrl} ({ConnectionsInUse()})"
+                ? $"no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl} ({ConnectionsInUse()})"
                 : $"unexpected error - {ex.GetType().Name}: {ex.Message}";
         }
 
@@ -200,7 +270,10 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 using var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/models");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
 
-                using var response = await _http.SendAsync(request, cancellationToken);
+                // The shared client no longer has a timeout of its own; the model list is small.
+                using var wait = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                wait.CancelAfter(HeaderTimeout);
+                using var response = await _http.SendAsync(request, wait.Token);
                 if (!response.IsSuccessStatusCode)
                 {
                     string error = response.Content != null ? await response.Content.ReadAsStringAsync() : string.Empty;
