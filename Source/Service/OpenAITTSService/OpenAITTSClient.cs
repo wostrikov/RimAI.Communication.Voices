@@ -46,8 +46,8 @@ namespace Ustas.RimAI.Communication.Voices.Service
         // colonist silent that long. The audio then streams in about as fast as it is
         // spoken, so a long line legitimately takes longer than any fixed timeout short
         // enough for the first wait: a single 30-second cap on the whole exchange cut
-        // such lines off mid-download ("no response within 30s" with 1 of 8 connections
-        // in use, thrown from LoadIntoBufferAsync). The body is read as a stream and
+        // such lines off mid-download ("no response within 30s", thrown from
+        // LoadIntoBufferAsync). The body is read as a stream and
         // abandoned only when it stops arriving for BodyIdleTimeout, or runs past
         // BodyTotalTimeout altogether.
         static readonly TimeSpan HeaderTimeout = TimeSpan.FromSeconds(30);
@@ -122,7 +122,6 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 // what every failure seen so far looked like: nothing, after an idle spell.
                 httpRequest.Headers.ConnectionClose = true;
 
-                RaiseConnectionLimit();
                 HttpResponseMessage sent;
                 using (var headerWait = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                 {
@@ -133,7 +132,7 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     }
                     catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                     {
-                        Log.Error($"[RimAI.Voices] OpenAITTSClient: no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl} ({ConnectionsInUse()})");
+                        Log.Error($"[RimAI.Voices] OpenAITTSClient: no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl}");
                         return null;
                     }
                 }
@@ -219,39 +218,19 @@ namespace Ustas.RimAI.Communication.Voices.Service
         }
 
         /// <summary>
-        /// Nobody cancels these requests but the client's own timeout, and Mono reports
-        /// that either as a TaskCanceledException or as a WebException whose message
-        /// says the request was cancelled - which reads as if something had stopped it
-        /// on purpose, and used to be logged only with Detailed Logs on.
+        /// Nobody cancels these requests but the client's own timeout, which arrives
+        /// as a TaskCanceledException - and that reads as if something had stopped the
+        /// request on purpose, so it is named for what it is.
+        ///
+        /// There is no limit on connections to one host to report beside it: the
+        /// runtime the game runs on opens as many as are asked for, so a spoken line
+        /// no longer waits behind Memory's embeddings for a free one.
         /// </summary>
         static string Describe(Exception ex)
         {
-            bool timedOut = ex is TaskCanceledException
-                            || (ex is System.Net.WebException web && web.Status == System.Net.WebExceptionStatus.RequestCanceled);
-            return timedOut
-                ? $"no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl} ({ConnectionsInUse()})"
+            return ex is TaskCanceledException
+                ? $"no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl}"
                 : $"unexpected error - {ex.GetType().Name}: {ex.Message}";
-        }
-
-        /// <summary>
-        /// Mono lets a process hold two connections to one host by default, and these
-        /// requests share api.openai.com with Memory's embeddings and anything else this
-        /// modset sends there through HttpClient. A spoken line queued behind them for a free
-        /// connection times out exactly as if OpenAI had never answered - which is what
-        /// every failure so far looked like. The limit is raised for this endpoint only.
-        /// </summary>
-        static void RaiseConnectionLimit()
-        {
-            ServicePoint point = ServicePointManager.FindServicePoint(new Uri(_baseUrl));
-            if (point.ConnectionLimit < 8)
-                point.ConnectionLimit = 8;
-        }
-
-        /// <summary>The endpoint's connections in use, so a timeout says whether it waited for one.</summary>
-        static string ConnectionsInUse()
-        {
-            ServicePoint point = ServicePointManager.FindServicePoint(new Uri(_baseUrl));
-            return $"{point.CurrentConnections} of {point.ConnectionLimit} connections in use";
         }
 
         /// <summary>

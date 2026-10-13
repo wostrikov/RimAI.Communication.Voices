@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using NAudio.Wave;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -288,60 +287,14 @@ namespace Ustas.RimAI.Communication.Voices.Service
                 var mediaType = resp.Content.Headers.ContentType?.MediaType?.ToLowerInvariant() ?? string.Empty;
                 if (!string.IsNullOrEmpty(mediaType) && mediaType.StartsWith("audio/"))
                 {
-                    // Server returned audio in a non-wav format (e.g., mp3/opus).
-                    // Log incoming sizes and a small preview to aid diagnosis.
-                    try
-                    {
-                        int previewLen = Math.Min(bytes?.Length ?? 0, 128);
-                        if (previewLen > 0)
-                        {
-                            string asciiPreview;
-                            try { asciiPreview = System.Text.Encoding.ASCII.GetString(bytes, 0, previewLen); }
-                            catch { asciiPreview = "<non-ascii-preview>"; }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Warning($"[RimAI.Voices] SiliconFlowClient: Failed to generate response preview: {ex.GetType().Name}: {ex.Message}");
-                    }
+                    // MP3 goes on as it came: AudioPlaybackService tells MP3 from
+                    // WAV by the header and hands MP3 to the engine's own decoder,
+                    // so nothing here has to turn one into the other.
+                    if (AudioFormatSniffer.LooksLikeMp3(bytes, mediaType))
+                        return bytes;
 
-                    // If MP3, attempt to convert to WAV so AudioPlaybackService can consume it.
-                    bool looksLikeMp3 = mediaType.Contains("mpeg") || mediaType.Contains("mp3") ||
-                        (bytes.Length >= 3 && bytes[0] == (byte)'I' && bytes[1] == (byte)'D' && bytes[2] == (byte)'3') ||
-                        (bytes.Length >= 2 && bytes[0] == 0xFF && (bytes[1] & 0xE0) == 0xE0);
-
-                    if (looksLikeMp3)
-                    {
-                        try
-                        {
-                            using var inMs = new MemoryStream(bytes);
-                            using var mp3Reader = new Mp3FileReader(inMs);
-                            using var outMs = new MemoryStream();
-                            using (var waveWriter = new WaveFileWriter(outMs, mp3Reader.WaveFormat))
-                            {
-                                var buffer = new byte[16384];
-                                int read;
-                                while ((read = mp3Reader.Read(buffer, 0, buffer.Length)) > 0)
-                                {
-                                    waveWriter.Write(buffer, 0, read);
-                                }
-                                waveWriter.Flush();
-                            }
-                            var wavBytes = outMs.ToArray();
-                            // Check WAV header of converted data
-                            bool wavHeader = wavBytes != null && wavBytes.Length > 12 &&
-                                wavBytes[0] == (byte)'R' && wavBytes[1] == (byte)'I' && wavBytes[2] == (byte)'F' && wavBytes[3] == (byte)'F' &&
-                                wavBytes[8] == (byte)'W' && wavBytes[9] == (byte)'A' && wavBytes[10] == (byte)'V' && wavBytes[11] == (byte)'E';
-                            return wavBytes;
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Warning($"[RimAI.Voices] SiliconFlowClient: Failed to convert MP3 to WAV: {ex.GetType().Name}: {ex.Message}. Returning raw bytes.");
-                            return bytes;
-                        }
-                    }
-
-                    // Not MP3 or conversion failed - return raw bytes for other audio types
+                    // Some other audio type. The player is given it anyway; whether
+                    // the engine can decode it is the engine's answer to give.
                     Log.Warning($"[RimAI.Voices] SiliconFlowClient: Received non-WAV audio with Content-Type '{mediaType}'. Returning raw bytes.");
                     return bytes;
                 }
