@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using HarmonyLib;
+using RimAI.Core.Runtime;
 using Ustas.RimAI.Communication.Voices.Integration;
 using Ustas.RimAI.Core.Composition;
 using Ustas.RimAI.Core.Diagnostics;
@@ -48,7 +49,7 @@ public sealed class VoicesComposition : IRimAiModuleComposition
 
             if (!_quitHooked)
             {
-                Application.quitting += OnApplicationQuitting;
+                RimAiGameExit.Subscribe(OnApplicationQuitting);
                 _quitHooked = true;
             }
 
