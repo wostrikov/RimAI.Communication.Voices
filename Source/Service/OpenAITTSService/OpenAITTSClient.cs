@@ -45,8 +45,9 @@ namespace Ustas.RimAI.Communication.Voices.Service
         // again up to HeaderAttempts times - past that the Edge fallback speaks the line
         // instead, and the default 100 seconds left a colonist silent that long. The retry
         // is measured rather than defensive: /audio/speech answered in 0.7-1.3 s five times
-        // in six on 2026-10-14 and the sixth sent nothing at all, from a shell as much as
-        // from the game, so waiting longer on that one never helps and asking again does. The audio then streams in about as fast as it is
+        // in six when it was measured and the sixth sent nothing at all, from a shell as
+        // much as from the game, so waiting longer on that one never helps and asking again
+        // does. The audio then streams in about as fast as it is
         // spoken, so a long line legitimately takes longer than any fixed timeout short
         // enough for the first wait: a single 30-second cap on the whole exchange cut
         // such lines off mid-download ("no response within 30s", thrown from
