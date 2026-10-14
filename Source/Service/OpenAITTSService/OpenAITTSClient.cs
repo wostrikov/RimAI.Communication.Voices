@@ -41,16 +41,20 @@ namespace Ustas.RimAI.Communication.Voices.Service
             "flac"
         };
 
-        // Two waits, not one. The server has HeaderTimeout to start answering - past that
-        // the Edge fallback speaks the line instead, and the default 100 seconds left a
-        // colonist silent that long. The audio then streams in about as fast as it is
+        // Two waits, not one. The server has HeaderTimeout to start answering, and is asked
+        // again up to HeaderAttempts times - past that the Edge fallback speaks the line
+        // instead, and the default 100 seconds left a colonist silent that long. The retry
+        // is measured rather than defensive: /audio/speech answered in 0.7-1.3 s five times
+        // in six on 2026-10-14 and the sixth sent nothing at all, from a shell as much as
+        // from the game, so waiting longer on that one never helps and asking again does. The audio then streams in about as fast as it is
         // spoken, so a long line legitimately takes longer than any fixed timeout short
         // enough for the first wait: a single 30-second cap on the whole exchange cut
         // such lines off mid-download ("no response within 30s", thrown from
         // LoadIntoBufferAsync). The body is read as a stream and
         // abandoned only when it stops arriving for BodyIdleTimeout, or runs past
         // BodyTotalTimeout altogether.
-        static readonly TimeSpan HeaderTimeout = TimeSpan.FromSeconds(30);
+        static readonly TimeSpan HeaderTimeout = TimeSpan.FromSeconds(10);
+        const int HeaderAttempts = 3;
         static readonly TimeSpan BodyIdleTimeout = TimeSpan.FromSeconds(20);
         static readonly TimeSpan BodyTotalTimeout = TimeSpan.FromMinutes(2);
         static readonly HttpClient _http = new HttpClient { Timeout = System.Threading.Timeout.InfiniteTimeSpan };
@@ -111,20 +115,22 @@ namespace Ustas.RimAI.Communication.Voices.Service
 
                 body.Append('}');
 
-                using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/audio/speech")
+                string json = body.ToString();
+                HttpResponseMessage sent = null;
+                for (int attempt = 1; sent == null; attempt++)
                 {
-                    Content = new StringContent(body.ToString(), Encoding.UTF8, "application/json")
-                };
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", request.ApiKey);
-                // A fresh connection per line. Lines come minutes apart, and Mono will send the
-                // next one down a kept-alive connection the other end has long since dropped,
-                // then wait out the whole timeout for an answer that cannot come - which is
-                // what every failure seen so far looked like: nothing, after an idle spell.
-                httpRequest.Headers.ConnectionClose = true;
+                    // A request message is sent once, so each attempt builds its own.
+                    using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/audio/speech")
+                    {
+                        Content = new StringContent(json, Encoding.UTF8, "application/json")
+                    };
+                    httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", request.ApiKey);
+                    // A fresh connection per line. Lines come minutes apart, and a kept-alive
+                    // connection the other end has long since dropped would take the next one
+                    // and wait out the whole timeout for an answer that cannot come.
+                    httpRequest.Headers.ConnectionClose = true;
 
-                HttpResponseMessage sent;
-                using (var headerWait = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-                {
+                    using var headerWait = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                     headerWait.CancelAfter(HeaderTimeout);
                     try
                     {
@@ -132,8 +138,15 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     }
                     catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                     {
-                        Log.Error($"[RimAI.Voices] OpenAITTSClient: no response within {HeaderTimeout.TotalSeconds:0}s from {_baseUrl}");
-                        return null;
+                        if (attempt >= HeaderAttempts)
+                        {
+                            Log.Error($"[RimAI.Voices] OpenAITTSClient: no response within {HeaderTimeout.TotalSeconds:0}s"
+                                + $" from {_baseUrl}, {HeaderAttempts} times");
+                            return null;
+                        }
+
+                        ModuleLog.Message($"[RimAI.Voices] OpenAITTSClient: no response within {HeaderTimeout.TotalSeconds:0}s"
+                            + $" on attempt {attempt}; asking again");
                     }
                 }
 

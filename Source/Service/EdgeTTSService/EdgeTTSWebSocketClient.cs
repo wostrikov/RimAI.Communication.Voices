@@ -22,11 +22,10 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
         // WebSocket URL
         private static readonly string WSS_URL = $"wss://{BASE_URL}/edge/v1?TrustedClientToken={TRUSTED_CLIENT_TOKEN}";
         
-        private const long WIN_EPOCH = 11644473600;
-        
         private const string CHROMIUM_FULL_VERSION = "143.0.3650.75";
         private static readonly string CHROMIUM_MAJOR_VERSION = CHROMIUM_FULL_VERSION.Split('.')[0];
-        private static readonly string SEC_MS_GEC_VERSION = $"1-{CHROMIUM_FULL_VERSION}";
+        // The token's second form; the service refuses the first with 403. See EdgeTtsSecMsGec.
+        private static readonly string SEC_MS_GEC_VERSION = $"2-{CHROMIUM_FULL_VERSION}";
         
         private static double clockSkewSeconds = 0.0;
         
@@ -39,21 +38,30 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
         private const int MAX_RETRIES = 3;
         
         private static string GenerateSecMsGec()
+            => EdgeTtsSecMsGec.Generate(DateTimeOffset.UtcNow.ToUnixTimeSeconds() + clockSkewSeconds, TRUSTED_CLIENT_TOKEN);
+
+        // The token is bound to the service's five-minute window, so a refused handshake is
+        // first a question about this machine's clock. The refusal carries the service's
+        // own time in its Date header; the next token is computed against that.
+        private static void AdjustClockSkew(IReadOnlyDictionary<string, IEnumerable<string>> headers)
         {
-            double ticks = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + clockSkewSeconds;
-            
-            ticks += WIN_EPOCH;
-            
-            ticks -= ticks % 300;
-            
-            ticks *= 1e9 / 100;
-            
-            string strToHash = $"{ticks:F0}{TRUSTED_CLIENT_TOKEN}";
-            
-            using (var sha256 = SHA256.Create())
+            if (headers == null || !headers.TryGetValue("Date", out IEnumerable<string> values))
             {
-                byte[] hashBytes = sha256.ComputeHash(Encoding.ASCII.GetBytes(strToHash));
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToUpper();
+                return;
+            }
+
+            string date = values.FirstOrDefault();
+            if (!DateTimeOffset.TryParse(date, System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.AssumeUniversal, out DateTimeOffset server))
+            {
+                return;
+            }
+
+            double client = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + clockSkewSeconds;
+            clockSkewSeconds += server.ToUnixTimeSeconds() - client;
+            if (RimAiLog.Detailed)
+            {
+                ModuleLog.Message($"[EdgeTTS] Clock skew set from the service's Date header to {clockSkewSeconds} seconds");
             }
         }
         
@@ -105,16 +113,7 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                         Log.Warning($"[EdgeTTS] Attempt {retry + 1}/{MAX_RETRIES} failed: {ex.Message}");
                     }
                     
-                    if (ex.Message.Contains("403"))
-                    {
-                        clockSkewSeconds += 300;
-                        if (RimAiLog.Detailed)
-                        {
-                            ModuleLog.Message($"[EdgeTTS] Adjusting clock skew to {clockSkewSeconds} seconds");
-                        }
-                    }
-                    
-                    if (ex.Message.Contains("ResourceExhausted") || ex.Message.Contains("1013"))
+if (ex.Message.Contains("ResourceExhausted") || ex.Message.Contains("1013"))
                     {
                         await Task.Delay(1000 * (retry + 1));
                     }
@@ -136,7 +135,9 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
             {
                 webSocket = new ClientWebSocket();
                 cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-                
+                // For the Date header of a refused handshake; see AdjustClockSkew.
+                webSocket.Options.CollectHttpResponseDetails = true;
+
                 webSocket.Options.SetRequestHeader("User-Agent", 
                     $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/{CHROMIUM_MAJOR_VERSION}.0.0.0 Safari/537.36 Edg/{CHROMIUM_MAJOR_VERSION}.0.0.0");
                 webSocket.Options.SetRequestHeader("Accept-Encoding", "gzip, deflate, br, zstd");
@@ -152,8 +153,16 @@ namespace Ustas.RimAI.Communication.Voices.Service.EdgeTTSService
                     ModuleLog.Message($"[EdgeTTS] Connecting to: {wssUrl.Substring(0, Math.Min(100, wssUrl.Length))}...");
                 }
                 
-                await webSocket.ConnectAsync(new Uri(wssUrl), cts.Token);
-                
+                try
+                {
+                    await webSocket.ConnectAsync(new Uri(wssUrl), cts.Token);
+                }
+                catch (WebSocketException) when (webSocket.HttpStatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    AdjustClockSkew(webSocket.HttpResponseHeaders);
+                    throw;
+                }
+
                 if (webSocket.State != WebSocketState.Open)
                 {
                     throw new Exception($"WebSocket connection failed, state: {webSocket.State}");

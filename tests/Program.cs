@@ -8,7 +8,8 @@ internal static class Program
             + DialogueAudioSyncPolicyTests.Run()
             + VoiceTextPreprocessAndShutdownTests.Run()
             + PawnVoiceBindingTests.Run()
-            + TtsSettingsInstanceTests.Run();
+            + TtsSettingsInstanceTests.Run()
+            + EdgeTtsSecMsGecTests.Run();
         Console.WriteLine("VOICES_FOCUSED_TESTS_OK passed=" + n);
         Console.WriteLine("TESTS total=" + n + " failed=0");
         return 0;
