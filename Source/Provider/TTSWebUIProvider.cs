@@ -34,6 +34,13 @@ namespace Ustas.RimAI.Communication.Voices.Provider
         {
             try
             {
+                // The local Ukrainian server is started on first use and loads for about
+                // half a minute; anything else at this address is somebody else's to run.
+                if (!await LocalTtsServer.EnsureRunningAsync(_baseUrl))
+                {
+                    return null;
+                }
+
                 byte[] audioData = await TTSWebUIClient.GenerateSpeechAsync(request, cancellationToken);
                 return audioData;
             }

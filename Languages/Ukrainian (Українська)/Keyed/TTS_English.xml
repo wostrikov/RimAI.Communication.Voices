@@ -445,6 +445,9 @@
     <Ustas.RimAI.Communication.Voices.VoiceNone>Немає</Ustas.RimAI.Communication.Voices.VoiceNone>
     <Ustas.RimAI.Communication.Settings.TTS.CustomProvider.AuthSettings>Автентифікація</Ustas.RimAI.Communication.Settings.TTS.CustomProvider.AuthSettings>
     <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI>TTS-WebUI (локальний)</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI>
+    <Ustas.RimAI.Communication.Settings.TTS.LocalTts.Random>Українська, локально: щоразу інший рушій, голос за статтю персонажа</Ustas.RimAI.Communication.Settings.TTS.LocalTts.Random>
+    <Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomMale>Українська, локально: щоразу інший рушій, чоловічі голоси</Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomMale>
+    <Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomFemale>Українська, локально: щоразу інший рушій, жіночі голоси</Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomFemale>
     <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice>CosyVoice2</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice>
     <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError>Вік має бути від 0 до 999999</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError>
     <Ustas.RimAI.Communication.Settings.TTS.ClearDefault>(Очистити модель за замовчуванням)</Ustas.RimAI.Communication.Settings.TTS.ClearDefault>

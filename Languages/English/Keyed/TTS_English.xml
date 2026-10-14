@@ -347,6 +347,9 @@
     <Ustas.RimAI.Communication.Voices.UploadComplete>Upload complete</Ustas.RimAI.Communication.Voices.UploadComplete>
     <Ustas.RimAI.Communication.Voices.VoiceNone>None</Ustas.RimAI.Communication.Voices.VoiceNone>
     <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI>TTS-WebUI (Local)</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.TTSWebUI>
+    <Ustas.RimAI.Communication.Settings.TTS.LocalTts.Random>Ukrainian, local: a random engine every line, the pawn's gender</Ustas.RimAI.Communication.Settings.TTS.LocalTts.Random>
+    <Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomMale>Ukrainian, local: a random engine every line, male voices</Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomMale>
+    <Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomFemale>Ukrainian, local: a random engine every line, female voices</Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomFemale>
     <Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice>CosyVoice2</Ustas.RimAI.Communication.Settings.TTS.TTSSupplier.CosyVoice>
     <Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError>Age must be between 0 and 999999</Ustas.RimAI.Communication.Settings.TTS.RuleEditor.AgeRangeError>
     <Ustas.RimAI.Communication.Settings.TTS.ClearDefault>(Clear Default)</Ustas.RimAI.Communication.Settings.TTS.ClearDefault>

@@ -389,6 +389,16 @@ namespace Ustas.RimAI.Communication.Voices.Data
                         presets.Add(new VoiceModel(entry.Id, OpenAiVoiceLabel(entry)));
                     break;
                 case TTSSupplier.TTSWebUI:
+                    // The local Ukrainian server first (tools/voices/local_tts_server.py): its
+                    // random voice changes engine every line and keeps the pawn's gender.
+                    presets.Add(new VoiceModel(Policy.LocalTtsVoicePolicy.Random,
+                        "Ustas.RimAI.Communication.Settings.TTS.LocalTts.Random".Translate()));
+                    presets.Add(new VoiceModel(Policy.LocalTtsVoicePolicy.RandomMale,
+                        "Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomMale".Translate()));
+                    presets.Add(new VoiceModel(Policy.LocalTtsVoicePolicy.RandomFemale,
+                        "Ustas.RimAI.Communication.Settings.TTS.LocalTts.RandomFemale".Translate()));
+                    foreach (var voice in Policy.LocalTtsVoicePolicy.FixedVoices)
+                        presets.Add(new VoiceModel(voice.Id, voice.Name));
                     // TTS-WebUI: Common voices from various supported models
                     // Users should configure based on their installed TTS-WebUI extensions
                     presets.Add(new VoiceModel("default", "Default Voice"));

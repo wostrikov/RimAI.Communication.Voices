@@ -12,6 +12,7 @@
     <Compile Include="..\Source\Policy\VoiceShutdownPolicy.cs" Link="Policy\VoiceShutdownPolicy.cs" />
     <Compile Include="..\Source\Policy\PawnVoiceBindingPolicy.cs" Link="Policy\PawnVoiceBindingPolicy.cs" />
     <Compile Include="..\Source\Service\EdgeTTSService\EdgeTtsSecMsGec.cs" Link="Service\EdgeTtsSecMsGec.cs" />
+    <Compile Include="..\Source\Policy\LocalTtsVoicePolicy.cs" Link="Policy\LocalTtsVoicePolicy.cs" />
     <None Include="..\Source\Service\TTSService.cs" Link="TTSService.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\Data\PawnVoiceManager.cs" Link="PawnVoiceManager.cs.src" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\Source\Voice\PawnVoiceRenderer.cs" Link="PawnVoiceRenderer.cs.src" CopyToOutputDirectory="PreserveNewest" />

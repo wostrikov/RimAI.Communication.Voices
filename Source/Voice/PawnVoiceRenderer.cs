@@ -155,6 +155,12 @@ namespace Ustas.RimAI.Communication.Voices.Voice
             if (string.IsNullOrEmpty(voiceId) || voiceId == VoiceModel.NONE_MODEL_ID)
                 return ResolvedPawnVoice.SilentVoice();
 
+            if (KindOf(settings.Supplier) == VoiceProviderKind.TTSWebUI)
+            {
+                bool? male = pawn == null || pawn.gender == Gender.None ? (bool?)null : pawn.gender == Gender.Male;
+                voiceId = LocalTtsVoicePolicy.ForPawn(voiceId, male);
+            }
+
             string model = settings.GetSupplierModel(settings.Supplier);
             string instructions = settings.GetSupplierInstructions(settings.Supplier);
             float speed = settings.GetSupplierSpeed(settings.Supplier);

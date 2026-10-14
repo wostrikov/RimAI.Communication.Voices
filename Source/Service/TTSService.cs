@@ -110,6 +110,8 @@ namespace Ustas.RimAI.Communication.Voices.Service
                             ttsWebUIProvider.SetBaseUrl(baseUrl);
                         }
                     }
+                    // Start loading the local engines now rather than on the first line.
+                    _ = LocalTtsServer.EnsureRunningAsync(ttsWebUIProvider.GetBaseUrl());
                     return ttsWebUIProvider;
                 case TTSSettings.TTSSupplier.None:
                 default:
