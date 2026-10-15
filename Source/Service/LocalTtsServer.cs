@@ -100,8 +100,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
             return false;
         }
 
+        /// <summary>Where the server writes its own account of each request.</summary>
+        internal static string LogPath => Path.Combine(Root, "server.log");
+
         /// <summary>The server's /health answer, or null when nothing answers.</summary>
-        private static async Task<string> HealthAsync()
+        internal static async Task<string> HealthAsync()
         {
             try
             {

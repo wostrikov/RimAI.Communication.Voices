@@ -86,8 +86,11 @@ namespace Ustas.RimAI.Communication.Voices.Service
                     requestBody["speed"] = request.Speed;
                 }
                 
-                // Response format - prefer mp3 for smaller size, fallback to wav
-                requestBody["response_format"] = "mp3";
+                // WAV, because that is what arrives: the local server writes PCM WAV
+                // whatever it is asked for, and the playback service reads WAV in
+                // memory where MP3 has to go through a temporary file. Asking for mp3
+                // and being handed RIFF worked only because playback sniffs the header.
+                requestBody["response_format"] = "wav";
 
                 string jsonRequest = SerializeRequestBody(requestBody);
                 
@@ -122,7 +125,24 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
             catch (HttpRequestException ex)
             {
-                Log.Error($"[RimAI.Voices] TTSWebUIClient: Network error - {ex.Message}. Make sure TTS-WebUI is running at {_baseUrl}");
+                // ex.Message is "An error occurred while sending the request." and
+                // nothing else; what tells a refused connection from a reset one is in
+                // the inner exceptions, so name those. The advice to start the server
+                // is given only when nothing is listening: the local server once
+                // answered 23 lines in a session and failed two, and the old message
+                // told the player it was not running.
+                string cause = DescribeTransportFailure(ex, out bool nothingListens);
+                string server = "";
+                if (LocalTtsServer.Serves(_baseUrl))
+                {
+                    string health = await LocalTtsServer.HealthAsync();
+                    server = health == null
+                        ? " Its /health does not answer either."
+                        : $" Its /health answers \"{health}\"; the server's log is {LocalTtsServer.LogPath}.";
+                }
+                Log.Error(nothingListens
+                    ? $"[RimAI.Voices] TTSWebUIClient: nothing is listening at {_baseUrl} ({cause}). Make sure TTS-WebUI is running there.{server}"
+                    : $"[RimAI.Voices] TTSWebUIClient: the request to {_baseUrl} failed - {cause}.{server}");
                 return null;
             }
             catch (TaskCanceledException)
@@ -201,6 +221,29 @@ namespace Ustas.RimAI.Communication.Voices.Service
             }
         }
         
+        /// <summary>
+        /// What actually failed under an HttpRequestException: its category and each
+        /// inner exception's type and message, with the socket error code where there is
+        /// one. <paramref name="nothingListens"/> is true for a refused connection.
+        /// </summary>
+        internal static string DescribeTransportFailure(HttpRequestException ex, out bool nothingListens)
+        {
+            nothingListens = false;
+            var parts = new List<string> { "error=" + ex.HttpRequestError };
+            for (Exception inner = ex.InnerException; inner != null; inner = inner.InnerException)
+            {
+                string part = inner.GetType().Name + ": " + inner.Message;
+                if (inner is System.Net.Sockets.SocketException socket)
+                {
+                    part += " (socket " + socket.SocketErrorCode + ")";
+                    if (socket.SocketErrorCode == System.Net.Sockets.SocketError.ConnectionRefused)
+                        nothingListens = true;
+                }
+                parts.Add(part);
+            }
+            return string.Join("; ", parts);
+        }
+
         /// <summary>
         /// Simple JSON serialization for request body
         /// </summary>
